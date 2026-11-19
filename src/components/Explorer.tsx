@@ -67,8 +67,11 @@ export default function Explorer() {
     const loadSimple = () => Promise.all(SIMPLE_LAYERS.map(([file, metric]) => load(file).then((d) => ({ metric, zones: d.zones ?? {}, comunas: d.comunas ?? {} }))));
     load("chile.geojson").then(setChile);
     // Real layers are merged into the comuna features; demo values stay for the rest.
-    Promise.all([load("comunas.geojson"), load("prices-comunas.json"), load("transit.json"), load("access.json"), load("censo.json"), load("noise.json"), load("hazards.json"), loadSimple(), load("climate.json"), load("enusc.json"), load("air.json")]).then(([fc, prices, transit, access, censo, noise, hazards, simple, climate, enusc, air]: [AreaCollection, PricesFile, { comunas: Record<string, number> }, AccessFile, CensoFile, NoiseFile, HazardFile, SimpleLayer[], { comunas: Record<string, Record<string, number>> }, { comunas: Record<string, Record<string, number | string>> }, { comunas: Record<string, Record<string, number | string>> }]) => {
+    Promise.all([load("comunas.geojson"), load("prices-comunas.json"), load("transit.json"), load("access.json"), load("censo.json"), load("noise.json"), load("hazards.json"), loadSimple(), load("climate.json"), load("enusc.json"), load("air.json"), load("crime.json")]).then(([fc, prices, transit, access, censo, noise, hazards, simple, climate, enusc, air, crime]: [AreaCollection, PricesFile, { comunas: Record<string, number> }, AccessFile, CensoFile, NoiseFile, HazardFile, SimpleLayer[], { comunas: Record<string, Record<string, number>> }, { comunas: Record<string, Record<string, number | string>> }, { comunas: Record<string, Record<string, number | string>> }, { comunas: Record<string, Record<string, number | null>> }]) => {
       for (const f of fc.features) {
+        const cr = crime.comunas[String(f.properties.code)];
+        if (cr) Object.assign(f.properties, cr);
+        else delete f.properties.RS01;
         const ai = air.comunas[String(f.properties.code)];
         if (ai) Object.assign(f.properties, ai);
         else delete f.properties.EN01;
@@ -421,6 +424,7 @@ function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType
           {metric.id === "EN04" && <p className="at-legend-scale">{t("legend.en04")}</p>}
           {(metric.id === "CL01" || metric.id === "CL03") && <p className="at-legend-scale">{t("legend.climate")}</p>}
           {metric.id === "RS03" && <p className="at-legend-scale">{t("legend.rs03")}</p>}
+          {metric.id === "RS01" && <p className="at-legend-scale">{t("legend.rs01")}</p>}
           {metric.id === "EN01" && <p className="at-legend-scale">{t("legend.en01")}</p>}
           {["RS05", "RS07", "RS09"].includes(metric.id) && <p className="at-legend-scale">{t("legend.hazards")}</p>}
         </>
@@ -452,6 +456,9 @@ function PlaceValues({ zone, comuna, locale, prices }: { zone?: AreaFeature; com
                 <span className="at-status">{t("drawer.atLevel", { level: t(`levels.${level}`) })} · {m.demo ? t("drawer.status") : t("drawer.real")}</span>
                 {m.id === "EN01" && comuna?.properties.EN01_st != null && (
                   <p>{t("drawer.airStation", { st: String(comuna.properties.EN01_st), v: String(comuna.properties.EN01_stv), km: String(comuna.properties.EN01_km) })}</p>
+                )}
+                {m.id === "RS01" && comuna?.properties.RS01_chg != null && (
+                  <p>{t("drawer.crimeChange", { chg: (Number(comuna.properties.RS01_chg) > 0 ? "+" : "") + String(comuna.properties.RS01_chg), prop: String(comuna.properties.RS01_prop ?? "—") })}</p>
                 )}
                 {m.id === "RS03" && comuna?.properties.RS03_lo != null && (
                   <p>{t("drawer.enuscInterval", { lo: String(comuna.properties.RS03_lo), hi: String(comuna.properties.RS03_hi) })}</p>

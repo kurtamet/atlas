@@ -30,3 +30,11 @@ describe("object facts", () => {
     expect(o.unknown.length).toBe(5);
   });
 });
+
+describe("crime observation", () => {
+  it("flags high and low recorded violent crime at comuna level", () => {
+    const base = { minutes: {}, metroName: undefined, hazards: { RS07: false, RS09: false, RS05: false }, faultKm: undefined };
+    expect(observations(base as never, { comuna: { RS01: 3931, name: "Santiago" } }).cons.map((o) => o.key)).toContain("crimeHigh");
+    expect(observations(base as never, { comuna: { RS01: 740, name: "Las Condes" } }).pros.map((o) => o.key)).toContain("crimeLow");
+  });
+});

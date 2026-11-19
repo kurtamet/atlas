@@ -63,7 +63,8 @@
     "en04": "Real data: Sentinel-2 (Copernicus), 17 January 2026, 10 m. Mean NDVI: in the dry summer only trees and irrigation stay green.",
     "climate": "Real data: ARClim (MMA, CR2), historical climate 1980–2010 by comuna (~5 km model, no neighbourhood detail).",
     "rs03": "Real data: INE and SPD, ENUSC 2024 small-area estimates (experimental statistics). % of households victim of a violent crime in 12 months; comuna level only.",
-    "en01": "Real data: SINCA (MMA), 10 stations in the Metropolitan Region, annual mean 2023–2025. Comuna value interpolated from stations: a coarse surface."
+    "en01": "Real data: SINCA (MMA), 10 stations in the Metropolitan Region, annual mean 2023–2025. Comuna value interpolated from stations: a coarse surface.",
+    "rs01": "Real data: CEAD, Ministry of Public Security, 2025 police cases. Crimes against life or physical integrity + violent robberies per 100k residents; counted where they happen, so commercial comunas rank high."
   },
   "families": {
     "climate": "Climate",
@@ -135,7 +136,9 @@
     "method_RS03": "INE and Undersecretariat for Crime Prevention: comuna SAE estimates of the ENUSC 2024 VHDV indicator (experimental statistics) with 95% confidence interval. Measures households victim of robbery with violence or intimidation, snatching and assault. Not downscaled to neighbourhoods.",
     "enuscInterval": "95% interval: {lo}–{hi}%. Experimental estimate.",
     "method_EN01": "SINCA (Ministry of Environment): daily validated (or preliminary) PM2.5 from 10 Metropolitan Region stations, 2023–2025; years with ≥75% of days. Comuna value: inverse-distance-squared interpolation to the comuna's population centre. With few stations this is coarse; the card shows the nearest station. Chilean annual standard: 20 µg/m³.",
-    "airStation": "Nearest station: {st}, {v} µg/m³ measured, {km} km away."
+    "airStation": "Nearest station: {st}, {v} µg/m³ measured, {km} km away.",
+    "method_RS01": "CEAD (Ministry of Public Security): 2025 police cases (reports + in-flagrante arrests) in the families 'crimes against life or physical integrity' and 'violent robberies'; annual rate per 100k residents = sum of monthly rates. Counted where the crime happened, not where the victim lives: comunas with a large daytime population (Santiago, Providencia) get inflated per-resident rates. Comuna level only.",
+    "crimeChange": "Change vs 2024: {chg}%. Non-violent property crime: {prop} per 100k."
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",
@@ -229,7 +232,9 @@
       "documents": "Title, debts and permits.",
       "objectPrice": "Price of this object (only the comuna median is available).",
       "condition": "Condition of the building and unit.",
-      "rules": "Building rules, pets, parking."
+      "rules": "Building rules, pets, parking.",
+      "crimeHigh": "Recorded violent crime: {rate} per 100k residents in {comuna} in 2025 (whole comuna; includes daytime population).",
+      "crimeLow": "Low recorded violent crime: {rate} per 100k residents in {comuna} in 2025 (whole comuna)."
     },
     "more": "See full card"
   },

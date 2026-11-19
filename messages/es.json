@@ -63,7 +63,8 @@
     "en04": "Datos reales: Sentinel-2 (Copernicus), 17 de enero de 2026, 10 m. NDVI promedio: en verano seco solo árboles y riego siguen verdes.",
     "climate": "Datos reales: ARClim (MMA, CR2), clima histórico 1980–2010 por comuna (modelo de ~5 km, sin detalle por barrio).",
     "rs03": "Datos reales: INE y SPD, ENUSC 2024, estimación para áreas pequeñas (estadística experimental). % de hogares víctimas de un delito violento en 12 meses; solo nivel comuna.",
-    "en01": "Datos reales: SINCA (MMA), 10 estaciones de la RM, promedio anual 2023–2025. Valor comunal interpolado desde las estaciones: superficie gruesa."
+    "en01": "Datos reales: SINCA (MMA), 10 estaciones de la RM, promedio anual 2023–2025. Valor comunal interpolado desde las estaciones: superficie gruesa.",
+    "rs01": "Datos reales: CEAD, Ministerio de Seguridad Pública, casos policiales 2025. Delitos contra la vida o integridad + robos violentos por 100 mil residentes; se cuentan donde ocurren, por eso las comunas comerciales salen altas."
   },
   "families": {
     "climate": "Clima",
@@ -135,7 +136,9 @@
     "method_RS03": "INE y Subsecretaría de Prevención del Delito: estimaciones comunales SAE del indicador VHDV de la ENUSC 2024 (estadística experimental), con intervalo de confianza al 95%. Mide hogares víctimas de robo con violencia o intimidación, robo por sorpresa y agresiones. No se baja a barrios.",
     "enuscInterval": "Intervalo 95%: {lo}–{hi}%. Estimación experimental.",
     "method_EN01": "SINCA (Ministerio del Medio Ambiente): MP2,5 diario validado (o preliminar) de 10 estaciones de la Región Metropolitana, 2023–2025; se usan años con ≥75% de días. Valor comunal: interpolación por inverso de la distancia al cuadrado hacia el centro poblado de la comuna. Con pocas estaciones es una superficie gruesa; la ficha muestra la estación más cercana. Norma anual chilena: 20 µg/m³.",
-    "airStation": "Estación más cercana: {st}, {v} µg/m³ medido, a {km} km."
+    "airStation": "Estación más cercana: {st}, {v} µg/m³ medido, a {km} km.",
+    "method_RS01": "CEAD (Ministerio de Seguridad Pública): casos policiales 2025 (denuncias + detenciones flagrantes) de las familias «delitos contra la vida o integridad de las personas» y «robos violentos», tasa anual por 100 mil habitantes = suma de las tasas mensuales. Es donde ocurrió el delito, no donde vive la víctima: en comunas con mucha población flotante (Santiago, Providencia) la tasa por residente se infla. Solo nivel comuna.",
+    "crimeChange": "Cambio frente a 2024: {chg}%. Delitos contra la propiedad no violentos: {prop} por 100 mil."
   },
   "search": {
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",
@@ -229,7 +232,9 @@
       "documents": "Título, deudas y permisos.",
       "objectPrice": "Precio de este objeto (solo hay mediana de la comuna).",
       "condition": "Estado del edificio y de la unidad.",
-      "rules": "Reglamento del edificio, mascotas, estacionamiento."
+      "rules": "Reglamento del edificio, mascotas, estacionamiento.",
+      "crimeHigh": "Delitos violentos registrados: {rate} por 100 mil hab. en {comuna} en 2025 (toda la comuna; incluye población flotante).",
+      "crimeLow": "Pocos delitos violentos registrados: {rate} por 100 mil hab. en {comuna} en 2025 (toda la comuna)."
     },
     "more": "Ver ficha completa"
   },

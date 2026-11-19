@@ -117,6 +117,9 @@ export function observations(f: PointFacts, a: AreaValues): { pros: Observation[
   const cname = String(a.comuna?.name ?? "");
   if (vict !== undefined && vict >= 12) cons.push({ key: "victimHigh", params: { pct: vict, comuna: cname }, evidence: "enusc-sae", level: "C" });
   else if (vict !== undefined && vict <= 7) pros.push({ key: "victimLow", params: { pct: vict, comuna: cname }, evidence: "enusc-sae", level: "C" });
+  const crime = num(a.comuna?.RS01);
+  if (crime !== undefined && crime >= 2800) cons.push({ key: "crimeHigh", params: { rate: Math.round(crime), comuna: cname }, evidence: "cead", level: "C" });
+  else if (crime !== undefined && crime <= 1200) pros.push({ key: "crimeLow", params: { rate: Math.round(crime), comuna: cname }, evidence: "cead", level: "C" });
   // always say what this free card does not establish (spec §9)
   const unknown: Observation[] = ["unit", "documents", "objectPrice", "condition", "rules"].map((key) => ({ key, evidence: "none", level: "O" as const }));
   return { pros, cons, unknown };
