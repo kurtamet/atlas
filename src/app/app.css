@@ -44,3 +44,13 @@
 /* keep the layer list clear of the legend when a family has many layers */
 .atlas-root .at-layers{max-height:calc(100% - 360px);overflow-y:auto}
 .atlas-root .at-legend{max-height:330px;overflow:hidden}
+/* object card */
+.atlas-root .at-object ul{margin:6px 0 0;padding-left:16px}
+.atlas-root .at-object li{margin:3px 0;line-height:1.4}
+.atlas-root .at-obs-level{color:var(--at-muted);font-size:10.5px}
+.atlas-root .at-obs-cons strong{color:#a4523f}
+.atlas-root .at-obs-pros strong{color:#3f7a5a}
+.atlas-root .at-obs-unknown li{color:var(--at-muted)}
+.atlas-root .at-walk{list-style:none;padding-left:0!important}
+.atlas-root .at-walk li{display:flex;justify-content:space-between;gap:10px}
+.atlas-root .at-walk b{font-weight:500;white-space:nowrap}

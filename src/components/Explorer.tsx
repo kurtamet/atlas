@@ -9,6 +9,7 @@ import { parseQuery, rankByCriteria, type Criterion } from "@/lib/search/parse";
 import { bboxOf, findContaining, valuesOf, type AreaCollection, type AreaFeature } from "@/lib/geo";
 import type { MapCommand } from "./MapView";
 import { SANTIAGO, SANTIAGO_ZOOM, zoomBy } from "./MapView";
+import ObjectCard from "./ObjectCard";
 
 const MapView = dynamic(() => import("./MapView"), { ssr: false });
 
@@ -28,8 +29,11 @@ interface AccessFile {
 const fmtDate = (d: string) => `${d.slice(4, 6)}/${d.slice(0, 4)}`;
 
 type Selection =
-  | { kind: "area"; level: "C" | "D"; id: string; comuna?: AreaFeature; zone?: AreaFeature; address?: string }
+  | { kind: "area"; level: "C" | "D"; id: string; comuna?: AreaFeature; zone?: AreaFeature; address?: string; object?: ObjectPick }
   | { kind: "matches"; criteria: Criterion[]; items: Array<{ code: string; name: string; score: number }> };
+
+/** a picked building or geocoded point (level O) */
+interface ObjectPick { lngLat: [number, number]; footprint: GeoJSON.Geometry | null; osm: Record<string, string | number> }
 
 /** real layers shipped as plain value maps, merged by zone id / comuna code */
 const SIMPLE_LAYERS: Array<[string, string]> = [["ndvi.json", "EN04"]];
@@ -132,15 +136,38 @@ export default function Explorer() {
     setMetricId(metricsOfFamily(f)[0].id);
   }
 
-  function selectArea(level: "C" | "D", props: Record<string, string | number>, address?: string) {
+  function selectArea(level: "C" | "D", props: Record<string, string | number>, address?: string, object?: ObjectPick) {
     if (level === "C") {
       const comuna = comunaByCode.get(String(props.code));
-      setSelection({ kind: "area", level, id: String(props.code), comuna, address });
+      setSelection({ kind: "area", level, id: String(props.code), comuna, address, object });
     } else {
       const zone = zones?.features.find((z) => z.properties.id === props.id);
-      setSelection({ kind: "area", level, id: String(props.id), zone, comuna: comunaByCode.get(String(props.comuna)), address });
+      setSelection({ kind: "area", level, id: String(props.id), zone, comuna: comunaByCode.get(String(props.comuna)), address, object });
     }
     setTab("summary");
+  }
+
+  /** open the object card for a point (building click or geocoded address) */
+  function selectObject(obj: ObjectPick, address?: string): boolean {
+    const zone = findContaining(zones, obj.lngLat);
+    const comuna = findContaining(comunas, obj.lngLat);
+    if (zone) selectArea("D", zone.properties, address, obj);
+    else if (comuna) selectArea("C", comuna.properties, address, obj);
+    else return false;
+    if (!address) {
+      // reverse geocoding (Photon/OSM) only labels the card; facts never depend on it
+      const [lon, lat] = obj.lngLat;
+      fetch(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}&limit=1`)
+        .then((r) => r.json())
+        .then((d) => {
+          const p = d.features?.[0]?.properties;
+          if (!p) return;
+          const label = p.street ? `${p.street} ${p.housenumber ?? ""}`.trim() : p.name;
+          if (label) setSelection((s) => (s?.kind === "area" && s.object === obj ? { ...s, address: label } : s));
+        })
+        .catch(() => {});
+    }
+    return true;
   }
 
   async function onSearch(e: React.FormEvent) {
@@ -193,12 +220,8 @@ export default function Explorer() {
           const p = hit.properties ?? {};
           const label = [p.street ? `${p.street} ${p.housenumber ?? ""}`.trim() : p.name, p.district ?? p.city].filter(Boolean).join(", ");
           setMarker(pt);
-          fly({ kind: "fly", center: pt, zoom: 15 });
-          const zone = findContaining(zones, pt);
-          const comuna = findContaining(comunas, pt);
-          if (zone) selectArea("D", zone.properties, label);
-          else if (comuna) selectArea("C", comuna.properties, label);
-          else {
+          fly({ kind: "fly", center: pt, zoom: 17 });
+          if (!selectObject({ lngLat: pt, footprint: null, osm: {} }, label)) {
             setSelection(null);
             setMessage(t("search.outside"));
             return;
@@ -270,6 +293,11 @@ export default function Explorer() {
             setMarker(null);
             selectArea(level as "C" | "D", props);
           }}
+          onPickObject={(lngLat, footprint, osm) => {
+            setMarker(null);
+            selectObject({ lngLat, footprint, osm });
+          }}
+          objectShape={selection?.kind === "area" ? selection.object?.footprint ?? null : null}
         />
         <div className="at-map-top">
           <div className="at-map-location">
@@ -304,7 +332,7 @@ export default function Explorer() {
         <aside className="at-drawer" aria-label={t("drawer.label")} aria-live="polite">
           <div className="at-drawer-top">
             <span className="at-eyebrow">
-              {selection.kind === "matches" ? t("drawer.matches") : selection.address ? t("drawer.address") : selection.level === "D" ? t("drawer.zone") : t("drawer.territory")}
+              {selection.kind === "matches" ? t("drawer.matches") : selection.object ? t("object.eyebrow") : selection.address ? t("drawer.address") : selection.level === "D" ? t("drawer.zone") : t("drawer.territory")}
             </span>
             <button type="button" className="at-close" aria-label={t("drawer.close")} onClick={() => { setSelection(null); setMarker(null); }}>×</button>
           </div>
@@ -317,7 +345,7 @@ export default function Explorer() {
             }} />
           ) : (
             <>
-              <h2>{selection.address ?? String(selection.comuna?.properties.name)}</h2>
+              <h2>{selection.address ?? (selection.object ? t("object.noAddress") : String(selection.comuna?.properties.name))}</h2>
               <p className="at-subline">
                 {selection.address ? `${selection.comuna?.properties.name} · ` : ""}
                 {selection.level === "D" ? `${t("drawer.zone")} ${selection.zone?.properties.id} · ` : ""}
@@ -327,6 +355,15 @@ export default function Explorer() {
                 <button type="button" aria-pressed={tab === "summary"} onClick={() => setTab("summary")}>{t("drawer.summary")}</button>
                 <button type="button" aria-pressed={tab === "evidence"} onClick={() => setTab("evidence")}>{t("drawer.evidence")}</button>
               </div>
+              {tab === "summary" && selection.object && (
+                <ObjectCard
+                  lngLat={selection.object.lngLat}
+                  footprint={selection.object.footprint}
+                  osm={selection.object.osm}
+                  zone={selection.zone?.properties}
+                  comuna={selection.comuna?.properties}
+                />
+              )}
               {tab === "summary" ? (
                 <PlaceValues zone={selection.zone} comuna={selection.comuna} locale={locale} prices={prices} />
               ) : (

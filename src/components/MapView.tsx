@@ -31,7 +31,14 @@ interface Props {
   command: MapCommand | null;
   onZoom: (z: number) => void;
   onPick: (level: Level, props: Record<string, string | number>, lngLat: [number, number]) => void;
+  /** building click at object zoom: footprint geometry from the basemap tiles + OSM height props */
+  onPickObject: (lngLat: [number, number], footprint: GeoJSON.Geometry | null, props: Record<string, string | number>) => void;
+  /** footprint of the selected object, drawn as an outline */
+  objectShape: GeoJSON.Geometry | null;
 }
+
+/** zoom from which buildings are drawn and clickable (spec §2.1: level O at 17+, footprints readable from 15) */
+export const OBJECT_ZOOM = 15;
 
 const EMPTY = { type: "FeatureCollection", features: [] } as const;
 
@@ -46,6 +53,7 @@ const BASE_STYLE: StyleSpecification = {
     comunas: { type: "geojson", data: EMPTY as never, promoteId: "code" },
     zones: { type: "geojson", data: EMPTY as never, promoteId: "id" },
     labels: { type: "geojson", data: "/data/comuna-labels.geojson" },
+    object: { type: "geojson", data: EMPTY as never },
   },
   layers: [
     { id: "bg", type: "background", paint: { "background-color": "#f0f2ee" } },
@@ -57,6 +65,8 @@ const BASE_STYLE: StyleSpecification = {
     // zones without buildings (empty land) are drawn faint: coarse values describe settled areas (spec §2.3)
     { id: "zones-fill", type: "fill", source: "zones", paint: { "fill-opacity": ["case", [">", ["coalesce", ["get", "bld"], 0], 0], 0.85, 0.25] } },
     { id: "zones-line", type: "line", source: "zones", minzoom: 13, paint: { "line-color": "#ffffff", "line-width": ["interpolate", ["linear"], ["zoom"], 13, 0.2, 16, 0.8], "line-opacity": 0.35 } },
+    // building footprints (OpenMapTiles building layer) at object zoom, light so the data color still reads
+    { id: "buildings", type: "fill", source: "omt", "source-layer": "building", minzoom: OBJECT_ZOOM, paint: { "fill-color": "#ffffff", "fill-opacity": ["interpolate", ["linear"], ["zoom"], OBJECT_ZOOM, 0.15, 17, 0.45], "fill-outline-color": "#5f6f66" } },
     // roads above fills so the street grid stays readable through the color
     {
       id: "roads", type: "line", source: "omt", "source-layer": "transportation", minzoom: 9,
@@ -73,6 +83,8 @@ const BASE_STYLE: StyleSpecification = {
     { id: "match-line", type: "line", source: "comunas", filter: ["in", ["get", "code"], ["literal", []]], paint: { "line-color": "#234f43", "line-width": 2.5, "line-dasharray": [2, 1] } },
     { id: "selected-comuna", type: "line", source: "comunas", filter: ["==", ["get", "code"], ""], paint: { "line-color": "#202d29", "line-width": 2.4 } },
     { id: "selected-zone", type: "line", source: "zones", filter: ["==", ["get", "id"], ""], paint: { "line-color": "#202d29", "line-width": 2 } },
+    { id: "object-fill", type: "fill", source: "object", paint: { "fill-color": "#234f43", "fill-opacity": 0.35 } },
+    { id: "object-line", type: "line", source: "object", paint: { "line-color": "#202d29", "line-width": 2.2 } },
     {
       id: "comuna-labels", type: "symbol", source: "labels", minzoom: 9.5,
       layout: { "text-field": ["get", "name"], "text-font": ["Noto Sans Regular"], "text-size": ["interpolate", ["linear"], ["zoom"], 10, 10, 14, 13], "text-max-width": 7 },
@@ -117,16 +129,24 @@ export default function MapView(props: Props) {
         ready.current = true;
         syncData();
         syncStyle();
+        syncObject();
         latest.current.onZoom(map.getZoom());
       });
       map.on("zoomend", () => latest.current.onZoom(map.getZoom()));
       map.on("click", (e) => {
+        if (map.getZoom() >= OBJECT_ZOOM) {
+          const b = map.queryRenderedFeatures(e.point, { layers: ["buildings"] })[0];
+          if (b) {
+            latest.current.onPickObject([e.lngLat.lng, e.lngLat.lat], b.geometry as GeoJSON.Geometry, b.properties as Record<string, string | number>);
+            return;
+          }
+        }
         const layers = ["zones-fill", "comunas-fill"].filter((id) => map.getLayoutProperty(id, "visibility") !== "none");
         const hit: MapGeoJSONFeature | undefined = map.queryRenderedFeatures(e.point, { layers })[0];
         if (!hit) return;
         latest.current.onPick(hit.layer.id === "zones-fill" ? "D" : "C", hit.properties as Record<string, string | number>, [e.lngLat.lng, e.lngLat.lat]);
       });
-      for (const id of ["zones-fill", "comunas-fill"]) {
+      for (const id of ["zones-fill", "comunas-fill", "buildings"]) {
         map.on("mouseenter", id, () => (map.getCanvas().style.cursor = "pointer"));
         map.on("mouseleave", id, () => (map.getCanvas().style.cursor = ""));
       }
@@ -148,6 +168,13 @@ export default function MapView(props: Props) {
     set("chile", chile);
     set("comunas", comunas);
     set("zones", zones);
+  }
+
+  function syncObject() {
+    const map = mapRef.current;
+    if (!map || !ready.current) return;
+    const g = latest.current.objectShape;
+    (map.getSource("object") as { setData?: (d: unknown) => void } | undefined)?.setData?.(g ? { type: "Feature", properties: {}, geometry: g } : EMPTY);
   }
 
   function syncStyle() {
@@ -174,6 +201,7 @@ export default function MapView(props: Props) {
 
   useEffect(syncData, [props.chile, props.comunas, props.zones]);
   useEffect(syncStyle, [props.metric, props.plan, props.selected, props.highlighted]);
+  useEffect(syncObject, [props.objectShape]);
 
   // marker
   useEffect(() => {
