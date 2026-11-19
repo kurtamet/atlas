@@ -65,6 +65,10 @@ const DICTIONARY: Array<[string, Omit<Criterion, "phrase">]> = [
   ["centrico", { metric: "SO01", prefer: "high" }],
   ["low density", { metric: "SO01", prefer: "low" }],
   // risk (spec: "safe" must name an aspect; we use victimization and say so in the card)
+  ["sin inundaciones", { metric: "RS07", prefer: "low" }],
+  ["no inundable", { metric: "RS07", prefer: "low" }],
+  ["no flooding", { metric: "RS07", prefer: "low" }],
+  ["no flood", { metric: "RS07", prefer: "low" }],
   ["seguro", { metric: "RS03", prefer: "low" }],
   ["segura", { metric: "RS03", prefer: "low" }],
   ["safe", { metric: "RS03", prefer: "low" }],

@@ -58,7 +58,8 @@
     "in04": "Datos reales: GTFS DTPM, día hábil 7–9 h, paraderos a 500 m en línea recta. Zonas sin edificios en tono tenue.",
     "in01": "Datos reales: Overture Maps y GTFS DTPM. Almacén, farmacia, salud primaria y transporte; 100 = todo a ≤5 min, 0 = a ≥20 min. Minutos estimados en línea recta.",
     "so01": "Datos reales: INE Censo 2024 por manzana. Habitantes por km² de cada celda; en la comuna, la densidad promedio en que vive un residente (los cerros vacíos no la diluyen).",
-    "en03": "Datos reales: Mapa de Ruido Gran Santiago Urbano 2023 (MMA, 2024). Nivel diurno Ld promedio en el espacio abierto de las manzanas, sin la calzada; clases de 5 dB."
+    "en03": "Datos reales: Mapa de Ruido Gran Santiago Urbano 2023 (MMA, 2024). Nivel diurno Ld promedio en el espacio abierto de las manzanas, sin la calzada; clases de 5 dB.",
+    "hazards": "Datos reales: MINVU RM (áreas de riesgo PRMS y estudios de amenaza). % de residentes (Censo 2024) que viven dentro de la zona oficial. Cada amenaza por separado; fuera del polígono no significa sin riesgo."
   },
   "families": {
     "climate": "Clima",
@@ -80,7 +81,10 @@
     "RS01": "Delitos violentos registrados",
     "RS03": "Victimización (ENUSC)",
     "EC01": "Precio de oferta, departamentos",
-    "EC02": "Precio mediano de compraventas"
+    "EC02": "Precio mediano de compraventas",
+    "RS07": "Zonas de inundación",
+    "RS09": "Remoción en masa y derrumbes",
+    "RS05": "Suelo de muy mala respuesta sísmica"
   },
   "drawer": {
     "label": "Ficha del lugar seleccionado",
@@ -114,7 +118,11 @@
     "method_IN01": "Overture Maps (lugares con confianza ≥0,5) y paraderos GTFS DTPM. Cuatro grupos con igual peso: almacén, farmacia, salud primaria, transporte; puntaje 100 a ≤5 min y 0 a ≥20 min. Minutos estimados desde distancia en línea recta ×1,3 a 4,5 km/h. Mide distancia, no calidad del servicio.",
     "method_SO01": "INE Censo 2024, cartografía por manzana (n_per). Cada manzana se asigna a la celda de ~600 m que contiene su centro; densidad bruta = habitantes / área de la celda. Valor comunal: promedio de densidades de celda ponderado por población. Celdas sin residentes quedan sin valor.",
     "method_EN03": "MMA, Mapa de Ruido Gran Santiago Urbano 2023 (publicado abril 2024). El mapa diurno (Ld) se publica como teselas de color; decodificamos cada píxel (~30 m) a su clase de 5 dB y promediamos en la celda los píxeles bajo 75 dBA (las calzadas se dibujan sobre 75, los edificios no tienen valor). Comuna: promedio ponderado por población Censo 2024. La exposición oficial por comuna (residentes sobre 65 dBA de día y 55 dBA de noche) se muestra en la ficha.",
-    "noiseExposure": "Oficial MMA: {day}% de residentes sobre 65 dBA de día, {night}% sobre 55 dBA de noche."
+    "noiseExposure": "Oficial MMA: {day}% de residentes sobre 65 dBA de día, {night}% sobre 55 dBA de noche.",
+    "method_RS07": "MINVU SEREMI/SERVIU RM, servicio OTRAS_AMENAZAS_RMS. Inundación: áreas recurrentemente inundables y afloramiento de napa (PRMS), zona de inundación alta, crecidas fluviales y flujos hiperconcentrados. Remoción: PRMS remoción en masa y derrumbes, flujos de detritos de peligro alto. Sísmica: suelos de muy mala respuesta sísmica. Valor: % de habitantes del Censo 2024 (centro de cada manzana) dentro del área; las amenazas no se suman. Escala de origen metropolitana: no reemplaza un estudio del terreno.",
+    "method_RS09": "MINVU SEREMI/SERVIU RM, servicio OTRAS_AMENAZAS_RMS. Inundación: áreas recurrentemente inundables y afloramiento de napa (PRMS), zona de inundación alta, crecidas fluviales y flujos hiperconcentrados. Remoción: PRMS remoción en masa y derrumbes, flujos de detritos de peligro alto. Sísmica: suelos de muy mala respuesta sísmica. Valor: % de habitantes del Censo 2024 (centro de cada manzana) dentro del área; las amenazas no se suman. Escala de origen metropolitana: no reemplaza un estudio del terreno.",
+    "method_RS05": "MINVU SEREMI/SERVIU RM, servicio OTRAS_AMENAZAS_RMS. Inundación: áreas recurrentemente inundables y afloramiento de napa (PRMS), zona de inundación alta, crecidas fluviales y flujos hiperconcentrados. Remoción: PRMS remoción en masa y derrumbes, flujos de detritos de peligro alto. Sísmica: suelos de muy mala respuesta sísmica. Valor: % de habitantes del Censo 2024 (centro de cada manzana) dentro del área; las amenazas no se suman. Escala de origen metropolitana: no reemplaza un estudio del terreno.",
+    "faultKm": "Distancia a la falla San Ramón (trazado MINVU): {km} km."
   },
   "search": {
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",
