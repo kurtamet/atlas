@@ -59,7 +59,10 @@
     "in01": "Datos reales: Overture Maps y GTFS DTPM. Almacén, farmacia, salud primaria y transporte; 100 = todo a ≤5 min, 0 = a ≥20 min. Minutos estimados en línea recta.",
     "so01": "Datos reales: INE Censo 2024 por manzana. Habitantes por km² de cada celda; en la comuna, la densidad promedio en que vive un residente (los cerros vacíos no la diluyen).",
     "en03": "Datos reales: Mapa de Ruido Gran Santiago Urbano 2023 (MMA, 2024). Nivel diurno Ld promedio en el espacio abierto de las manzanas, sin la calzada; clases de 5 dB.",
-    "hazards": "Datos reales: MINVU RM (áreas de riesgo PRMS y estudios de amenaza). % de residentes (Censo 2024) que viven dentro de la zona oficial. Cada amenaza por separado; fuera del polígono no significa sin riesgo."
+    "hazards": "Datos reales: MINVU RM (áreas de riesgo PRMS y estudios de amenaza). % de residentes (Censo 2024) que viven dentro de la zona oficial. Cada amenaza por separado; fuera del polígono no significa sin riesgo.",
+    "en04": "Datos reales: Sentinel-2 (Copernicus), 17 de enero de 2026, 10 m. NDVI promedio: en verano seco solo árboles y riego siguen verdes.",
+    "climate": "Datos reales: ARClim (MMA, CR2), clima histórico 1980–2010 por comuna (modelo de ~5 km, sin detalle por barrio).",
+    "rs03": "Datos reales: INE y SPD, ENUSC 2024, estimación para áreas pequeñas (estadística experimental). % de hogares víctimas de un delito violento en 12 meses; solo nivel comuna."
   },
   "families": {
     "climate": "Clima",
@@ -70,7 +73,7 @@
     "value": "Valor y cambios"
   },
   "metrics": {
-    "CL01": "Días calurosos (≥30 °C)",
+    "CL01": "Días calurosos (>30 °C)",
     "CL03": "Precipitación anual",
     "EN04": "Vegetación (NDVI)",
     "EN03": "Ruido de tránsito (día)",
@@ -79,7 +82,7 @@
     "IN04": "Oferta de transporte público",
     "SO01": "Densidad de población",
     "RS01": "Delitos violentos registrados",
-    "RS03": "Victimización (ENUSC)",
+    "RS03": "Victimización por delitos violentos (ENUSC)",
     "EC01": "Precio de oferta, departamentos",
     "EC02": "Precio mediano de compraventas",
     "RS07": "Zonas de inundación",
@@ -122,7 +125,14 @@
     "method_RS07": "MINVU SEREMI/SERVIU RM, servicio OTRAS_AMENAZAS_RMS. Inundación: áreas recurrentemente inundables y afloramiento de napa (PRMS), zona de inundación alta, crecidas fluviales y flujos hiperconcentrados. Remoción: PRMS remoción en masa y derrumbes, flujos de detritos de peligro alto. Sísmica: suelos de muy mala respuesta sísmica. Valor: % de habitantes del Censo 2024 (centro de cada manzana) dentro del área; las amenazas no se suman. Escala de origen metropolitana: no reemplaza un estudio del terreno.",
     "method_RS09": "MINVU SEREMI/SERVIU RM, servicio OTRAS_AMENAZAS_RMS. Inundación: áreas recurrentemente inundables y afloramiento de napa (PRMS), zona de inundación alta, crecidas fluviales y flujos hiperconcentrados. Remoción: PRMS remoción en masa y derrumbes, flujos de detritos de peligro alto. Sísmica: suelos de muy mala respuesta sísmica. Valor: % de habitantes del Censo 2024 (centro de cada manzana) dentro del área; las amenazas no se suman. Escala de origen metropolitana: no reemplaza un estudio del terreno.",
     "method_RS05": "MINVU SEREMI/SERVIU RM, servicio OTRAS_AMENAZAS_RMS. Inundación: áreas recurrentemente inundables y afloramiento de napa (PRMS), zona de inundación alta, crecidas fluviales y flujos hiperconcentrados. Remoción: PRMS remoción en masa y derrumbes, flujos de detritos de peligro alto. Sísmica: suelos de muy mala respuesta sísmica. Valor: % de habitantes del Censo 2024 (centro de cada manzana) dentro del área; las amenazas no se suman. Escala de origen metropolitana: no reemplaza un estudio del terreno.",
-    "faultKm": "Distancia a la falla San Ramón (trazado MINVU): {km} km."
+    "faultKm": "Distancia a la falla San Ramón (trazado MINVU): {km} km.",
+    "method_EN04": "Sentinel-2 L2A (Copernicus, ESA), escena sin nubes del 17-01-2026, mosaicos 19HCD y 19HCC vía COG de Element84 en AWS. NDVI = (B8 − B4)/(B8 + B4) a 10 m; se descartan nubes, sombras y agua según la banda SCL. Celda: promedio de sus píxeles. Comuna: promedio ponderado por población Censo 2024. Una sola fecha de verano: mide cobertura verde, no calidad de parques.",
+    "method_CL01": "ARClim (Ministerio del Medio Ambiente, CR2), capa comunas: días al año con máxima sobre 30 °C, periodo histórico 1980–2010. En la ficha, el cambio proyectado a 2035–2065 bajo SSP2-4.5 (promedio de modelos). Resolución de origen ~5 km: solo nivel comuna.",
+    "method_CL03": "ARClim (MMA, CR2), capa comunas: precipitación acumulada anual, periodo histórico 1980–2010. En la ficha, el cambio proyectado a 2035–2065 bajo SSP2-4.5. La megasequía posterior a 2010 no está en el promedio histórico.",
+    "hotFuture": "Proyección 2035–2065 (SSP2-4.5): +{d} días al año.",
+    "rainFuture": "Proyección 2035–2065 (SSP2-4.5): {d}% de lluvia.",
+    "method_RS03": "INE y Subsecretaría de Prevención del Delito: estimaciones comunales SAE del indicador VHDV de la ENUSC 2024 (estadística experimental), con intervalo de confianza al 95%. Mide hogares víctimas de robo con violencia o intimidación, robo por sorpresa y agresiones. No se baja a barrios.",
+    "enuscInterval": "Intervalo 95%: {lo}–{hi}%. Estimación experimental."
   },
   "search": {
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",

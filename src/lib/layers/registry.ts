@@ -69,9 +69,9 @@ export interface Metric {
 }
 
 export const METRICS: Metric[] = [
-  { id: "CL01", family: "climate", levels: ["C"], unit: "días/año", domain: [0, 60], direction: "more", sources: ["S01", "S04"], decimals: 0, demo: true },
-  { id: "CL03", family: "climate", levels: ["C"], unit: "mm/año", domain: [200, 450], direction: "more", sources: ["S01", "S04"], decimals: 0, demo: true },
-  { id: "EN04", family: "environment", levels: ["C", "D"], unit: "NDVI", domain: [0, 0.6], direction: "more", sources: ["S02"], decimals: 2, demo: true },
+  { id: "CL01", family: "climate", levels: ["C"], unit: "días/año", domain: [0, 75], direction: "more", sources: ["S12"], decimals: 0, demo: false },
+  { id: "CL03", family: "climate", levels: ["C"], unit: "mm/año", domain: [300, 520], direction: "more", sources: ["S12"], decimals: 0, demo: false },
+  { id: "EN04", family: "environment", levels: ["C", "D"], unit: "NDVI", domain: [0.05, 0.45], direction: "more", sources: ["S02"], decimals: 2, demo: false },
   { id: "EN03", family: "environment", levels: ["C", "D"], unit: "dBA Ld", domain: [55, 70], direction: "more", sources: ["S06"], decimals: 0, demo: false },
   { id: "EN01", family: "environment", levels: ["C"], unit: "µg/m³", domain: [15, 35], direction: "more", sources: ["S05"], decimals: 0, demo: true },
   { id: "IN01", family: "access", levels: ["C", "D"], unit: "índice 0–100", domain: [0, 100], direction: "better", sources: ["S07", "S11"], decimals: 0, demo: false },
@@ -81,7 +81,7 @@ export const METRICS: Metric[] = [
   { id: "RS09", family: "risk", levels: ["C", "D"], unit: "% residentes", domain: [0, 100], direction: "more", sources: ["S22", "S26"], decimals: 0, demo: false },
   { id: "RS05", family: "risk", levels: ["C", "D"], unit: "% residentes", domain: [0, 100], direction: "more", sources: ["S22", "S25"], decimals: 0, demo: false },
   { id: "RS01", family: "risk", levels: ["C"], unit: "por 100 mil hab.", domain: [200, 1400], direction: "more", sources: ["S19"], decimals: 0, demo: true },
-  { id: "RS03", family: "risk", levels: ["C"], unit: "% hogares", domain: [10, 40], direction: "more", sources: ["S20"], decimals: 0, demo: true },
+  { id: "RS03", family: "risk", levels: ["C"], unit: "% hogares", domain: [4, 18], direction: "more", sources: ["S20"], decimals: 1, demo: false },
   { id: "EC02", family: "value", levels: ["C"], unit: "UF", domain: [1000, 10000], direction: "more", sources: ["S29"], decimals: 0, demo: false },
   { id: "EC01", family: "value", levels: ["C", "D"], unit: "UF/m²", domain: [30, 140], direction: "more", sources: ["S23"], decimals: 0, demo: true },
 ];

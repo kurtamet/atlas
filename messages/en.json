@@ -59,7 +59,10 @@
     "in01": "Real data: Overture Maps and DTPM GTFS. Grocery, pharmacy, primary care and transit; 100 = all within 5 min, 0 = 20+ min. Minutes estimated from straight-line distance.",
     "so01": "Real data: INE Census 2024 by block. Residents per km² of each cell; for the comuna, the density the average resident lives at (empty hills don't dilute it).",
     "en03": "Real data: Greater Santiago Urban Noise Map 2023 (MMA, 2024). Mean daytime Ld in the open space of blocks, excluding carriageways; 5 dB classes.",
-    "hazards": "Real data: MINVU RM (PRMS risk areas and hazard studies). % of residents (Census 2024) living inside the official zone. Each hazard separately; outside a polygon does not mean no risk."
+    "hazards": "Real data: MINVU RM (PRMS risk areas and hazard studies). % of residents (Census 2024) living inside the official zone. Each hazard separately; outside a polygon does not mean no risk.",
+    "en04": "Real data: Sentinel-2 (Copernicus), 17 January 2026, 10 m. Mean NDVI: in the dry summer only trees and irrigation stay green.",
+    "climate": "Real data: ARClim (MMA, CR2), historical climate 1980–2010 by comuna (~5 km model, no neighbourhood detail).",
+    "rs03": "Real data: INE and SPD, ENUSC 2024 small-area estimates (experimental statistics). % of households victim of a violent crime in 12 months; comuna level only."
   },
   "families": {
     "climate": "Climate",
@@ -70,7 +73,7 @@
     "value": "Value & change"
   },
   "metrics": {
-    "CL01": "Hot days (≥30 °C)",
+    "CL01": "Hot days (>30 °C)",
     "CL03": "Annual precipitation",
     "EN04": "Vegetation (NDVI)",
     "EN03": "Traffic noise (day)",
@@ -79,7 +82,7 @@
     "IN04": "Public transport supply",
     "SO01": "Population density",
     "RS01": "Recorded violent crime",
-    "RS03": "Victimization (ENUSC)",
+    "RS03": "Violent crime victimization (ENUSC)",
     "EC01": "Asking price, apartments",
     "EC02": "Median sale price",
     "RS07": "Flood zones",
@@ -122,7 +125,14 @@
     "method_RS07": "MINVU SEREMI/SERVIU RM, OTRAS_AMENAZAS_RMS service. Flooding: PRMS recurrently floodable areas and groundwater outcrop, high flood zone, river floods and hyperconcentrated flows. Mass movement: PRMS landslide and collapse areas, high-hazard debris flows. Seismic: soils with very poor seismic response. Value: % of Census 2024 residents (block centers) inside the area; hazards are not summed. Metropolitan source scale: not a substitute for a site study.",
     "method_RS09": "MINVU SEREMI/SERVIU RM, OTRAS_AMENAZAS_RMS service. Flooding: PRMS recurrently floodable areas and groundwater outcrop, high flood zone, river floods and hyperconcentrated flows. Mass movement: PRMS landslide and collapse areas, high-hazard debris flows. Seismic: soils with very poor seismic response. Value: % of Census 2024 residents (block centers) inside the area; hazards are not summed. Metropolitan source scale: not a substitute for a site study.",
     "method_RS05": "MINVU SEREMI/SERVIU RM, OTRAS_AMENAZAS_RMS service. Flooding: PRMS recurrently floodable areas and groundwater outcrop, high flood zone, river floods and hyperconcentrated flows. Mass movement: PRMS landslide and collapse areas, high-hazard debris flows. Seismic: soils with very poor seismic response. Value: % of Census 2024 residents (block centers) inside the area; hazards are not summed. Metropolitan source scale: not a substitute for a site study.",
-    "faultKm": "Distance to the San Ramón fault (MINVU trace): {km} km."
+    "faultKm": "Distance to the San Ramón fault (MINVU trace): {km} km.",
+    "method_EN04": "Sentinel-2 L2A (Copernicus, ESA), cloud-free scene of 2026-01-17, tiles 19HCD and 19HCC via Element84 COGs on AWS. NDVI = (B8 − B4)/(B8 + B4) at 10 m; clouds, shadows and water removed using the SCL band. Cell: mean of its pixels. Comuna: Census 2024 population-weighted mean. One summer date: measures green cover, not park quality.",
+    "method_CL01": "ARClim (Ministry of Environment, CR2), comunas layer: days per year with maximum above 30 °C, historical period 1980–2010. The card shows the projected change to 2035–2065 under SSP2-4.5 (model mean). Source resolution ~5 km: comuna level only.",
+    "method_CL03": "ARClim (MMA, CR2), comunas layer: annual accumulated precipitation, historical period 1980–2010. The card shows the projected change to 2035–2065 under SSP2-4.5. The post-2010 megadrought is not in the historical mean.",
+    "hotFuture": "Projection 2035–2065 (SSP2-4.5): +{d} days per year.",
+    "rainFuture": "Projection 2035–2065 (SSP2-4.5): {d}% rainfall.",
+    "method_RS03": "INE and Undersecretariat for Crime Prevention: comuna SAE estimates of the ENUSC 2024 VHDV indicator (experimental statistics) with 95% confidence interval. Measures households victim of robbery with violence or intimidation, snatching and assault. Not downscaled to neighbourhoods.",
+    "enuscInterval": "95% interval: {lo}–{hi}%. Experimental estimate."
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",
