@@ -64,20 +64,23 @@ export interface Metric {
   sources: string[];
   /** number formatting */
   decimals: number;
+  /** true while values are synthetic placeholders (phase 0); real layers set false */
+  demo: boolean;
 }
 
 export const METRICS: Metric[] = [
-  { id: "CL01", family: "climate", levels: ["C"], unit: "días/año", domain: [0, 60], direction: "more", sources: ["S01", "S04"], decimals: 0 },
-  { id: "CL03", family: "climate", levels: ["C"], unit: "mm/año", domain: [200, 450], direction: "more", sources: ["S01", "S04"], decimals: 0 },
-  { id: "EN04", family: "environment", levels: ["C", "D"], unit: "NDVI", domain: [0, 0.6], direction: "more", sources: ["S02"], decimals: 2 },
-  { id: "EN03", family: "environment", levels: ["C", "D"], unit: "dB Ln", domain: [40, 70], direction: "more", sources: ["S06"], decimals: 0 },
-  { id: "EN01", family: "environment", levels: ["C"], unit: "µg/m³", domain: [15, 35], direction: "more", sources: ["S05"], decimals: 0 },
-  { id: "IN01", family: "access", levels: ["C", "D"], unit: "índice 0–100", domain: [0, 100], direction: "better", sources: ["S07", "S08"], decimals: 0 },
-  { id: "IN04", family: "access", levels: ["C", "D"], unit: "índice 0–100", domain: [0, 100], direction: "better", sources: ["S11", "S07"], decimals: 0 },
-  { id: "SO01", family: "urban", levels: ["C", "D"], unit: "hab/km²", domain: [0, 20000], direction: "more", sources: ["S16", "S17"], decimals: 0 },
-  { id: "RS01", family: "risk", levels: ["C"], unit: "por 100 mil hab.", domain: [200, 1400], direction: "more", sources: ["S19"], decimals: 0 },
-  { id: "RS03", family: "risk", levels: ["C"], unit: "% hogares", domain: [10, 40], direction: "more", sources: ["S20"], decimals: 0 },
-  { id: "EC01", family: "value", levels: ["C", "D"], unit: "UF/m²", domain: [30, 140], direction: "more", sources: ["S23"], decimals: 0 },
+  { id: "CL01", family: "climate", levels: ["C"], unit: "días/año", domain: [0, 60], direction: "more", sources: ["S01", "S04"], decimals: 0, demo: true },
+  { id: "CL03", family: "climate", levels: ["C"], unit: "mm/año", domain: [200, 450], direction: "more", sources: ["S01", "S04"], decimals: 0, demo: true },
+  { id: "EN04", family: "environment", levels: ["C", "D"], unit: "NDVI", domain: [0, 0.6], direction: "more", sources: ["S02"], decimals: 2, demo: true },
+  { id: "EN03", family: "environment", levels: ["C", "D"], unit: "dB Ln", domain: [40, 70], direction: "more", sources: ["S06"], decimals: 0, demo: true },
+  { id: "EN01", family: "environment", levels: ["C"], unit: "µg/m³", domain: [15, 35], direction: "more", sources: ["S05"], decimals: 0, demo: true },
+  { id: "IN01", family: "access", levels: ["C", "D"], unit: "índice 0–100", domain: [0, 100], direction: "better", sources: ["S07", "S08"], decimals: 0, demo: true },
+  { id: "IN04", family: "access", levels: ["C", "D"], unit: "índice 0–100", domain: [0, 100], direction: "better", sources: ["S11", "S07"], decimals: 0, demo: true },
+  { id: "SO01", family: "urban", levels: ["C", "D"], unit: "hab/km²", domain: [0, 20000], direction: "more", sources: ["S16", "S17"], decimals: 0, demo: true },
+  { id: "RS01", family: "risk", levels: ["C"], unit: "por 100 mil hab.", domain: [200, 1400], direction: "more", sources: ["S19"], decimals: 0, demo: true },
+  { id: "RS03", family: "risk", levels: ["C"], unit: "% hogares", domain: [10, 40], direction: "more", sources: ["S20"], decimals: 0, demo: true },
+  { id: "EC02", family: "value", levels: ["C"], unit: "UF", domain: [1000, 10000], direction: "more", sources: ["S29"], decimals: 0, demo: false },
+  { id: "EC01", family: "value", levels: ["C", "D"], unit: "UF/m²", domain: [30, 140], direction: "more", sources: ["S23"], decimals: 0, demo: true },
 ];
 
 export const metricById = (id: string): Metric => {

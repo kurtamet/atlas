@@ -14,6 +14,13 @@ const MapView = dynamic(() => import("./MapView"), { ssr: false });
 
 const AVAILABLE_LEVELS: Level[] = ["N", "C", "D"];
 
+interface PricesFile {
+  period: [string, string];
+  comunas: Record<string, { n: number; median: number; p25: number; p75: number; years: Record<string, { n: number; median: number }> }>;
+}
+
+const fmtDate = (d: string) => `${d.slice(4, 6)}/${d.slice(0, 4)}`;
+
 type Selection =
   | { kind: "area"; level: "C" | "D"; id: string; comuna?: AreaFeature; zone?: AreaFeature; address?: string }
   | { kind: "matches"; criteria: Criterion[]; items: Array<{ code: string; name: string; score: number }> };
@@ -25,6 +32,7 @@ export default function Explorer() {
   const [chile, setChile] = useState<unknown>(null);
   const [comunas, setComunas] = useState<AreaCollection | null>(null);
   const [zones, setZones] = useState<AreaCollection | null>(null);
+  const [prices, setPrices] = useState<PricesFile | null>(null);
   const [family, setFamily] = useState<FamilyId>("environment");
   const [metricId, setMetricId] = useState("EN04");
   const [zoom, setZoom] = useState(SANTIAGO_ZOOM);
@@ -39,7 +47,16 @@ export default function Explorer() {
   useEffect(() => {
     const load = (f: string) => fetch(`/data/${f}`).then((r) => r.json());
     load("chile.geojson").then(setChile);
-    load("comunas.geojson").then(setComunas);
+    // Real layers are merged into the comuna features; demo values stay for the rest.
+    Promise.all([load("comunas.geojson"), load("prices-comunas.json")]).then(([fc, prices]: [AreaCollection, PricesFile]) => {
+      for (const f of fc.features) {
+        const p = prices.comunas[String(f.properties.code)];
+        if (!p) continue;
+        Object.assign(f.properties, { EC02: p.median, EC02_n: p.n, EC02_p25: p.p25, EC02_p75: p.p75 });
+      }
+      setPrices(prices);
+      setComunas(fc);
+    });
     load("zones.geojson").then(setZones);
   }, []);
 
@@ -198,9 +215,9 @@ export default function Explorer() {
             <strong>{placeName}</strong>
           </div>
         </div>
-        <div className="at-demo">{t("explore.demo")}</div>
+        {metric.demo && <div className="at-demo">{t("explore.demo")}</div>}
 
-        <Legend metricId={metricId} plan={plan} />
+        <Legend metricId={metricId} plan={plan} period={prices?.period} />
 
         <div className="at-zoom" aria-label="zoom">
           <button type="button" aria-label={t("explore.zoomIn")} onClick={() => zoomBy(1)}>+</button>
@@ -249,7 +266,7 @@ export default function Explorer() {
                 <button type="button" aria-pressed={tab === "evidence"} onClick={() => setTab("evidence")}>{t("drawer.evidence")}</button>
               </div>
               {tab === "summary" ? (
-                <PlaceValues zone={selection.zone} comuna={selection.comuna} locale={locale} />
+                <PlaceValues zone={selection.zone} comuna={selection.comuna} locale={locale} prices={prices} />
               ) : (
                 <Evidence />
               )}
@@ -267,7 +284,7 @@ export default function Explorer() {
   );
 }
 
-function Legend({ metricId, plan }: { metricId: string; plan: ReturnType<typeof planLayers> }) {
+function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType<typeof planLayers>; period?: [string, string] }) {
   const t = useTranslations();
   const metric = metricById(metricId);
   const ramp = rampFor(metric);
@@ -287,6 +304,9 @@ function Legend({ metricId, plan }: { metricId: string; plan: ReturnType<typeof 
             {t("legend.levelNow", { level: t(`levels.${plan.viewLevel}`) })} · <strong>{t("legend.dataAt", { level: t(`levels.${plan.fillLevel}`) })}</strong>
             {plan.isFallback && <><br />{t("legend.fallback", { level: t(`levels.${plan.fillLevel}`) })}</>}
           </p>
+          {!metric.demo && metric.id === "EC02" && period && (
+            <p className="at-legend-scale">{t("legend.ec02", { from: fmtDate(period[0]), to: fmtDate(period[1]) })}</p>
+          )}
         </>
       ) : (
         <p className="at-legend-scale">{t("legend.noData")}</p>
@@ -295,7 +315,7 @@ function Legend({ metricId, plan }: { metricId: string; plan: ReturnType<typeof 
   );
 }
 
-function PlaceValues({ zone, comuna, locale }: { zone?: AreaFeature; comuna?: AreaFeature; locale: string }) {
+function PlaceValues({ zone, comuna, locale, prices }: { zone?: AreaFeature; comuna?: AreaFeature; locale: string; prices: PricesFile | null }) {
   const t = useTranslations();
   return (
     <div>
@@ -313,13 +333,29 @@ function PlaceValues({ zone, comuna, locale }: { zone?: AreaFeature; comuna?: Ar
                   <strong>{t(`metrics.${m.id}`)}</strong>
                   <b>{formatValue(m, value, locale)}<small>{m.unit}</small></b>
                 </div>
-                <span className="at-status">{t("drawer.atLevel", { level: t(`levels.${level}`) })} · {t("drawer.status")}</span>
+                <span className="at-status">{t("drawer.atLevel", { level: t(`levels.${level}`) })} · {m.demo ? t("drawer.status") : t("drawer.real")}</span>
+                {m.id === "EC02" && comuna && prices?.comunas[String(comuna.properties.code)] && (
+                  <PriceDetail p={prices.comunas[String(comuna.properties.code)]} period={prices.period} locale={locale} />
+                )}
               </div>
             );
           })}
         </div>
       ))}
     </div>
+  );
+}
+
+function PriceDetail({ p, period, locale }: { p: PricesFile["comunas"][string]; period: [string, string]; locale: string }) {
+  const t = useTranslations("drawer");
+  const nf = new Intl.NumberFormat(locale === "es" ? "es-CL" : "en-US");
+  const years = Object.entries(p.years).filter(([y]) => y >= "2019");
+  return (
+    <p>
+      {t("ec02Sample", { n: nf.format(p.n), from: fmtDate(period[0]), to: fmtDate(period[1]), p25: nf.format(p.p25), p75: nf.format(p.p75) })}
+      <br />
+      {t("ec02Trend")}: {years.map(([y, v]) => `${y} ${nf.format(v.median)}`).join(" · ")}
+    </p>
   );
 }
 
@@ -331,7 +367,7 @@ function Evidence() {
       {METRICS.map((m) => (
         <div className="at-observation" key={m.id}>
           <strong>{m.id} · {t(`metrics.${m.id}`)}</strong>
-          <p>{t("drawer.sources", { sources: m.sources.join(", ") })}</p>
+          <p>{m.demo ? t("drawer.sources", { sources: m.sources.join(", ") }) : t(`drawer.method_${m.id}`)}</p>
           <span className="at-status">{m.levels.map((l) => t(`levels.${l}`)).join(" · ")}</span>
         </div>
       ))}

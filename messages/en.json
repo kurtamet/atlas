@@ -1,49 +1,106 @@
 {
-  "meta": { "title": "Atlas Chile · Every place, in context", "description": "Explore Chile layer by layer: climate, environment, daily life, urban life, risks and value." },
-  "nav": { "label": "Main navigation", "explore": "Explore", "trends": "Data & trends", "partners": "Organizations", "account": "My reports" },
-  "note": { "left": "DEVELOPMENT BUILD · Demo values", "right": "Working name · ATLAS CHILE" },
-  "footer": { "tagline": "ATLAS CHILE · Territorial intelligence", "methods": "Methodology", "api": "Integrations & API", "language": "Language" },
+  "meta": {
+    "title": "Atlas Chile · Every place, in context",
+    "description": "Explore Chile layer by layer: climate, environment, daily life, urban life, risks and value."
+  },
+  "nav": {
+    "label": "Main navigation",
+    "explore": "Explore",
+    "trends": "Data & trends",
+    "partners": "Organizations",
+    "account": "My reports"
+  },
+  "note": {
+    "left": "DEVELOPMENT BUILD · Demo values",
+    "right": "Working name · ATLAS CHILE"
+  },
+  "footer": {
+    "tagline": "ATLAS CHILE · Territorial intelligence",
+    "methods": "Methodology",
+    "api": "Integrations & API",
+    "language": "Language"
+  },
   "explore": {
     "searchLabel": "Address, listing link or criteria",
     "searchPlaceholder": "Address, link or criteria (e.g. “quiet and near the metro”)",
     "analyze": "Analyze",
     "demo": "Demo values",
-    "zoomIn": "Zoom in", "zoomOut": "Zoom out", "recenter": "Back to Santiago",
-    "propertyTitle": "Look into a property", "propertyText": "Search an address to see its surroundings and what still needs checking."
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "recenter": "Back to Santiago",
+    "propertyTitle": "Look into a property",
+    "propertyText": "Search an address to see its surroundings and what still needs checking."
   },
   "layers": {
-    "heading": "Layers", "collapse": "Show or hide layers",
+    "heading": "Layers",
+    "collapse": "Show or hide layers",
     "hint": "One color layer at a time. Intensity follows the indicator value; broader levels stay as outlines.",
     "methods": "Sources & methodology",
     "indicator": "Indicator"
   },
-  "levels": { "N": "country", "C": "comuna", "D": "calculation zone (~600 m)", "B": "block", "O": "property" },
-  "legend": { "levelNow": "Map scale: {level}", "dataAt": "Data at {level} level", "fallback": "No finer data; keeping the {level} level.", "noData": "No data at this scale", "less": "less", "more": "more", "worse": "worse", "better": "better" },
+  "levels": {
+    "N": "country",
+    "C": "comuna",
+    "D": "calculation zone (~600 m)",
+    "B": "block",
+    "O": "property"
+  },
+  "legend": {
+    "levelNow": "Map scale: {level}",
+    "dataAt": "Data at {level} level",
+    "fallback": "No finer data; keeping the {level} level.",
+    "noData": "No data at this scale",
+    "less": "less",
+    "more": "more",
+    "worse": "worse",
+    "better": "better",
+    "ec02": "Real data: SII F2890, deeds {from}–{to}. All property types, no floor area."
+  },
   "families": {
-    "climate": "Climate", "environment": "Environment", "access": "Daily life", "urban": "Urban life", "risk": "Safety & risks", "value": "Value & change"
+    "climate": "Climate",
+    "environment": "Environment",
+    "access": "Daily life",
+    "urban": "Urban life",
+    "risk": "Safety & risks",
+    "value": "Value & change"
   },
   "metrics": {
-    "CL01": "Hot days (≥30 °C)", "CL03": "Annual precipitation",
-    "EN04": "Vegetation (NDVI)", "EN03": "Night-time noise", "EN01": "Annual PM2.5",
-    "IN01": "Basic services on foot", "IN04": "Public transport",
+    "CL01": "Hot days (≥30 °C)",
+    "CL03": "Annual precipitation",
+    "EN04": "Vegetation (NDVI)",
+    "EN03": "Night-time noise",
+    "EN01": "Annual PM2.5",
+    "IN01": "Basic services on foot",
+    "IN04": "Public transport",
     "SO01": "Population density",
-    "RS01": "Recorded violent crime", "RS03": "Victimization (ENUSC)",
-    "EC01": "Asking price, apartments"
+    "RS01": "Recorded violent crime",
+    "RS03": "Victimization (ENUSC)",
+    "EC01": "Asking price, apartments",
+    "EC02": "Median sale price"
   },
   "drawer": {
-    "label": "Selected place card", "close": "Close card",
-    "territory": "Comuna", "zone": "Calculation zone", "address": "Address",
+    "label": "Selected place card",
+    "close": "Close card",
+    "territory": "Comuna",
+    "zone": "Calculation zone",
+    "address": "Address",
     "region": "Santiago Metropolitan Region · Chile",
-    "summary": "Summary", "evidence": "Sources & coverage",
+    "summary": "Summary",
+    "evidence": "Sources & coverage",
     "atLevel": "{level} level",
     "status": "Demo",
     "sources": "Planned sources: {sources}",
-    "demoNote": "Values in this build are synthetic and only test the interface. Comuna geometries are real.",
+    "demoNote": "Except the sale price, values in this build are synthetic and only test the interface. Comuna geometries are real.",
     "matches": "Matching comunas",
     "matchesNote": "Ranked by: {criteria}",
-    "teaserEyebrow": "Property analysis", "teaserTitle": "The information. And what it means.",
+    "teaserEyebrow": "Property analysis",
+    "teaserTitle": "The information. And what it means.",
     "teaserText": "Estimated value, records, surroundings and priority checks in a single report.",
-    "teaserCta": "See full report"
+    "teaserCta": "See full report",
+    "real": "Real data",
+    "ec02Sample": "{n} sales, {from}–{to}. Interquartile range {p25}–{p75} UF.",
+    "ec02Trend": "Median by year (UF)",
+    "method_EC02": "SII form F2890 (registered transfers). Sales from 500 to 100,000 UF; a deal covering several rols (apartment + parking + storage) counts once. No type or floor area until the SII catastro is joined."
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",
@@ -52,17 +109,45 @@
     "outside": "This address is outside the comunas available in this build."
   },
   "pages": {
-    "trends": { "eyebrow": "Territorial observatory", "title": "The territory, through data.", "lead": "Thematic analysis, comparable series and context to understand how places change.", "soon": "Section in preparation." },
-    "partners": { "eyebrow": "For organizations", "title": "Context for your users. Information for their decisions.", "lead": "Maps, indicators and reports embedded where people already search and work.",
-      "portals": "Portals & platforms", "portalsTitle": "The surroundings, inside every listing.", "portalsText": "An embedded card, a map or indicators. Report access from your own flow.",
-      "agencies": "Agencies & professionals", "agenciesTitle": "A common base for every analysis.", "agenciesText": "Report packs, batch requests and client delivery from one workspace.",
-      "public": "Municipalities & media", "publicTitle": "Territorial information for everyone.", "publicText": "Free public embeds that bring local context to residents and readers." },
-    "methods": { "eyebrow": "Methodology", "title": "Clear data. Clear conclusions.", "lead": "Every indicator keeps its source, date, scale and status: observed, documented or estimated.",
-      "a": "Sources & coverage", "aText": "Available detail varies by place and indicator. A comuna-level figure keeps that scope on a property card.",
-      "b": "Explainable models", "bText": "Estimates come with their method and limits. Missing information stays visible.",
-      "c": "Reports", "cText": "The report brings together evidence, calculations and analysis. Checks that need documents or a visit are marked explicitly.",
-      "d": "Updates", "dText": "Each source's date accompanies the indicator. Historical versions are kept apart from current observations.",
-      "back": "Back to the atlas" },
-    "account": { "eyebrow": "Workspace", "title": "Your analyses. One place.", "lead": "Reports, batch requests and client delivery for professionals and organizations.", "soon": "Account access arrives in a later phase." }
+    "trends": {
+      "eyebrow": "Territorial observatory",
+      "title": "The territory, through data.",
+      "lead": "Thematic analysis, comparable series and context to understand how places change.",
+      "soon": "Section in preparation."
+    },
+    "partners": {
+      "eyebrow": "For organizations",
+      "title": "Context for your users. Information for their decisions.",
+      "lead": "Maps, indicators and reports embedded where people already search and work.",
+      "portals": "Portals & platforms",
+      "portalsTitle": "The surroundings, inside every listing.",
+      "portalsText": "An embedded card, a map or indicators. Report access from your own flow.",
+      "agencies": "Agencies & professionals",
+      "agenciesTitle": "A common base for every analysis.",
+      "agenciesText": "Report packs, batch requests and client delivery from one workspace.",
+      "public": "Municipalities & media",
+      "publicTitle": "Territorial information for everyone.",
+      "publicText": "Free public embeds that bring local context to residents and readers."
+    },
+    "methods": {
+      "eyebrow": "Methodology",
+      "title": "Clear data. Clear conclusions.",
+      "lead": "Every indicator keeps its source, date, scale and status: observed, documented or estimated.",
+      "a": "Sources & coverage",
+      "aText": "Available detail varies by place and indicator. A comuna-level figure keeps that scope on a property card.",
+      "b": "Explainable models",
+      "bText": "Estimates come with their method and limits. Missing information stays visible.",
+      "c": "Reports",
+      "cText": "The report brings together evidence, calculations and analysis. Checks that need documents or a visit are marked explicitly.",
+      "d": "Updates",
+      "dText": "Each source's date accompanies the indicator. Historical versions are kept apart from current observations.",
+      "back": "Back to the atlas"
+    },
+    "account": {
+      "eyebrow": "Workspace",
+      "title": "Your analyses. One place.",
+      "lead": "Reports, batch requests and client delivery for professionals and organizations.",
+      "soon": "Account access arrives in a later phase."
+    }
   }
 }
