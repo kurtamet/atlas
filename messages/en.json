@@ -62,7 +62,8 @@
     "hazards": "Real data: MINVU RM (PRMS risk areas and hazard studies). % of residents (Census 2024) living inside the official zone. Each hazard separately; outside a polygon does not mean no risk.",
     "en04": "Real data: Sentinel-2 (Copernicus), 17 January 2026, 10 m. Mean NDVI: in the dry summer only trees and irrigation stay green.",
     "climate": "Real data: ARClim (MMA, CR2), historical climate 1980–2010 by comuna (~5 km model, no neighbourhood detail).",
-    "rs03": "Real data: INE and SPD, ENUSC 2024 small-area estimates (experimental statistics). % of households victim of a violent crime in 12 months; comuna level only."
+    "rs03": "Real data: INE and SPD, ENUSC 2024 small-area estimates (experimental statistics). % of households victim of a violent crime in 12 months; comuna level only.",
+    "en01": "Real data: SINCA (MMA), 10 stations in the Metropolitan Region, annual mean 2023–2025. Comuna value interpolated from stations: a coarse surface."
   },
   "families": {
     "climate": "Climate",
@@ -132,7 +133,9 @@
     "hotFuture": "Projection 2035–2065 (SSP2-4.5): +{d} days per year.",
     "rainFuture": "Projection 2035–2065 (SSP2-4.5): {d}% rainfall.",
     "method_RS03": "INE and Undersecretariat for Crime Prevention: comuna SAE estimates of the ENUSC 2024 VHDV indicator (experimental statistics) with 95% confidence interval. Measures households victim of robbery with violence or intimidation, snatching and assault. Not downscaled to neighbourhoods.",
-    "enuscInterval": "95% interval: {lo}–{hi}%. Experimental estimate."
+    "enuscInterval": "95% interval: {lo}–{hi}%. Experimental estimate.",
+    "method_EN01": "SINCA (Ministry of Environment): daily validated (or preliminary) PM2.5 from 10 Metropolitan Region stations, 2023–2025; years with ≥75% of days. Comuna value: inverse-distance-squared interpolation to the comuna's population centre. With few stations this is coarse; the card shows the nearest station. Chilean annual standard: 20 µg/m³.",
+    "airStation": "Nearest station: {st}, {v} µg/m³ measured, {km} km away."
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",
@@ -227,6 +230,27 @@
       "objectPrice": "Price of this object (only the comuna median is available).",
       "condition": "Condition of the building and unit.",
       "rules": "Building rules, pets, parking."
-    }
+    },
+    "more": "See full card"
+  },
+  "report": {
+    "eyebrow": "Full free card · no AI",
+    "title": "Full object card",
+    "summary": "Summary",
+    "hazards": "Hazards at the point",
+    "fault": "Distance to the San Ramón fault",
+    "yes": "Yes, inside the official area",
+    "no": "No (outside the polygon)",
+    "hazardNote": "Official MINVU areas at metropolitan scale. Being outside a polygon does not guarantee no risk; not a substitute for a site study.",
+    "price": "Sale prices in the comuna",
+    "priceText": "Median {median} UF in {comuna} (interquartile range {p25}–{p75} UF), {n} sales in 24 months, all property types.",
+    "priceNote": "Source SII F2890. This is comuna context, not this object's value: without floor area and type no UF/m² is computed.",
+    "layers": "All indicators",
+    "noValue": "no data",
+    "pctZones": "higher than in {pct}% of zones",
+    "pctComunas": "higher than in {pct}% of comunas",
+    "noFlags": "No notable observations with the available data.",
+    "paidAdds": "The paid report adds identification of the unit and its rol, available documents, price comparables, scenarios and an explanation of all of the above.",
+    "disclaimer": "Card generated automatically by fixed rules from public sources; each figure states its scale. Not a valuation, title search or engineering survey."
   }
 }

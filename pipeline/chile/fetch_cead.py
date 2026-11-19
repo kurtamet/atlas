@@ -10,7 +10,36 @@ import re, urllib.parse
 from common import fetch, log, out, save
 
 S = "cead"
-BASE = "https://cead.spd.gov.cl"
+# cead.spd.gov.cl stopped resolving after the 2025 move to the Ministerio de Seguridad Pública;
+# try the likely new homes and follow links from the Subsecretaría's site.
+CANDIDATES = ["https://cead.spd.gov.cl", "https://cead.subprevenciondeldelito.gob.cl", "https://cead.minsegpublica.gob.cl",
+              "https://cead.seguridadpublica.gob.cl", "https://subprevenciondeldelito.gob.cl/cead", "https://www.subprevenciondeldelito.gob.cl/cead"]
+DISCOVER = ["https://subprevenciondeldelito.gob.cl/", "https://www.subprevenciondeldelito.gob.cl/", "https://www.minsegpublica.gob.cl/",
+            "https://www.gob.cl/instituciones/"]
+BASE = CANDIDATES[0]
+
+
+def find_base():
+    """first candidate that answers; else any 'cead' link found on the ministry sites"""
+    for c in CANDIDATES:
+        st, body, final = fetch(c + "/", retries=0, timeout=20)
+        log(S, f"try {c}: HTTP {st}")
+        if st == 200:
+            return final.rstrip("/")
+    for d in DISCOVER:
+        st, body, final = fetch(d, retries=0, timeout=20)
+        log(S, f"discover {d}: HTTP {st}, {len(body)} bytes")
+        if st != 200:
+            continue
+        save(out(S, "pages", "discover_" + re.sub(r"[^a-z0-9]", "_", d.lower())[:60] + ".html"), body)
+        for href in re.findall(r'href="([^"]+)"', body.decode("utf-8", "ignore")):
+            if re.search(r"cead|estadisticas-delictuales|estad%C3%ADsticas", href, re.I):
+                u = urllib.parse.urljoin(final, href)
+                log(S, f"  link: {u}")
+                st2, _, final2 = fetch(u, retries=0, timeout=20)
+                if st2 == 200:
+                    return final2.rstrip("/")
+    return None
 PAGES = ["/", "/estadisticas-delictuales/", "/centro-de-documentacion/", "/estadisticas-regionales/",
          "/estadisticas-comunales/", "/biblioteca/", "/reportes-estadisticos/"]
 DOC = re.compile(r'href="([^"]+\.(?:xlsx|xls|csv|zip))"', re.I)
@@ -19,6 +48,13 @@ AJAX = re.compile(r'["\']([^"\']*(?:get_|ajax|admin-ajax|\.php)[^"\']*)["\']', r
 
 
 def main():
+    global BASE
+    b = find_base()
+    if not b:
+        log(S, "CEAD site not found under any known address; see pages/discover_*.html")
+        return
+    BASE = b
+    log(S, f"using {BASE}")
     seen_docs, endpoints = set(), set()
     for p in PAGES:
         st, body, final = fetch(BASE + p)

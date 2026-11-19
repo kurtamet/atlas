@@ -62,7 +62,8 @@
     "hazards": "Datos reales: MINVU RM (áreas de riesgo PRMS y estudios de amenaza). % de residentes (Censo 2024) que viven dentro de la zona oficial. Cada amenaza por separado; fuera del polígono no significa sin riesgo.",
     "en04": "Datos reales: Sentinel-2 (Copernicus), 17 de enero de 2026, 10 m. NDVI promedio: en verano seco solo árboles y riego siguen verdes.",
     "climate": "Datos reales: ARClim (MMA, CR2), clima histórico 1980–2010 por comuna (modelo de ~5 km, sin detalle por barrio).",
-    "rs03": "Datos reales: INE y SPD, ENUSC 2024, estimación para áreas pequeñas (estadística experimental). % de hogares víctimas de un delito violento en 12 meses; solo nivel comuna."
+    "rs03": "Datos reales: INE y SPD, ENUSC 2024, estimación para áreas pequeñas (estadística experimental). % de hogares víctimas de un delito violento en 12 meses; solo nivel comuna.",
+    "en01": "Datos reales: SINCA (MMA), 10 estaciones de la RM, promedio anual 2023–2025. Valor comunal interpolado desde las estaciones: superficie gruesa."
   },
   "families": {
     "climate": "Clima",
@@ -132,7 +133,9 @@
     "hotFuture": "Proyección 2035–2065 (SSP2-4.5): +{d} días al año.",
     "rainFuture": "Proyección 2035–2065 (SSP2-4.5): {d}% de lluvia.",
     "method_RS03": "INE y Subsecretaría de Prevención del Delito: estimaciones comunales SAE del indicador VHDV de la ENUSC 2024 (estadística experimental), con intervalo de confianza al 95%. Mide hogares víctimas de robo con violencia o intimidación, robo por sorpresa y agresiones. No se baja a barrios.",
-    "enuscInterval": "Intervalo 95%: {lo}–{hi}%. Estimación experimental."
+    "enuscInterval": "Intervalo 95%: {lo}–{hi}%. Estimación experimental.",
+    "method_EN01": "SINCA (Ministerio del Medio Ambiente): MP2,5 diario validado (o preliminar) de 10 estaciones de la Región Metropolitana, 2023–2025; se usan años con ≥75% de días. Valor comunal: interpolación por inverso de la distancia al cuadrado hacia el centro poblado de la comuna. Con pocas estaciones es una superficie gruesa; la ficha muestra la estación más cercana. Norma anual chilena: 20 µg/m³.",
+    "airStation": "Estación más cercana: {st}, {v} µg/m³ medido, a {km} km."
   },
   "search": {
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",
@@ -227,6 +230,27 @@
       "objectPrice": "Precio de este objeto (solo hay mediana de la comuna).",
       "condition": "Estado del edificio y de la unidad.",
       "rules": "Reglamento del edificio, mascotas, estacionamiento."
-    }
+    },
+    "more": "Ver ficha completa"
+  },
+  "report": {
+    "eyebrow": "Ficha completa gratuita · sin IA",
+    "title": "Ficha completa del objeto",
+    "summary": "Resumen",
+    "hazards": "Amenazas en el punto",
+    "fault": "Distancia a la falla San Ramón",
+    "yes": "Sí, dentro del área oficial",
+    "no": "No (fuera del polígono)",
+    "hazardNote": "Áreas oficiales MINVU a escala metropolitana. Estar fuera del polígono no garantiza ausencia de riesgo; no reemplaza un estudio del terreno.",
+    "price": "Precios de compraventa en la comuna",
+    "priceText": "Mediana {median} UF en {comuna} (rango intercuartil {p25}–{p75} UF), {n} compraventas en 24 meses, todos los tipos de propiedad.",
+    "priceNote": "Fuente SII F2890. Es el contexto de la comuna, no el valor de este objeto: sin superficie ni tipo no se calcula UF/m².",
+    "layers": "Todos los indicadores",
+    "noValue": "sin dato",
+    "pctZones": "mayor que en {pct}% de las zonas",
+    "pctComunas": "mayor que en {pct}% de las comunas",
+    "noFlags": "No hay observaciones destacadas con los datos disponibles.",
+    "paidAdds": "El informe pagado agrega identificación de la unidad y su rol, documentos disponibles, comparables de precio, escenarios y una explicación de todo lo anterior.",
+    "disclaimer": "Ficha generada automáticamente con reglas fijas a partir de fuentes públicas; cada dato indica su escala. No es una tasación ni un estudio de títulos o de ingeniería."
   }
 }

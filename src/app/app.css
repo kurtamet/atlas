@@ -54,3 +54,24 @@
 .atlas-root .at-walk{list-style:none;padding-left:0!important}
 .atlas-root .at-walk li{display:flex;justify-content:space-between;gap:10px}
 .atlas-root .at-walk b{font-weight:500;white-space:nowrap}
+/* full object card (modal) */
+.atlas-root .at-more{margin-top:12px;width:100%}
+.at-report-overlay{position:fixed;inset:0;z-index:50;background:#1b25217a;display:flex;align-items:flex-start;justify-content:center;padding:4vh 16px;overflow-y:auto}
+.at-report{background:var(--at-surface,#fff);border-radius:10px;max-width:1080px;width:100%;padding:28px 34px 24px;box-shadow:0 12px 40px #00000040}
+.at-report-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid var(--at-line,#dde2dc);padding-bottom:14px}
+.at-report-head h1{font-size:28px;font-weight:500;letter-spacing:-.03em;margin:8px 0 4px}
+.at-report-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:36px;margin-top:8px}
+.atlas-root .at-report h2,.at-report h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--at-muted,#5f6f66);font-weight:500;margin:22px 0 8px}
+.at-report ul{margin:4px 0 8px;padding-left:18px}
+.at-report li{margin:4px 0;line-height:1.45}
+.at-report-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.at-report-table td{padding:6px 0;border-bottom:1px solid var(--at-line,#e5e9e3)}
+.at-report-table td:last-child{text-align:right;white-space:nowrap;padding-left:12px}
+.at-report-metric{padding:8px 0;border-bottom:1px solid var(--at-line,#e5e9e3)}
+.at-report-method{font-size:11.5px;color:var(--at-muted,#5f6f66);margin-top:4px;line-height:1.45}
+.at-report-family{margin-bottom:10px}
+.at-report-bars{display:flex;gap:10px;align-items:flex-end;height:96px;margin:8px 0}
+.at-report-bars div{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;color:var(--at-muted,#5f6f66)}
+.at-report-bars span{width:26px;background:#2f7c7a;border-radius:2px 2px 0 0}
+.at-report-foot{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin:20px 0 10px;border-top:1px solid var(--at-line,#dde2dc);padding-top:6px}
+@media(max-width:820px){.at-report-grid,.at-report-foot{grid-template-columns:1fr}.at-report{padding:20px 18px}}

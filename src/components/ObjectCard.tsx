@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import ObjectReport, { type PriceInfo } from "./ObjectReport";
+import type { AreaCollection } from "@/lib/geo";
 import { pointFacts, observations, type PointFacts, type PoisFile, type HazardsFile, type Observation, type PoiGroup, type LngLat } from "@/lib/object/facts";
 
 /** object context files are loaded once, on the first object card */
@@ -25,15 +27,21 @@ export function footprintArea(g: GeoJSON.Geometry | null): number | null {
   return Math.round(area);
 }
 
-export default function ObjectCard({ lngLat, footprint, osm, zone, comuna }: {
+export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title, zones, comunas, price, pricePeriod }: {
   lngLat: LngLat;
   footprint: GeoJSON.Geometry | null;
   osm: Record<string, string | number>;
   zone?: Record<string, unknown>;
   comuna?: Record<string, unknown>;
+  title: string;
+  zones: AreaCollection | null;
+  comunas: AreaCollection | null;
+  price?: PriceInfo;
+  pricePeriod?: [string, string];
 }) {
   const t = useTranslations("object");
   const [facts, setFacts] = useState<PointFacts | null>(null);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     let live = true;
     loadCtx().then(([p, h]) => live && setFacts(pointFacts(lngLat, p, h))).catch(() => live && setFacts(null));
@@ -94,6 +102,27 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna }: {
             <ul>{obs.unknown.map((o) => <li key={o.key}>{t(`obs.${o.key}`)}</li>)}</ul>
           </div>
         </>
+      )}
+      {obs && (
+        <button type="button" className="at-secondary at-more" onClick={() => setOpen(true)}>{t("more")}</button>
+      )}
+      {open && facts && obs && (
+        <ObjectReport
+          onClose={() => setOpen(false)}
+          title={title}
+          lngLat={lngLat}
+          area={area}
+          height={Number.isFinite(height) && height > 0 ? height : undefined}
+          hasFootprint={!!footprint}
+          facts={facts}
+          obs={obs}
+          zone={zone}
+          comuna={comuna}
+          zones={zones}
+          comunas={comunas}
+          price={price}
+          pricePeriod={pricePeriod}
+        />
       )}
       <p className="at-family-head" style={{ marginTop: 18 }}>{t("context")}</p>
     </div>
