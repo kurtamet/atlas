@@ -19,11 +19,19 @@ interface PricesFile {
   comunas: Record<string, { n: number; median: number; p25: number; p75: number; years: Record<string, { n: number; median: number }> }>;
 }
 
+const ACCESS_GROUPS = ["food", "pharmacy", "health", "transport"] as const;
+interface AccessFile {
+  zones: Record<string, { v: number } & Partial<Record<(typeof ACCESS_GROUPS)[number], number | null>>>;
+  comunas: Record<string, number>;
+}
+
 const fmtDate = (d: string) => `${d.slice(4, 6)}/${d.slice(0, 4)}`;
 
 type Selection =
   | { kind: "area"; level: "C" | "D"; id: string; comuna?: AreaFeature; zone?: AreaFeature; address?: string }
   | { kind: "matches"; criteria: Criterion[]; items: Array<{ code: string; name: string; score: number }> };
+
+interface CensoFile { comunas: Record<string, { SO01: number; pop: number }>; zones: Record<string, { SO01: number; pop: number }> }
 
 export default function Explorer() {
   const t = useTranslations();
@@ -48,8 +56,13 @@ export default function Explorer() {
     const load = (f: string) => fetch(`/data/${f}`).then((r) => r.json());
     load("chile.geojson").then(setChile);
     // Real layers are merged into the comuna features; demo values stay for the rest.
-    Promise.all([load("comunas.geojson"), load("prices-comunas.json"), load("transit.json")]).then(([fc, prices, transit]: [AreaCollection, PricesFile, { comunas: Record<string, number> }]) => {
+    Promise.all([load("comunas.geojson"), load("prices-comunas.json"), load("transit.json"), load("access.json"), load("censo.json")]).then(([fc, prices, transit, access, censo]: [AreaCollection, PricesFile, { comunas: Record<string, number> }, AccessFile, CensoFile]) => {
       for (const f of fc.features) {
+        const cs = censo.comunas[String(f.properties.code)];
+        if (cs) Object.assign(f.properties, { SO01: cs.SO01, pop: cs.pop });
+        else delete f.properties.SO01;
+        const ac = access.comunas[String(f.properties.code)];
+        if (ac !== undefined) f.properties.IN01 = ac;
         const t = transit.comunas[String(f.properties.code)];
         if (t !== undefined) f.properties.IN04 = t;
         const p = prices.comunas[String(f.properties.code)];
@@ -59,11 +72,20 @@ export default function Explorer() {
       setPrices(prices);
       setComunas(fc);
     });
-    Promise.all([load("zones.geojson"), load("transit.json"), load("zone-weights.json")]).then(
-      ([fc, transit, w]: [AreaCollection, { zones: Record<string, number> }, { weights: Record<string, number> }]) => {
+    Promise.all([load("zones.geojson"), load("transit.json"), load("zone-weights.json"), load("access.json"), load("censo.json")]).then(
+      ([fc, transit, w, access, censo]: [AreaCollection, { zones: Record<string, number> }, { weights: Record<string, number> }, AccessFile, CensoFile]) => {
         for (const f of fc.features) {
           const id = String(f.properties.id);
+          const cz = censo.zones[id];
+          // zones without Censo residents have no density value (unknown ≠ 0 for non-residential land)
+          if (cz) Object.assign(f.properties, { SO01: cz.SO01, pop: cz.pop });
+          else delete f.properties.SO01;
           if (id in transit.zones) f.properties.IN04 = transit.zones[id];
+          const acc = access.zones[id];
+          if (acc) {
+            f.properties.IN01 = acc.v;
+            for (const g of ACCESS_GROUPS) if (acc[g] != null) f.properties[`IN01_${g}`] = acc[g] as number;
+          }
           f.properties.bld = w.weights[id] ?? 0;
         }
         setZones(fc);
@@ -319,6 +341,8 @@ function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType
             <p className="at-legend-scale">{t("legend.ec02", { from: fmtDate(period[0]), to: fmtDate(period[1]) })}</p>
           )}
           {metric.id === "IN04" && <p className="at-legend-scale">{t("legend.in04")}</p>}
+          {metric.id === "IN01" && <p className="at-legend-scale">{t("legend.in01")}</p>}
+          {metric.id === "SO01" && <p className="at-legend-scale">{t("legend.so01")}</p>}
         </>
       ) : (
         <p className="at-legend-scale">{t("legend.noData")}</p>
@@ -346,6 +370,9 @@ function PlaceValues({ zone, comuna, locale, prices }: { zone?: AreaFeature; com
                   <b>{formatValue(m, value, locale)}<small>{m.unit}</small></b>
                 </div>
                 <span className="at-status">{t("drawer.atLevel", { level: t(`levels.${level}`) })} · {m.demo ? t("drawer.status") : t("drawer.real")}</span>
+                {m.id === "IN01" && fromZone !== undefined && zone && (
+                  <p>{ACCESS_GROUPS.map((g) => `${t(`drawer.acc_${g}`)} ~${Math.round(Number(zone.properties[`IN01_${g}`]))} min`).join(" · ")}<br />{t("drawer.accNote")}</p>
+                )}
                 {m.id === "EC02" && comuna && prices?.comunas[String(comuna.properties.code)] && (
                   <PriceDetail p={prices.comunas[String(comuna.properties.code)]} period={prices.period} locale={locale} />
                 )}

@@ -55,7 +55,9 @@
     "worse": "peor",
     "better": "mejor",
     "ec02": "Datos reales: SII F2890, escrituras {from}–{to}. Todos los tipos de propiedad, sin superficie.",
-    "in04": "Datos reales: GTFS DTPM, día hábil 7–9 h, paraderos a 500 m en línea recta. Zonas sin edificios en tono tenue."
+    "in04": "Datos reales: GTFS DTPM, día hábil 7–9 h, paraderos a 500 m en línea recta. Zonas sin edificios en tono tenue.",
+    "in01": "Datos reales: Overture Maps y GTFS DTPM. Almacén, farmacia, salud primaria y transporte; 100 = todo a ≤5 min, 0 = a ≥20 min. Minutos estimados en línea recta.",
+    "so01": "Datos reales: INE Censo 2024 por manzana. Habitantes por km² de cada celda; en la comuna, la densidad promedio en que vive un residente (los cerros vacíos no la diluyen)."
   },
   "families": {
     "climate": "Clima",
@@ -71,7 +73,7 @@
     "EN04": "Vegetación (NDVI)",
     "EN03": "Ruido nocturno",
     "EN01": "PM2.5 anual",
-    "IN01": "Servicios básicos a pie",
+    "IN01": "Servicios cotidianos a pie",
     "IN04": "Oferta de transporte público",
     "SO01": "Densidad de población",
     "RS01": "Delitos violentos registrados",
@@ -91,7 +93,7 @@
     "atLevel": "nivel {level}",
     "status": "Demostración",
     "sources": "Fuentes previstas: {sources}",
-    "demoNote": "Precio de compraventas y transporte público son datos reales; el resto de los valores de esta versión son sintéticos. Las geometrías de comunas son reales.",
+    "demoNote": "Precio de compraventas, transporte y servicios cotidianos son datos reales; el resto de los valores de esta versión son sintéticos. Las geometrías de comunas son reales.",
     "matches": "Comunas que coinciden",
     "matchesNote": "Ordenadas según: {criteria}",
     "teaserEyebrow": "Análisis de propiedad",
@@ -102,7 +104,14 @@
     "ec02Sample": "{n} compraventas, {from}–{to}. Rango intercuartil {p25}–{p75} UF.",
     "ec02Trend": "Mediana por año (UF)",
     "method_EC02": "SII, formulario F2890 (transferencias inscritas). Compraventas de 500 a 100 000 UF; una operación con varios roles (depto + estacionamiento + bodega) cuenta una vez. Sin tipo ni superficie hasta integrar el catastro SII.",
-    "method_IN04": "DTPM GTFS (Red Metropolitana de Movilidad). Salidas por hora en día hábil de 7 a 9 h en paraderos y estaciones a 500 m en línea recta del centro de la zona; no es tiempo de caminata por calles. Comuna: promedio de zonas ponderado por número de edificios (Overture)."
+    "method_IN04": "DTPM GTFS (Red Metropolitana de Movilidad). Salidas por hora en día hábil de 7 a 9 h en paraderos y estaciones a 500 m en línea recta del centro de la zona; no es tiempo de caminata por calles. Comuna: promedio de zonas ponderado por número de edificios (Overture).",
+    "acc_food": "Almacén",
+    "acc_pharmacy": "Farmacia",
+    "acc_health": "Salud",
+    "acc_transport": "Paradero",
+    "accNote": "Minutos estimados: línea recta ×1,3 a 4,5 km/h, no ruta real.",
+    "method_IN01": "Overture Maps (lugares con confianza ≥0,5) y paraderos GTFS DTPM. Cuatro grupos con igual peso: almacén, farmacia, salud primaria, transporte; puntaje 100 a ≤5 min y 0 a ≥20 min. Minutos estimados desde distancia en línea recta ×1,3 a 4,5 km/h. Mide distancia, no calidad del servicio.",
+    "method_SO01": "INE Censo 2024, cartografía por manzana (n_per). Cada manzana se asigna a la celda de ~600 m que contiene su centro; densidad bruta = habitantes / área de la celda. Valor comunal: promedio de densidades de celda ponderado por población. Celdas sin residentes quedan sin valor."
   },
   "search": {
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",

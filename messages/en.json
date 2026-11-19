@@ -55,7 +55,9 @@
     "worse": "worse",
     "better": "better",
     "ec02": "Real data: SII F2890, deeds {from}–{to}. All property types, no floor area.",
-    "in04": "Real data: DTPM GTFS, weekday 7–9 am, stops within 500 m straight line. Zones without buildings shown faint."
+    "in04": "Real data: DTPM GTFS, weekday 7–9 am, stops within 500 m straight line. Zones without buildings shown faint.",
+    "in01": "Real data: Overture Maps and DTPM GTFS. Grocery, pharmacy, primary care and transit; 100 = all within 5 min, 0 = 20+ min. Minutes estimated from straight-line distance.",
+    "so01": "Real data: INE Census 2024 by block. Residents per km² of each cell; for the comuna, the density the average resident lives at (empty hills don't dilute it)."
   },
   "families": {
     "climate": "Climate",
@@ -71,7 +73,7 @@
     "EN04": "Vegetation (NDVI)",
     "EN03": "Night-time noise",
     "EN01": "Annual PM2.5",
-    "IN01": "Basic services on foot",
+    "IN01": "Daily services on foot",
     "IN04": "Public transport supply",
     "SO01": "Population density",
     "RS01": "Recorded violent crime",
@@ -91,7 +93,7 @@
     "atLevel": "{level} level",
     "status": "Demo",
     "sources": "Planned sources: {sources}",
-    "demoNote": "Sale prices and public transport are real data; other values in this build are synthetic. Comuna geometries are real.",
+    "demoNote": "Sale prices, transit and daily services are real data; other values in this build are synthetic. Comuna geometries are real.",
     "matches": "Matching comunas",
     "matchesNote": "Ranked by: {criteria}",
     "teaserEyebrow": "Property analysis",
@@ -102,7 +104,14 @@
     "ec02Sample": "{n} sales, {from}–{to}. Interquartile range {p25}–{p75} UF.",
     "ec02Trend": "Median by year (UF)",
     "method_EC02": "SII form F2890 (registered transfers). Sales from 500 to 100,000 UF; a deal covering several rols (apartment + parking + storage) counts once. No type or floor area until the SII catastro is joined.",
-    "method_IN04": "DTPM GTFS (Red Metropolitana de Movilidad). Weekday 7–9 am departures per hour at stops and stations within 500 m straight line of the zone center; not walking time over streets. Comuna: zone average weighted by building count (Overture)."
+    "method_IN04": "DTPM GTFS (Red Metropolitana de Movilidad). Weekday 7–9 am departures per hour at stops and stations within 500 m straight line of the zone center; not walking time over streets. Comuna: zone average weighted by building count (Overture).",
+    "acc_food": "Grocery",
+    "acc_pharmacy": "Pharmacy",
+    "acc_health": "Health",
+    "acc_transport": "Stop",
+    "accNote": "Estimated minutes: straight line ×1.3 at 4.5 km/h, not an actual route.",
+    "method_IN01": "Overture Maps (places with confidence ≥0.5) and DTPM GTFS stops. Four equally weighted groups: grocery, pharmacy, primary care, transit; score 100 at ≤5 min, 0 at ≥20 min. Minutes estimated from straight-line distance ×1.3 at 4.5 km/h. Measures distance, not service quality.",
+    "method_SO01": "INE Census 2024 block cartography (n_per). Each block is assigned to the ~600 m cell containing its center; gross density = residents / cell area. Comuna value: population-weighted mean of cell densities. Cells without residents have no value."
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",
