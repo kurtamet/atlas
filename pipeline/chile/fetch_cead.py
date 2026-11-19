@@ -6,7 +6,7 @@ Two routes, both raw:
     page does: all Región Metropolitana comunas, every crime group, 2023-2025, rates per 100k and counts.
 Everything goes to data-chile/cead/; the log tells what worked so the parser can be finished.
 """
-import re, urllib.parse
+import os, re, urllib.parse
 from common import fetch, log, out, save
 
 S = "cead"
@@ -126,31 +126,41 @@ def cead_tables(base):
     url = base + "/wp-content/themes/gobcl-wp-master/data/get_estadisticas_delictuales.php"
     hdr = {"X-Requested-With": "XMLHttpRequest", "Referer": base + "/estadisticas-delictuales/",
            "Origin": base, "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"}
+    # (seleccion, medida, year, descarga, family id or None = all crimes)
+    jobs = [(sel, med, y, d, None) for sel in ("1", "2") for med in ("2", "1") for y in want
+            for d in (("false", "true") if (sel, med) == ("1", "2") else ("false",))]
+    # comuna x family tables: the all-crimes table above has no breakdown by crime type per comuna
+    jobs += [("1", med, y, "false", f) for f, _ in fam for med in ("2", "1") for y in want[:2]]
     ok = 0
-    for seleccion in ("1", "2"):
-        for medida in ("2", "1"):
-            for y in want:
-                for descarga in (("false", "true") if (seleccion, medida) == ("1", "2") else ("false",)):
-                    data = {
-                        "medida": medida, "tipoVal": "1,2", "anio[]": [y],
-                        "trimestre[]": ["1", "2", "3", "4"],
-                        "mes[]": [str(i) for i in range(1, 13)], "mes_nombres[]": MONTHS,
-                        "region[]": ["13"], "region_nombres[]": ["Región Metropolitana"],
-                        "provincia[]": [v for v, _ in prov], "provincias_nombres[]": [t for _, t in prov],
-                        "comuna[]": [v for v, _ in com], "comuna_nombres[]": [t for _, t in com],
-                        "familia[]": [v for v, _ in fam], "familia_nombres[]": [t for _, t in fam],
-                        "grupo[]": [v for v, _ in grp], "grupo_nombres[]": [t for _, t in grp],
-                        "subgrupo[]": [v for v, _ in sub], "subgrupo_nombres[]": [t for _, t in sub],
-                        "seleccion": seleccion, "descarga": descarga,
-                    }
-                    st, body, _ = fetch(url, data=data, headers=hdr, timeout=180, retries=3)
-                    ext = "xls" if descarga == "true" else "html"
-                    name = f"sel{seleccion}_medida{medida}_{y}.{ext}"
-                    # a real table mentions comuna names; the empty template is ~3 KB
-                    good = st == 200 and len(body) > 8000 and b"Providencia" in body
-                    log(S, f"table {name}: HTTP {st}, {len(body)} bytes{'' if good else '  (empty?)'}")
-                    save(out(S, "api", name), body)
-                    ok += good
+    for seleccion, medida, y, descarga, f in jobs:
+        ext = "xls" if descarga == "true" else "html"
+        name = f"sel{seleccion}_medida{medida}_{y}" + (f"_fam{f}" if f else "") + f".{ext}"
+        path = out(S, "api", name)
+        if os.path.exists(path) and os.path.getsize(path) > 8000:
+            ok += 1
+            continue  # already downloaded on an earlier run
+        fs = [x for x in fam if f in (None, x[0])]
+        pre = tuple(v for v, _ in fs)
+        gs = [x for x in grp if f is None or x[0].startswith(pre)]
+        ss = [x for x in sub if f is None or x[0].startswith(pre)]
+        data = {
+            "medida": medida, "tipoVal": "1,2", "anio[]": [y],
+            "trimestre[]": ["1", "2", "3", "4"],
+            "mes[]": [str(i) for i in range(1, 13)], "mes_nombres[]": MONTHS,
+            "region[]": ["13"], "region_nombres[]": ["Región Metropolitana"],
+            "provincia[]": [v for v, _ in prov], "provincias_nombres[]": [t for _, t in prov],
+            "comuna[]": [v for v, _ in com], "comuna_nombres[]": [t for _, t in com],
+            "familia[]": [v for v, _ in fs], "familia_nombres[]": [t for _, t in fs],
+            "grupo[]": [v for v, _ in gs], "grupo_nombres[]": [t for _, t in gs],
+            "subgrupo[]": [v for v, _ in ss], "subgrupo_nombres[]": [t for _, t in ss],
+            "seleccion": seleccion, "descarga": descarga,
+        }
+        st, body, _ = fetch(url, data=data, headers=hdr, timeout=180, retries=3)
+        # a real table mentions comuna names; the empty template is ~3 KB
+        good = st == 200 and len(body) > 8000 and b"Providencia" in body
+        log(S, f"table {name}: HTTP {st}, {len(body)} bytes{'' if good else '  (empty?)'}")
+        save(path, body)
+        ok += good
     log(S, f"{ok} non-empty tables")
     return ok > 0
 
