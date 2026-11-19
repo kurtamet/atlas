@@ -57,7 +57,8 @@
     "ec02": "Real data: SII F2890, deeds {from}–{to}. All property types, no floor area.",
     "in04": "Real data: DTPM GTFS, weekday 7–9 am, stops within 500 m straight line. Zones without buildings shown faint.",
     "in01": "Real data: Overture Maps and DTPM GTFS. Grocery, pharmacy, primary care and transit; 100 = all within 5 min, 0 = 20+ min. Minutes estimated from straight-line distance.",
-    "so01": "Real data: INE Census 2024 by block. Residents per km² of each cell; for the comuna, the density the average resident lives at (empty hills don't dilute it)."
+    "so01": "Real data: INE Census 2024 by block. Residents per km² of each cell; for the comuna, the density the average resident lives at (empty hills don't dilute it).",
+    "en03": "Real data: Greater Santiago Urban Noise Map 2023 (MMA, 2024). Mean daytime Ld in the open space of blocks, excluding carriageways; 5 dB classes."
   },
   "families": {
     "climate": "Climate",
@@ -71,7 +72,7 @@
     "CL01": "Hot days (≥30 °C)",
     "CL03": "Annual precipitation",
     "EN04": "Vegetation (NDVI)",
-    "EN03": "Night-time noise",
+    "EN03": "Traffic noise (day)",
     "EN01": "Annual PM2.5",
     "IN01": "Daily services on foot",
     "IN04": "Public transport supply",
@@ -111,7 +112,9 @@
     "acc_transport": "Stop",
     "accNote": "Estimated minutes: straight line ×1.3 at 4.5 km/h, not an actual route.",
     "method_IN01": "Overture Maps (places with confidence ≥0.5) and DTPM GTFS stops. Four equally weighted groups: grocery, pharmacy, primary care, transit; score 100 at ≤5 min, 0 at ≥20 min. Minutes estimated from straight-line distance ×1.3 at 4.5 km/h. Measures distance, not service quality.",
-    "method_SO01": "INE Census 2024 block cartography (n_per). Each block is assigned to the ~600 m cell containing its center; gross density = residents / cell area. Comuna value: population-weighted mean of cell densities. Cells without residents have no value."
+    "method_SO01": "INE Census 2024 block cartography (n_per). Each block is assigned to the ~600 m cell containing its center; gross density = residents / cell area. Comuna value: population-weighted mean of cell densities. Cells without residents have no value.",
+    "method_EN03": "MMA Greater Santiago Urban Noise Map 2023 (published April 2024). The day map (Ld) is published as colored tiles; we decode each ~30 m pixel to its 5 dB class and average pixels below 75 dBA within the cell (carriageways are drawn above 75, buildings have no value). Comuna: population-weighted mean (Census 2024). Official exposure by comuna (residents above 65 dBA day, 55 dBA night) is shown in the card.",
+    "noiseExposure": "Official MMA: {day}% of residents above 65 dBA by day, {night}% above 55 dBA at night."
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",

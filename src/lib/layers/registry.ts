@@ -72,7 +72,7 @@ export const METRICS: Metric[] = [
   { id: "CL01", family: "climate", levels: ["C"], unit: "días/año", domain: [0, 60], direction: "more", sources: ["S01", "S04"], decimals: 0, demo: true },
   { id: "CL03", family: "climate", levels: ["C"], unit: "mm/año", domain: [200, 450], direction: "more", sources: ["S01", "S04"], decimals: 0, demo: true },
   { id: "EN04", family: "environment", levels: ["C", "D"], unit: "NDVI", domain: [0, 0.6], direction: "more", sources: ["S02"], decimals: 2, demo: true },
-  { id: "EN03", family: "environment", levels: ["C", "D"], unit: "dB Ln", domain: [40, 70], direction: "more", sources: ["S06"], decimals: 0, demo: true },
+  { id: "EN03", family: "environment", levels: ["C", "D"], unit: "dBA Ld", domain: [55, 70], direction: "more", sources: ["S06"], decimals: 0, demo: false },
   { id: "EN01", family: "environment", levels: ["C"], unit: "µg/m³", domain: [15, 35], direction: "more", sources: ["S05"], decimals: 0, demo: true },
   { id: "IN01", family: "access", levels: ["C", "D"], unit: "índice 0–100", domain: [0, 100], direction: "better", sources: ["S07", "S11"], decimals: 0, demo: false },
   { id: "IN04", family: "access", levels: ["C", "D"], unit: "salidas/h", domain: [0, 600], direction: "better", sources: ["S11"], decimals: 0, demo: false },

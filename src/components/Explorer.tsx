@@ -31,6 +31,7 @@ type Selection =
   | { kind: "area"; level: "C" | "D"; id: string; comuna?: AreaFeature; zone?: AreaFeature; address?: string }
   | { kind: "matches"; criteria: Criterion[]; items: Array<{ code: string; name: string; score: number }> };
 
+interface NoiseFile { comunas: Record<string, { EN03: number; day65?: number; night55?: number }>; zones: Record<string, number> }
 interface CensoFile { comunas: Record<string, { SO01: number; pop: number }>; zones: Record<string, { SO01: number; pop: number }> }
 
 export default function Explorer() {
@@ -56,8 +57,11 @@ export default function Explorer() {
     const load = (f: string) => fetch(`/data/${f}`).then((r) => r.json());
     load("chile.geojson").then(setChile);
     // Real layers are merged into the comuna features; demo values stay for the rest.
-    Promise.all([load("comunas.geojson"), load("prices-comunas.json"), load("transit.json"), load("access.json"), load("censo.json")]).then(([fc, prices, transit, access, censo]: [AreaCollection, PricesFile, { comunas: Record<string, number> }, AccessFile, CensoFile]) => {
+    Promise.all([load("comunas.geojson"), load("prices-comunas.json"), load("transit.json"), load("access.json"), load("censo.json"), load("noise.json")]).then(([fc, prices, transit, access, censo, noise]: [AreaCollection, PricesFile, { comunas: Record<string, number> }, AccessFile, CensoFile, NoiseFile]) => {
       for (const f of fc.features) {
+        const nz = noise.comunas[String(f.properties.code)];
+        if (nz) Object.assign(f.properties, { EN03: nz.EN03, EN03_day65: nz.day65 ?? null, EN03_night55: nz.night55 ?? null });
+        else delete f.properties.EN03;
         const cs = censo.comunas[String(f.properties.code)];
         if (cs) Object.assign(f.properties, { SO01: cs.SO01, pop: cs.pop });
         else delete f.properties.SO01;
@@ -72,10 +76,12 @@ export default function Explorer() {
       setPrices(prices);
       setComunas(fc);
     });
-    Promise.all([load("zones.geojson"), load("transit.json"), load("zone-weights.json"), load("access.json"), load("censo.json")]).then(
-      ([fc, transit, w, access, censo]: [AreaCollection, { zones: Record<string, number> }, { weights: Record<string, number> }, AccessFile, CensoFile]) => {
+    Promise.all([load("zones.geojson"), load("transit.json"), load("zone-weights.json"), load("access.json"), load("censo.json"), load("noise.json")]).then(
+      ([fc, transit, w, access, censo, noise]: [AreaCollection, { zones: Record<string, number> }, { weights: Record<string, number> }, AccessFile, CensoFile, NoiseFile]) => {
         for (const f of fc.features) {
           const id = String(f.properties.id);
+          if (id in noise.zones) f.properties.EN03 = noise.zones[id];
+          else delete f.properties.EN03;
           const cz = censo.zones[id];
           // zones without Censo residents have no density value (unknown ≠ 0 for non-residential land)
           if (cz) Object.assign(f.properties, { SO01: cz.SO01, pop: cz.pop });
@@ -343,6 +349,7 @@ function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType
           {metric.id === "IN04" && <p className="at-legend-scale">{t("legend.in04")}</p>}
           {metric.id === "IN01" && <p className="at-legend-scale">{t("legend.in01")}</p>}
           {metric.id === "SO01" && <p className="at-legend-scale">{t("legend.so01")}</p>}
+          {metric.id === "EN03" && <p className="at-legend-scale">{t("legend.en03")}</p>}
         </>
       ) : (
         <p className="at-legend-scale">{t("legend.noData")}</p>
@@ -370,6 +377,9 @@ function PlaceValues({ zone, comuna, locale, prices }: { zone?: AreaFeature; com
                   <b>{formatValue(m, value, locale)}<small>{m.unit}</small></b>
                 </div>
                 <span className="at-status">{t("drawer.atLevel", { level: t(`levels.${level}`) })} · {m.demo ? t("drawer.status") : t("drawer.real")}</span>
+                {m.id === "EN03" && comuna?.properties.EN03_day65 != null && (
+                  <p>{t("drawer.noiseExposure", { day: Math.round(Number(comuna.properties.EN03_day65) * 100), night: Math.round(Number(comuna.properties.EN03_night55) * 100) })}</p>
+                )}
                 {m.id === "IN01" && fromZone !== undefined && zone && (
                   <p>{ACCESS_GROUPS.map((g) => `${t(`drawer.acc_${g}`)} ~${Math.round(Number(zone.properties[`IN01_${g}`]))} min`).join(" · ")}<br />{t("drawer.accNote")}</p>
                 )}
