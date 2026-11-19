@@ -48,8 +48,10 @@ export default function Explorer() {
     const load = (f: string) => fetch(`/data/${f}`).then((r) => r.json());
     load("chile.geojson").then(setChile);
     // Real layers are merged into the comuna features; demo values stay for the rest.
-    Promise.all([load("comunas.geojson"), load("prices-comunas.json")]).then(([fc, prices]: [AreaCollection, PricesFile]) => {
+    Promise.all([load("comunas.geojson"), load("prices-comunas.json"), load("transit.json")]).then(([fc, prices, transit]: [AreaCollection, PricesFile, { comunas: Record<string, number> }]) => {
       for (const f of fc.features) {
+        const t = transit.comunas[String(f.properties.code)];
+        if (t !== undefined) f.properties.IN04 = t;
         const p = prices.comunas[String(f.properties.code)];
         if (!p) continue;
         Object.assign(f.properties, { EC02: p.median, EC02_n: p.n, EC02_p25: p.p25, EC02_p75: p.p75 });
@@ -57,7 +59,16 @@ export default function Explorer() {
       setPrices(prices);
       setComunas(fc);
     });
-    load("zones.geojson").then(setZones);
+    Promise.all([load("zones.geojson"), load("transit.json"), load("zone-weights.json")]).then(
+      ([fc, transit, w]: [AreaCollection, { zones: Record<string, number> }, { weights: Record<string, number> }]) => {
+        for (const f of fc.features) {
+          const id = String(f.properties.id);
+          if (id in transit.zones) f.properties.IN04 = transit.zones[id];
+          f.properties.bld = w.weights[id] ?? 0;
+        }
+        setZones(fc);
+      },
+    );
   }, []);
 
   const metric = metricById(metricId);
@@ -307,6 +318,7 @@ function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType
           {!metric.demo && metric.id === "EC02" && period && (
             <p className="at-legend-scale">{t("legend.ec02", { from: fmtDate(period[0]), to: fmtDate(period[1]) })}</p>
           )}
+          {metric.id === "IN04" && <p className="at-legend-scale">{t("legend.in04")}</p>}
         </>
       ) : (
         <p className="at-legend-scale">{t("legend.noData")}</p>

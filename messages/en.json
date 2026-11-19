@@ -54,7 +54,8 @@
     "more": "more",
     "worse": "worse",
     "better": "better",
-    "ec02": "Real data: SII F2890, deeds {from}–{to}. All property types, no floor area."
+    "ec02": "Real data: SII F2890, deeds {from}–{to}. All property types, no floor area.",
+    "in04": "Real data: DTPM GTFS, weekday 7–9 am, stops within 500 m straight line. Zones without buildings shown faint."
   },
   "families": {
     "climate": "Climate",
@@ -71,7 +72,7 @@
     "EN03": "Night-time noise",
     "EN01": "Annual PM2.5",
     "IN01": "Basic services on foot",
-    "IN04": "Public transport",
+    "IN04": "Public transport supply",
     "SO01": "Population density",
     "RS01": "Recorded violent crime",
     "RS03": "Victimization (ENUSC)",
@@ -90,7 +91,7 @@
     "atLevel": "{level} level",
     "status": "Demo",
     "sources": "Planned sources: {sources}",
-    "demoNote": "Except the sale price, values in this build are synthetic and only test the interface. Comuna geometries are real.",
+    "demoNote": "Sale prices and public transport are real data; other values in this build are synthetic. Comuna geometries are real.",
     "matches": "Matching comunas",
     "matchesNote": "Ranked by: {criteria}",
     "teaserEyebrow": "Property analysis",
@@ -100,7 +101,8 @@
     "real": "Real data",
     "ec02Sample": "{n} sales, {from}–{to}. Interquartile range {p25}–{p75} UF.",
     "ec02Trend": "Median by year (UF)",
-    "method_EC02": "SII form F2890 (registered transfers). Sales from 500 to 100,000 UF; a deal covering several rols (apartment + parking + storage) counts once. No type or floor area until the SII catastro is joined."
+    "method_EC02": "SII form F2890 (registered transfers). Sales from 500 to 100,000 UF; a deal covering several rols (apartment + parking + storage) counts once. No type or floor area until the SII catastro is joined.",
+    "method_IN04": "DTPM GTFS (Red Metropolitana de Movilidad). Weekday 7–9 am departures per hour at stops and stations within 500 m straight line of the zone center; not walking time over streets. Comuna: zone average weighted by building count (Overture)."
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",

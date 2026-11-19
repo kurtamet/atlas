@@ -24,3 +24,13 @@ npm run dev        # http://localhost:3000
 npm test           # vitest: правило приоритета и парсер поиска
 npm run data:demo  # пересобрать демо-данные в public/data
 ```
+
+## Данные (этап 1)
+
+Пайплайн в `pipeline/`, результаты в `public/data/`. Сырые файлы в git не кладутся.
+
+| Слой | Скрипт | Источник |
+|---|---|---|
+| EC02 цена сделок, коммуна | `prices_f2890.py` | SII F2890 (sii.cl/destacados/transparencia) + UF с sii.cl (`pipeline/uf_daily.csv`) |
+| IN04 транспорт, зоны и коммуны | `transit_gtfs.py` | DTPM GTFS (dtpm.cl/index.php/gtfs-vigente) |
+| Веса заселённости зон | `zone_weights.py` | Overture buildings, `s3://overturemaps-us-west-2/release/<release>/theme=buildings/type=building/` (pyarrow, фильтр по bbox) |

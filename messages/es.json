@@ -54,7 +54,8 @@
     "more": "más",
     "worse": "peor",
     "better": "mejor",
-    "ec02": "Datos reales: SII F2890, escrituras {from}–{to}. Todos los tipos de propiedad, sin superficie."
+    "ec02": "Datos reales: SII F2890, escrituras {from}–{to}. Todos los tipos de propiedad, sin superficie.",
+    "in04": "Datos reales: GTFS DTPM, día hábil 7–9 h, paraderos a 500 m en línea recta. Zonas sin edificios en tono tenue."
   },
   "families": {
     "climate": "Clima",
@@ -71,7 +72,7 @@
     "EN03": "Ruido nocturno",
     "EN01": "PM2.5 anual",
     "IN01": "Servicios básicos a pie",
-    "IN04": "Transporte público",
+    "IN04": "Oferta de transporte público",
     "SO01": "Densidad de población",
     "RS01": "Delitos violentos registrados",
     "RS03": "Victimización (ENUSC)",
@@ -90,7 +91,7 @@
     "atLevel": "nivel {level}",
     "status": "Demostración",
     "sources": "Fuentes previstas: {sources}",
-    "demoNote": "Salvo el precio de compraventas, los valores de esta versión son sintéticos y sirven para probar la interfaz. Las geometrías de comunas son reales.",
+    "demoNote": "Precio de compraventas y transporte público son datos reales; el resto de los valores de esta versión son sintéticos. Las geometrías de comunas son reales.",
     "matches": "Comunas que coinciden",
     "matchesNote": "Ordenadas según: {criteria}",
     "teaserEyebrow": "Análisis de propiedad",
@@ -100,7 +101,8 @@
     "real": "Datos reales",
     "ec02Sample": "{n} compraventas, {from}–{to}. Rango intercuartil {p25}–{p75} UF.",
     "ec02Trend": "Mediana por año (UF)",
-    "method_EC02": "SII, formulario F2890 (transferencias inscritas). Compraventas de 500 a 100 000 UF; una operación con varios roles (depto + estacionamiento + bodega) cuenta una vez. Sin tipo ni superficie hasta integrar el catastro SII."
+    "method_EC02": "SII, formulario F2890 (transferencias inscritas). Compraventas de 500 a 100 000 UF; una operación con varios roles (depto + estacionamiento + bodega) cuenta una vez. Sin tipo ni superficie hasta integrar el catastro SII.",
+    "method_IN04": "DTPM GTFS (Red Metropolitana de Movilidad). Salidas por hora en día hábil de 7 a 9 h en paraderos y estaciones a 500 m en línea recta del centro de la zona; no es tiempo de caminata por calles. Comuna: promedio de zonas ponderado por número de edificios (Overture)."
   },
   "search": {
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",

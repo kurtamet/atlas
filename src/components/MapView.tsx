@@ -54,7 +54,8 @@ const BASE_STYLE: StyleSpecification = {
     { id: "chile-fill", type: "fill", source: "chile", maxzoom: 9, paint: { "fill-color": "#e7eae0", "fill-opacity": ["interpolate", ["linear"], ["zoom"], 6, 0.7, 9, 0] } },
     // data surfaces (only one visible at a time, decided by the priority plan)
     { id: "comunas-fill", type: "fill", source: "comunas", paint: { "fill-opacity": 0.85 } },
-    { id: "zones-fill", type: "fill", source: "zones", paint: { "fill-opacity": 0.85 } },
+    // zones without buildings (empty land) are drawn faint: coarse values describe settled areas (spec §2.3)
+    { id: "zones-fill", type: "fill", source: "zones", paint: { "fill-opacity": ["case", [">", ["coalesce", ["get", "bld"], 0], 0], 0.85, 0.25] } },
     { id: "zones-line", type: "line", source: "zones", minzoom: 13, paint: { "line-color": "#ffffff", "line-width": ["interpolate", ["linear"], ["zoom"], 13, 0.2, 16, 0.8], "line-opacity": 0.35 } },
     // roads above fills so the street grid stays readable through the color
     {
