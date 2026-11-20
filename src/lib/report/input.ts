@@ -135,3 +135,10 @@ export function buildReportInput(a: {
 export function promptPayload(i: ReportInput) {
   return { locale: i.locale, object: i.object, metrics: i.metrics, walk: i.walk, metroName: i.metroName, hazards: i.hazards, price: i.price, flags: i.flags, scores: i.scores, extras: i.extras };
 }
+
+/** verdict from scores and flags alone: used for the free preview and the no-AI draft */
+export function ruleVerdict(i: Pick<ReportInput, "scores" | "flags">): "favorable" | "mixed" | "caution" {
+  const s = Object.values(i.scores).filter((x): x is number => x !== null);
+  const avg = s.length ? s.reduce((a, b) => a + b, 0) / s.length : 50;
+  return i.flags.cons.length >= 3 || avg < 40 ? "caution" : avg >= 60 && i.flags.cons.length <= 1 ? "favorable" : "mixed";
+}

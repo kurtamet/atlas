@@ -264,7 +264,11 @@
     "pctComunas": "higher than in {pct}% of comunas",
     "noFlags": "No notable observations with the available data.",
     "paidAdds": "The paid report adds identification of the unit and its rol, available documents, price comparables, scenarios and an explanation of all of the above.",
-    "disclaimer": "Card generated automatically by fixed rules from public sources; each figure states its scale. Not a valuation, title search or engineering survey."
+    "disclaimer": "Card generated automatically by fixed rules from public sources; each figure states its scale. Not a valuation, title search or engineering survey.",
+    "previewEyebrow": "Report preview",
+    "previewCounts": "{pros, plural, one {# strength} other {# strengths}} · {cons, plural, one {# point of attention} other {# points of attention}}",
+    "previewLocked": "The report explains each finding, its severity, who the place suits, what to check before buying and how to negotiate.",
+    "explainedInReport": "→ In the full report: why each point matters and what to do about it."
   },
   "reportDoc": {
     "eyebrow": "Location report",

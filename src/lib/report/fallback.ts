@@ -3,7 +3,7 @@
  * or when the API call fails. Same shape as the model answer, built only from the free-card flags.
  */
 import type { ReportAI } from "./schema.ts";
-import type { ReportInput, Flag } from "./input.ts";
+import { ruleVerdict, type ReportInput, type Flag } from "./input.ts";
 
 type Msgs = { object: { obs: Record<string, string> }; reportDoc: Record<string, string> };
 
@@ -21,9 +21,7 @@ const fill = (tpl: string, p: Flag["params"] = {}) => tpl.replace(/\{(\w+)\}/g, 
 
 export function ruleDraft(i: ReportInput, m: Msgs): ReportAI {
   const text = (f: Flag) => fill(m.object.obs[f.key] ?? f.key, f.params);
-  const s = Object.values(i.scores).filter((x): x is number => x !== null);
-  const avg = s.length ? s.reduce((a, b) => a + b, 0) / s.length : 50;
-  const verdict = i.flags.cons.length >= 3 || avg < 40 ? "caution" : avg >= 60 && i.flags.cons.length <= 1 ? "favorable" : "mixed";
+  const verdict = ruleVerdict(i);
   const high = new Set(["flood", "landslide", "fault", "crimeHigh"]);
   const comunaPrices = i.price ? Object.values(i.price.years) : [];
   return {

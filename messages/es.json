@@ -264,7 +264,11 @@
     "pctComunas": "mayor que en {pct}% de las comunas",
     "noFlags": "No hay observaciones destacadas con los datos disponibles.",
     "paidAdds": "El informe pagado agrega identificación de la unidad y su rol, documentos disponibles, comparables de precio, escenarios y una explicación de todo lo anterior.",
-    "disclaimer": "Ficha generada automáticamente con reglas fijas a partir de fuentes públicas; cada dato indica su escala. No es una tasación ni un estudio de títulos o de ingeniería."
+    "disclaimer": "Ficha generada automáticamente con reglas fijas a partir de fuentes públicas; cada dato indica su escala. No es una tasación ni un estudio de títulos o de ingeniería.",
+    "previewEyebrow": "Vista previa del informe",
+    "previewCounts": "{pros, plural, one {# fortaleza} other {# fortalezas}} · {cons, plural, one {# punto de atención} other {# puntos de atención}}",
+    "previewLocked": "El informe explica cada hallazgo, su gravedad, para quién conviene, qué verificar antes de comprar y cómo negociar.",
+    "explainedInReport": "→ En el informe completo: por qué importa cada punto y qué hacer al respecto."
   },
   "reportDoc": {
     "eyebrow": "Informe de ubicación",
