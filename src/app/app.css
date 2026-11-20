@@ -1,0 +1,43 @@
+/* Additions on top of the design concept (concept.css). */
+.atlas-root a{color:inherit;text-decoration:none}
+.atlas-root .at-nav a{display:inline-block}
+.atlas-root .at-account{color:var(--at-ink)}
+.atlas-root .at-app{flex:1;display:flex;flex-direction:column}
+.atlas-root main{flex:1;display:flex;flex-direction:column}
+.atlas-root .at-workspace,.atlas-root .at-workspace.at-selected{flex:1;min-height:600px;position:relative;display:block}
+.atlas-root .at-map{position:absolute;inset:0;height:auto;min-height:0}
+.atlas-root .at-map-canvas{position:absolute;inset:0}
+.atlas-root .at-map-canvas .maplibregl-ctrl-attrib{font-size:10px}
+.atlas-root .at-footer-links{display:flex;gap:17px;flex-wrap:wrap}
+.atlas-root .at-lang{display:flex;gap:8px}
+.atlas-root .at-lang a[aria-current="true"]{color:var(--at-ink);font-weight:600}
+.atlas-root .at-footer[data-explore]{display:flex}
+.atlas-root .at-page{flex:1}
+
+/* layers panel: one surface at a time */
+.atlas-root .at-widget-heading{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--at-line)}
+.atlas-root .at-widget-heading button{border:0;background:none;padding:0;font-size:13px;font-weight:500}
+.atlas-root .at-layer-label input[type=radio]{accent-color:var(--at-brand)}
+.atlas-root .at-layer-dot{width:8px;height:8px;border-radius:50%;flex:none}
+.atlas-root .at-metric-list{display:grid;gap:2px;margin:6px 0 2px 24px}
+.atlas-root .at-metric-list label{display:flex;gap:7px;align-items:center;font-size:11px;color:var(--at-muted);cursor:pointer;min-height:22px}
+.atlas-root .at-metric-list input{margin:0;accent-color:var(--at-brand)}
+.atlas-root .at-metric-list label:has(input:checked){color:var(--at-ink)}
+.atlas-root .at-metric-list .at-level-tag{margin-left:auto;font-size:10px;color:var(--at-muted);border:1px solid var(--at-line);border-radius:3px;padding:0 4px}
+.atlas-root .at-layer-detail{padding:10px 14px 13px;border-top:1px solid var(--at-line);font-size:11px;color:var(--at-muted)}
+
+/* legend */
+.atlas-root .at-legend .at-ramp span:first-child{border-radius:2px 0 0 2px}
+.atlas-root .at-legend .at-ramp span:last-child{border-radius:0 2px 2px 0}
+.atlas-root .at-legend-scale{font-size:10.5px;color:var(--at-muted);margin-top:7px;line-height:1.35}
+.atlas-root .at-legend-scale strong{color:var(--at-ink);font-weight:500}
+
+/* drawer */
+.atlas-root .at-drawer{max-height:calc(100% - 32px);overflow:auto}
+.atlas-root .at-value-row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.atlas-root .at-value-row b{font-weight:500;font-size:13px;white-space:nowrap}
+.atlas-root .at-value-row small{font-size:10px;color:var(--at-muted);margin-left:3px}
+.atlas-root .at-family-head{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--at-muted);margin:12px 0 0;display:flex;align-items:center;gap:6px}
+.atlas-root .at-match{display:flex;justify-content:space-between;width:100%;border:0;border-bottom:1px solid var(--at-line);background:none;padding:8px 0;font-size:12px;text-align:left}
+.atlas-root .at-match span{color:var(--at-muted);font-size:11px}
+.atlas-root .at-search-message{position:absolute;z-index:6;bottom:78px;left:50%;transform:translateX(-50%);background:var(--at-surface);border:1px solid var(--at-line);border-radius:6px;padding:6px 11px;font-size:11px;color:var(--at-muted);box-shadow:0 1px 4px #00000015;max-width:calc(100% - 165px);text-align:center}

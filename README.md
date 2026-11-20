@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Atlas Chile
 
-## Getting Started
+Интерактивный атлас Чили (старт: Сантьяго) для выбора недвижимости: слои среды, инфраструктуры, экологии, безопасности и стоимости по масштабам, карточка места, поиск по адресу или критериям, бесплатный тизер и платный AI-отчёт.
 
-First, run the development server:
+Спецификация слоёв и моделей: `chile_atlas_layers_models_v0_1.md` (в папке проекта). План и архитектура: документ «Atlas Chile — архитектура и план v0.1».
+
+## Этап 0 (эта версия)
+
+- Next.js 16 (App Router, TypeScript), i18n ES (по умолчанию) / EN через `next-intl`.
+- Дизайн из HTML-концепта (`src/app/concept.css`), без регулятора прозрачности.
+- Карта MapLibre GL: подложка OpenFreeMap (OSM) в палитре концепта, контур Чили, 32 коммуны Сантьяго, расчётные зоны ~600 м.
+- **Реестр слоёв** `src/lib/layers/registry.ts`: шесть семейств, показатели с ID из спецификации, родные уровни (N/C/D/B/O), фиксированные шкалы.
+- **Правило приоритета** `src/lib/layers/priority.ts`: на текущем zoom закрашивается родной уровень показателя; более крупный уровень остаётся контуром; если детальнее данных нет, остаётся крупный уровень с пометкой «dato a nivel comuna». Интенсивность заливки = значение по единой шкале.
+- **Поиск** `src/lib/search/parse.ts`: ссылка / коммуна / критерии по словарю ES+EN / адрес (геокодер Photon). Без LLM.
+- Карточка места: все показатели с указанием уровня данных, вкладка источников.
+
+**Значения слоёв в этой версии синтетические** (`scripts/build-demo-data.mts`); геометрия коммун реальная. Реальные данные приходят на этапе 1.
+
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm test           # vitest: правило приоритета и парсер поиска
+npm run data:demo  # пересобрать демо-данные в public/data
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
