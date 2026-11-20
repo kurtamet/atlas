@@ -81,8 +81,9 @@ for (const f of comunas.features) {
     minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y);
   }
 }
-const dMetrics = METRICS.filter((m) => m.levels.includes("D"));
-const cOnly = METRICS.filter((m) => !m.levels.includes("D"));
+const DEMO = METRICS.filter((m) => m.demo);
+const dMetrics = DEMO.filter((m) => m.levels.includes("D"));
+const cOnly = DEMO.filter((m) => !m.levels.includes("D"));
 const zones: Feature<Polygon>[] = [];
 const sums: Record<string, Record<string, number>> = {};
 const counts: Record<string, number> = {};

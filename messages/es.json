@@ -1,49 +1,138 @@
 {
-  "meta": { "title": "Atlas Chile · Cada lugar, en contexto", "description": "Explora el territorio de Chile por capas: clima, ambiente, vida cotidiana, ciudad, riesgos y valor." },
-  "nav": { "label": "Navegación principal", "explore": "Explorar", "trends": "Datos y tendencias", "partners": "Organizaciones", "account": "Mis informes" },
-  "note": { "left": "VERSIÓN DE DESARROLLO · Valores de demostración", "right": "Nombre de trabajo · ATLAS CHILE" },
-  "footer": { "tagline": "ATLAS CHILE · Inteligencia territorial", "methods": "Metodología", "api": "Integraciones y API", "language": "Idioma" },
+  "meta": {
+    "title": "Atlas Chile · Cada lugar, en contexto",
+    "description": "Explora el territorio de Chile por capas: clima, ambiente, vida cotidiana, ciudad, riesgos y valor."
+  },
+  "nav": {
+    "label": "Navegación principal",
+    "explore": "Explorar",
+    "trends": "Datos y tendencias",
+    "partners": "Organizaciones",
+    "account": "Mis informes"
+  },
+  "note": {
+    "left": "VERSIÓN DE DESARROLLO · Valores de demostración",
+    "right": "Nombre de trabajo · ATLAS CHILE"
+  },
+  "footer": {
+    "tagline": "ATLAS CHILE · Inteligencia territorial",
+    "methods": "Metodología",
+    "api": "Integraciones y API",
+    "language": "Idioma"
+  },
   "explore": {
     "searchLabel": "Dirección, enlace de anuncio o criterio",
     "searchPlaceholder": "Dirección, enlace o criterio (p. ej. «tranquilo y cerca del metro»)",
     "analyze": "Analizar",
     "demo": "Valores de demostración",
-    "zoomIn": "Acercar", "zoomOut": "Alejar", "recenter": "Volver a Santiago",
-    "propertyTitle": "Conoce una propiedad", "propertyText": "Busca una dirección para ver su entorno y lo que falta por verificar."
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "recenter": "Volver a Santiago",
+    "propertyTitle": "Conoce una propiedad",
+    "propertyText": "Busca una dirección para ver su entorno y lo que falta por verificar."
   },
   "layers": {
-    "heading": "Capas", "collapse": "Mostrar u ocultar capas",
+    "heading": "Capas",
+    "collapse": "Mostrar u ocultar capas",
     "hint": "Una capa de color a la vez. La intensidad sigue el valor del indicador; los niveles más amplios quedan como contorno.",
     "methods": "Fuentes y metodología",
     "indicator": "Indicador"
   },
-  "levels": { "N": "país", "C": "comuna", "D": "zona de cálculo (~600 m)", "B": "manzana", "O": "objeto" },
-  "legend": { "levelNow": "Escala del mapa: {level}", "dataAt": "Dato a nivel {level}", "fallback": "No hay datos más detallados; se mantiene el nivel {level}.", "noData": "Sin datos para esta escala", "less": "menos", "more": "más", "worse": "peor", "better": "mejor" },
+  "levels": {
+    "N": "país",
+    "C": "comuna",
+    "D": "zona de cálculo (~600 m)",
+    "B": "manzana",
+    "O": "objeto"
+  },
+  "legend": {
+    "levelNow": "Escala del mapa: {level}",
+    "dataAt": "Dato a nivel {level}",
+    "fallback": "No hay datos más detallados; se mantiene el nivel {level}.",
+    "noData": "Sin datos para esta escala",
+    "less": "menos",
+    "more": "más",
+    "worse": "peor",
+    "better": "mejor",
+    "ec02": "Datos reales: SII F2890, escrituras {from}–{to}. Todos los tipos de propiedad, sin superficie.",
+    "in04": "Datos reales: GTFS DTPM, día hábil 7–9 h, paraderos a 500 m en línea recta. Zonas sin edificios en tono tenue.",
+    "in01": "Datos reales: Overture Maps y GTFS DTPM. Almacén, farmacia, salud primaria y transporte; 100 = todo a ≤5 min, 0 = a ≥20 min. Minutos estimados en línea recta.",
+    "so01": "Datos reales: INE Censo 2024 por manzana. Habitantes por km² de cada celda; en la comuna, la densidad promedio en que vive un residente (los cerros vacíos no la diluyen).",
+    "en03": "Datos reales: Mapa de Ruido Gran Santiago Urbano 2023 (MMA, 2024). Nivel diurno Ld promedio en el espacio abierto de las manzanas, sin la calzada; clases de 5 dB.",
+    "hazards": "Datos reales: MINVU RM (áreas de riesgo PRMS y estudios de amenaza). % de residentes (Censo 2024) que viven dentro de la zona oficial. Cada amenaza por separado; fuera del polígono no significa sin riesgo.",
+    "en04": "Datos reales: Sentinel-2 (Copernicus), 17 de enero de 2026, 10 m. NDVI promedio: en verano seco solo árboles y riego siguen verdes.",
+    "climate": "Datos reales: ARClim (MMA, CR2), clima histórico 1980–2010 por comuna (modelo de ~5 km, sin detalle por barrio).",
+    "rs03": "Datos reales: INE y SPD, ENUSC 2024, estimación para áreas pequeñas (estadística experimental). % de hogares víctimas de un delito violento en 12 meses; solo nivel comuna."
+  },
   "families": {
-    "climate": "Clima", "environment": "Medio ambiente", "access": "Vida cotidiana", "urban": "Vida urbana", "risk": "Seguridad y riesgos", "value": "Valor y cambios"
+    "climate": "Clima",
+    "environment": "Medio ambiente",
+    "access": "Vida cotidiana",
+    "urban": "Vida urbana",
+    "risk": "Seguridad y riesgos",
+    "value": "Valor y cambios"
   },
   "metrics": {
-    "CL01": "Días calurosos (≥30 °C)", "CL03": "Precipitación anual",
-    "EN04": "Vegetación (NDVI)", "EN03": "Ruido nocturno", "EN01": "PM2.5 anual",
-    "IN01": "Servicios básicos a pie", "IN04": "Transporte público",
+    "CL01": "Días calurosos (>30 °C)",
+    "CL03": "Precipitación anual",
+    "EN04": "Vegetación (NDVI)",
+    "EN03": "Ruido de tránsito (día)",
+    "EN01": "PM2.5 anual",
+    "IN01": "Servicios cotidianos a pie",
+    "IN04": "Oferta de transporte público",
     "SO01": "Densidad de población",
-    "RS01": "Delitos violentos registrados", "RS03": "Victimización (ENUSC)",
-    "EC01": "Precio de oferta, departamentos"
+    "RS01": "Delitos violentos registrados",
+    "RS03": "Victimización por delitos violentos (ENUSC)",
+    "EC01": "Precio de oferta, departamentos",
+    "EC02": "Precio mediano de compraventas",
+    "RS07": "Zonas de inundación",
+    "RS09": "Remoción en masa y derrumbes",
+    "RS05": "Suelo de muy mala respuesta sísmica"
   },
   "drawer": {
-    "label": "Ficha del lugar seleccionado", "close": "Cerrar ficha",
-    "territory": "Comuna", "zone": "Zona de cálculo", "address": "Dirección",
+    "label": "Ficha del lugar seleccionado",
+    "close": "Cerrar ficha",
+    "territory": "Comuna",
+    "zone": "Zona de cálculo",
+    "address": "Dirección",
     "region": "Región Metropolitana · Chile",
-    "summary": "Resumen", "evidence": "Fuentes y cobertura",
+    "summary": "Resumen",
+    "evidence": "Fuentes y cobertura",
     "atLevel": "nivel {level}",
     "status": "Demostración",
     "sources": "Fuentes previstas: {sources}",
-    "demoNote": "Los valores de esta versión son sintéticos y sirven para probar la interfaz. Las geometrías de comunas son reales.",
+    "demoNote": "Precio de compraventas, transporte y servicios cotidianos son datos reales; el resto de los valores de esta versión son sintéticos. Las geometrías de comunas son reales.",
     "matches": "Comunas que coinciden",
     "matchesNote": "Ordenadas según: {criteria}",
-    "teaserEyebrow": "Análisis de propiedad", "teaserTitle": "La información. Y lo que significa.",
+    "teaserEyebrow": "Análisis de propiedad",
+    "teaserTitle": "La información. Y lo que significa.",
     "teaserText": "Valor estimado, antecedentes, entorno y verificaciones prioritarias en un solo informe.",
-    "teaserCta": "Ver informe completo"
+    "teaserCta": "Ver informe completo",
+    "real": "Datos reales",
+    "ec02Sample": "{n} compraventas, {from}–{to}. Rango intercuartil {p25}–{p75} UF.",
+    "ec02Trend": "Mediana por año (UF)",
+    "method_EC02": "SII, formulario F2890 (transferencias inscritas). Compraventas de 500 a 100 000 UF; una operación con varios roles (depto + estacionamiento + bodega) cuenta una vez. Sin tipo ni superficie hasta integrar el catastro SII.",
+    "method_IN04": "DTPM GTFS (Red Metropolitana de Movilidad). Salidas por hora en día hábil de 7 a 9 h en paraderos y estaciones a 500 m en línea recta del centro de la zona; no es tiempo de caminata por calles. Comuna: promedio de zonas ponderado por número de edificios (Overture).",
+    "acc_food": "Almacén",
+    "acc_pharmacy": "Farmacia",
+    "acc_health": "Salud",
+    "acc_transport": "Paradero",
+    "accNote": "Minutos estimados: línea recta ×1,3 a 4,5 km/h, no ruta real.",
+    "method_IN01": "Overture Maps (lugares con confianza ≥0,5) y paraderos GTFS DTPM. Cuatro grupos con igual peso: almacén, farmacia, salud primaria, transporte; puntaje 100 a ≤5 min y 0 a ≥20 min. Minutos estimados desde distancia en línea recta ×1,3 a 4,5 km/h. Mide distancia, no calidad del servicio.",
+    "method_SO01": "INE Censo 2024, cartografía por manzana (n_per). Cada manzana se asigna a la celda de ~600 m que contiene su centro; densidad bruta = habitantes / área de la celda. Valor comunal: promedio de densidades de celda ponderado por población. Celdas sin residentes quedan sin valor.",
+    "method_EN03": "MMA, Mapa de Ruido Gran Santiago Urbano 2023 (publicado abril 2024). El mapa diurno (Ld) se publica como teselas de color; decodificamos cada píxel (~30 m) a su clase de 5 dB y promediamos en la celda los píxeles bajo 75 dBA (las calzadas se dibujan sobre 75, los edificios no tienen valor). Comuna: promedio ponderado por población Censo 2024. La exposición oficial por comuna (residentes sobre 65 dBA de día y 55 dBA de noche) se muestra en la ficha.",
+    "noiseExposure": "Oficial MMA: {day}% de residentes sobre 65 dBA de día, {night}% sobre 55 dBA de noche.",
+    "method_RS07": "MINVU SEREMI/SERVIU RM, servicio OTRAS_AMENAZAS_RMS. Inundación: áreas recurrentemente inundables y afloramiento de napa (PRMS), zona de inundación alta, crecidas fluviales y flujos hiperconcentrados. Remoción: PRMS remoción en masa y derrumbes, flujos de detritos de peligro alto. Sísmica: suelos de muy mala respuesta sísmica. Valor: % de habitantes del Censo 2024 (centro de cada manzana) dentro del área; las amenazas no se suman. Escala de origen metropolitana: no reemplaza un estudio del terreno.",
+    "method_RS09": "MINVU SEREMI/SERVIU RM, servicio OTRAS_AMENAZAS_RMS. Inundación: áreas recurrentemente inundables y afloramiento de napa (PRMS), zona de inundación alta, crecidas fluviales y flujos hiperconcentrados. Remoción: PRMS remoción en masa y derrumbes, flujos de detritos de peligro alto. Sísmica: suelos de muy mala respuesta sísmica. Valor: % de habitantes del Censo 2024 (centro de cada manzana) dentro del área; las amenazas no se suman. Escala de origen metropolitana: no reemplaza un estudio del terreno.",
+    "method_RS05": "MINVU SEREMI/SERVIU RM, servicio OTRAS_AMENAZAS_RMS. Inundación: áreas recurrentemente inundables y afloramiento de napa (PRMS), zona de inundación alta, crecidas fluviales y flujos hiperconcentrados. Remoción: PRMS remoción en masa y derrumbes, flujos de detritos de peligro alto. Sísmica: suelos de muy mala respuesta sísmica. Valor: % de habitantes del Censo 2024 (centro de cada manzana) dentro del área; las amenazas no se suman. Escala de origen metropolitana: no reemplaza un estudio del terreno.",
+    "faultKm": "Distancia a la falla San Ramón (trazado MINVU): {km} km.",
+    "method_EN04": "Sentinel-2 L2A (Copernicus, ESA), escena sin nubes del 17-01-2026, mosaicos 19HCD y 19HCC vía COG de Element84 en AWS. NDVI = (B8 − B4)/(B8 + B4) a 10 m; se descartan nubes, sombras y agua según la banda SCL. Celda: promedio de sus píxeles. Comuna: promedio ponderado por población Censo 2024. Una sola fecha de verano: mide cobertura verde, no calidad de parques.",
+    "method_CL01": "ARClim (Ministerio del Medio Ambiente, CR2), capa comunas: días al año con máxima sobre 30 °C, periodo histórico 1980–2010. En la ficha, el cambio proyectado a 2035–2065 bajo SSP2-4.5 (promedio de modelos). Resolución de origen ~5 km: solo nivel comuna.",
+    "method_CL03": "ARClim (MMA, CR2), capa comunas: precipitación acumulada anual, periodo histórico 1980–2010. En la ficha, el cambio proyectado a 2035–2065 bajo SSP2-4.5. La megasequía posterior a 2010 no está en el promedio histórico.",
+    "hotFuture": "Proyección 2035–2065 (SSP2-4.5): +{d} días al año.",
+    "rainFuture": "Proyección 2035–2065 (SSP2-4.5): {d}% de lluvia.",
+    "method_RS03": "INE y Subsecretaría de Prevención del Delito: estimaciones comunales SAE del indicador VHDV de la ENUSC 2024 (estadística experimental), con intervalo de confianza al 95%. Mide hogares víctimas de robo con violencia o intimidación, robo por sorpresa y agresiones. No se baja a barrios.",
+    "enuscInterval": "Intervalo 95%: {lo}–{hi}%. Estimación experimental."
   },
   "search": {
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",
@@ -52,17 +141,45 @@
     "outside": "La dirección está fuera de las comunas disponibles en esta versión."
   },
   "pages": {
-    "trends": { "eyebrow": "Observatorio territorial", "title": "El territorio, a través de los datos.", "lead": "Análisis temáticos, series comparables y contexto para comprender cómo cambian los lugares.", "soon": "Sección en preparación." },
-    "partners": { "eyebrow": "Para organizaciones", "title": "Contexto para tus usuarios. Información para sus decisiones.", "lead": "Mapas, indicadores e informes integrables en el lugar donde las personas ya buscan y trabajan.",
-      "portals": "Portales y plataformas", "portalsTitle": "El entorno, dentro de cada anuncio.", "portalsText": "Una ficha integrada, un mapa o indicadores. Acceso al informe desde tu propio recorrido.",
-      "agencies": "Agencias y profesionales", "agenciesTitle": "Una base común para cada análisis.", "agenciesText": "Paquetes de informes, solicitudes por lotes y entrega a clientes desde un espacio de trabajo.",
-      "public": "Municipios y medios", "publicTitle": "Información territorial al alcance de todos.", "publicText": "Integraciones públicas gratuitas para acercar el contexto local a vecinos y lectores." },
-    "methods": { "eyebrow": "Metodología", "title": "Claridad en los datos. Claridad en las conclusiones.", "lead": "Cada indicador conserva su fuente, fecha, escala y condición: observado, documentado o estimado.",
-      "a": "Fuentes y cobertura", "aText": "El detalle disponible cambia con el lugar y el indicador. Un dato de la comuna conserva ese alcance en la ficha de una propiedad.",
-      "b": "Modelos explicables", "bText": "Las estimaciones se presentan con su método y sus límites. La ausencia de información permanece visible.",
-      "c": "Informes", "cText": "El informe reúne evidencia, cálculos y análisis. Las verificaciones que requieren documentos o una visita se identifican de forma explícita.",
-      "d": "Actualizaciones", "dText": "La fecha de cada fuente acompaña al indicador. Las versiones históricas se distinguen de las observaciones actuales.",
-      "back": "Volver al atlas" },
-    "account": { "eyebrow": "Espacio de trabajo", "title": "Tus análisis. Un mismo lugar.", "lead": "Informes, solicitudes por lotes y entregas a clientes para profesionales y organizaciones.", "soon": "El acceso con cuenta llega en una próxima etapa." }
+    "trends": {
+      "eyebrow": "Observatorio territorial",
+      "title": "El territorio, a través de los datos.",
+      "lead": "Análisis temáticos, series comparables y contexto para comprender cómo cambian los lugares.",
+      "soon": "Sección en preparación."
+    },
+    "partners": {
+      "eyebrow": "Para organizaciones",
+      "title": "Contexto para tus usuarios. Información para sus decisiones.",
+      "lead": "Mapas, indicadores e informes integrables en el lugar donde las personas ya buscan y trabajan.",
+      "portals": "Portales y plataformas",
+      "portalsTitle": "El entorno, dentro de cada anuncio.",
+      "portalsText": "Una ficha integrada, un mapa o indicadores. Acceso al informe desde tu propio recorrido.",
+      "agencies": "Agencias y profesionales",
+      "agenciesTitle": "Una base común para cada análisis.",
+      "agenciesText": "Paquetes de informes, solicitudes por lotes y entrega a clientes desde un espacio de trabajo.",
+      "public": "Municipios y medios",
+      "publicTitle": "Información territorial al alcance de todos.",
+      "publicText": "Integraciones públicas gratuitas para acercar el contexto local a vecinos y lectores."
+    },
+    "methods": {
+      "eyebrow": "Metodología",
+      "title": "Claridad en los datos. Claridad en las conclusiones.",
+      "lead": "Cada indicador conserva su fuente, fecha, escala y condición: observado, documentado o estimado.",
+      "a": "Fuentes y cobertura",
+      "aText": "El detalle disponible cambia con el lugar y el indicador. Un dato de la comuna conserva ese alcance en la ficha de una propiedad.",
+      "b": "Modelos explicables",
+      "bText": "Las estimaciones se presentan con su método y sus límites. La ausencia de información permanece visible.",
+      "c": "Informes",
+      "cText": "El informe reúne evidencia, cálculos y análisis. Las verificaciones que requieren documentos o una visita se identifican de forma explícita.",
+      "d": "Actualizaciones",
+      "dText": "La fecha de cada fuente acompaña al indicador. Las versiones históricas se distinguen de las observaciones actuales.",
+      "back": "Volver al atlas"
+    },
+    "account": {
+      "eyebrow": "Espacio de trabajo",
+      "title": "Tus análisis. Un mismo lugar.",
+      "lead": "Informes, solicitudes por lotes y entregas a clientes para profesionales y organizaciones.",
+      "soon": "El acceso con cuenta llega en una próxima etapa."
+    }
   }
 }

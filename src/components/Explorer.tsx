@@ -14,9 +14,29 @@ const MapView = dynamic(() => import("./MapView"), { ssr: false });
 
 const AVAILABLE_LEVELS: Level[] = ["N", "C", "D"];
 
+interface PricesFile {
+  period: [string, string];
+  comunas: Record<string, { n: number; median: number; p25: number; p75: number; years: Record<string, { n: number; median: number }> }>;
+}
+
+const ACCESS_GROUPS = ["food", "pharmacy", "health", "transport"] as const;
+interface AccessFile {
+  zones: Record<string, { v: number } & Partial<Record<(typeof ACCESS_GROUPS)[number], number | null>>>;
+  comunas: Record<string, number>;
+}
+
+const fmtDate = (d: string) => `${d.slice(4, 6)}/${d.slice(0, 4)}`;
+
 type Selection =
   | { kind: "area"; level: "C" | "D"; id: string; comuna?: AreaFeature; zone?: AreaFeature; address?: string }
   | { kind: "matches"; criteria: Criterion[]; items: Array<{ code: string; name: string; score: number }> };
+
+/** real layers shipped as plain value maps, merged by zone id / comuna code */
+const SIMPLE_LAYERS: Array<[string, string]> = [["ndvi.json", "EN04"]];
+interface SimpleLayer { metric: string; zones: Record<string, number>; comunas: Record<string, number> }
+interface HazardFile { comunas: Record<string, Record<string, number>>; zones: Record<string, Record<string, number>> }
+interface NoiseFile { comunas: Record<string, { EN03: number; day65?: number; night55?: number }>; zones: Record<string, number> }
+interface CensoFile { comunas: Record<string, { SO01: number; pop: number }>; zones: Record<string, { SO01: number; pop: number }> }
 
 export default function Explorer() {
   const t = useTranslations();
@@ -25,6 +45,7 @@ export default function Explorer() {
   const [chile, setChile] = useState<unknown>(null);
   const [comunas, setComunas] = useState<AreaCollection | null>(null);
   const [zones, setZones] = useState<AreaCollection | null>(null);
+  const [prices, setPrices] = useState<PricesFile | null>(null);
   const [family, setFamily] = useState<FamilyId>("environment");
   const [metricId, setMetricId] = useState("EN04");
   const [zoom, setZoom] = useState(SANTIAGO_ZOOM);
@@ -38,9 +59,67 @@ export default function Explorer() {
 
   useEffect(() => {
     const load = (f: string) => fetch(`/data/${f}`).then((r) => r.json());
+    // single-value layers: {zones: {id: v}, comunas: {code: v}}
+    const loadSimple = () => Promise.all(SIMPLE_LAYERS.map(([file, metric]) => load(file).then((d) => ({ metric, zones: d.zones ?? {}, comunas: d.comunas ?? {} }))));
     load("chile.geojson").then(setChile);
-    load("comunas.geojson").then(setComunas);
-    load("zones.geojson").then(setZones);
+    // Real layers are merged into the comuna features; demo values stay for the rest.
+    Promise.all([load("comunas.geojson"), load("prices-comunas.json"), load("transit.json"), load("access.json"), load("censo.json"), load("noise.json"), load("hazards.json"), loadSimple(), load("climate.json"), load("enusc.json")]).then(([fc, prices, transit, access, censo, noise, hazards, simple, climate, enusc]: [AreaCollection, PricesFile, { comunas: Record<string, number> }, AccessFile, CensoFile, NoiseFile, HazardFile, SimpleLayer[], { comunas: Record<string, Record<string, number>> }, { comunas: Record<string, Record<string, number | string>> }]) => {
+      for (const f of fc.features) {
+        const en = enusc.comunas[String(f.properties.code)];
+        if (en) Object.assign(f.properties, en);
+        else delete f.properties.RS03;
+        const cl = climate.comunas[String(f.properties.code)];
+        if (cl) Object.assign(f.properties, cl);
+        else for (const k of ["CL01", "CL03"]) delete f.properties[k];
+        for (const l of simple) {
+          const v = l.comunas[String(f.properties.code)];
+          if (v !== undefined) f.properties[l.metric] = v;
+          else delete f.properties[l.metric];
+        }
+        Object.assign(f.properties, hazards.comunas[String(f.properties.code)] ?? {});
+        const nz = noise.comunas[String(f.properties.code)];
+        if (nz) Object.assign(f.properties, { EN03: nz.EN03, EN03_day65: nz.day65 ?? null, EN03_night55: nz.night55 ?? null });
+        else delete f.properties.EN03;
+        const cs = censo.comunas[String(f.properties.code)];
+        if (cs) Object.assign(f.properties, { SO01: cs.SO01, pop: cs.pop });
+        else delete f.properties.SO01;
+        const ac = access.comunas[String(f.properties.code)];
+        if (ac !== undefined) f.properties.IN01 = ac;
+        const t = transit.comunas[String(f.properties.code)];
+        if (t !== undefined) f.properties.IN04 = t;
+        const p = prices.comunas[String(f.properties.code)];
+        if (!p) continue;
+        Object.assign(f.properties, { EC02: p.median, EC02_n: p.n, EC02_p25: p.p25, EC02_p75: p.p75 });
+      }
+      setPrices(prices);
+      setComunas(fc);
+    });
+    Promise.all([load("zones.geojson"), load("transit.json"), load("zone-weights.json"), load("access.json"), load("censo.json"), load("noise.json"), load("hazards.json"), loadSimple()]).then(
+      ([fc, transit, w, access, censo, noise, hazards, simple]: [AreaCollection, { zones: Record<string, number> }, { weights: Record<string, number> }, AccessFile, CensoFile, NoiseFile, HazardFile, SimpleLayer[]]) => {
+        for (const f of fc.features) {
+          const id = String(f.properties.id);
+          for (const l of simple) {
+            if (id in l.zones) f.properties[l.metric] = l.zones[id];
+            else delete f.properties[l.metric];
+          }
+          Object.assign(f.properties, hazards.zones[id] ?? {});
+          if (id in noise.zones) f.properties.EN03 = noise.zones[id];
+          else delete f.properties.EN03;
+          const cz = censo.zones[id];
+          // zones without Censo residents have no density value (unknown ≠ 0 for non-residential land)
+          if (cz) Object.assign(f.properties, { SO01: cz.SO01, pop: cz.pop });
+          else delete f.properties.SO01;
+          if (id in transit.zones) f.properties.IN04 = transit.zones[id];
+          const acc = access.zones[id];
+          if (acc) {
+            f.properties.IN01 = acc.v;
+            for (const g of ACCESS_GROUPS) if (acc[g] != null) f.properties[`IN01_${g}`] = acc[g] as number;
+          }
+          f.properties.bld = w.weights[id] ?? 0;
+        }
+        setZones(fc);
+      },
+    );
   }, []);
 
   const metric = metricById(metricId);
@@ -198,9 +277,9 @@ export default function Explorer() {
             <strong>{placeName}</strong>
           </div>
         </div>
-        <div className="at-demo">{t("explore.demo")}</div>
+        {metric.demo && <div className="at-demo">{t("explore.demo")}</div>}
 
-        <Legend metricId={metricId} plan={plan} />
+        <Legend metricId={metricId} plan={plan} period={prices?.period} />
 
         <div className="at-zoom" aria-label="zoom">
           <button type="button" aria-label={t("explore.zoomIn")} onClick={() => zoomBy(1)}>+</button>
@@ -249,7 +328,7 @@ export default function Explorer() {
                 <button type="button" aria-pressed={tab === "evidence"} onClick={() => setTab("evidence")}>{t("drawer.evidence")}</button>
               </div>
               {tab === "summary" ? (
-                <PlaceValues zone={selection.zone} comuna={selection.comuna} locale={locale} />
+                <PlaceValues zone={selection.zone} comuna={selection.comuna} locale={locale} prices={prices} />
               ) : (
                 <Evidence />
               )}
@@ -267,7 +346,7 @@ export default function Explorer() {
   );
 }
 
-function Legend({ metricId, plan }: { metricId: string; plan: ReturnType<typeof planLayers> }) {
+function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType<typeof planLayers>; period?: [string, string] }) {
   const t = useTranslations();
   const metric = metricById(metricId);
   const ramp = rampFor(metric);
@@ -287,6 +366,17 @@ function Legend({ metricId, plan }: { metricId: string; plan: ReturnType<typeof 
             {t("legend.levelNow", { level: t(`levels.${plan.viewLevel}`) })} · <strong>{t("legend.dataAt", { level: t(`levels.${plan.fillLevel}`) })}</strong>
             {plan.isFallback && <><br />{t("legend.fallback", { level: t(`levels.${plan.fillLevel}`) })}</>}
           </p>
+          {!metric.demo && metric.id === "EC02" && period && (
+            <p className="at-legend-scale">{t("legend.ec02", { from: fmtDate(period[0]), to: fmtDate(period[1]) })}</p>
+          )}
+          {metric.id === "IN04" && <p className="at-legend-scale">{t("legend.in04")}</p>}
+          {metric.id === "IN01" && <p className="at-legend-scale">{t("legend.in01")}</p>}
+          {metric.id === "SO01" && <p className="at-legend-scale">{t("legend.so01")}</p>}
+          {metric.id === "EN03" && <p className="at-legend-scale">{t("legend.en03")}</p>}
+          {metric.id === "EN04" && <p className="at-legend-scale">{t("legend.en04")}</p>}
+          {(metric.id === "CL01" || metric.id === "CL03") && <p className="at-legend-scale">{t("legend.climate")}</p>}
+          {metric.id === "RS03" && <p className="at-legend-scale">{t("legend.rs03")}</p>}
+          {["RS05", "RS07", "RS09"].includes(metric.id) && <p className="at-legend-scale">{t("legend.hazards")}</p>}
         </>
       ) : (
         <p className="at-legend-scale">{t("legend.noData")}</p>
@@ -295,7 +385,7 @@ function Legend({ metricId, plan }: { metricId: string; plan: ReturnType<typeof 
   );
 }
 
-function PlaceValues({ zone, comuna, locale }: { zone?: AreaFeature; comuna?: AreaFeature; locale: string }) {
+function PlaceValues({ zone, comuna, locale, prices }: { zone?: AreaFeature; comuna?: AreaFeature; locale: string; prices: PricesFile | null }) {
   const t = useTranslations();
   return (
     <div>
@@ -313,13 +403,47 @@ function PlaceValues({ zone, comuna, locale }: { zone?: AreaFeature; comuna?: Ar
                   <strong>{t(`metrics.${m.id}`)}</strong>
                   <b>{formatValue(m, value, locale)}<small>{m.unit}</small></b>
                 </div>
-                <span className="at-status">{t("drawer.atLevel", { level: t(`levels.${level}`) })} · {t("drawer.status")}</span>
+                <span className="at-status">{t("drawer.atLevel", { level: t(`levels.${level}`) })} · {m.demo ? t("drawer.status") : t("drawer.real")}</span>
+                {m.id === "RS03" && comuna?.properties.RS03_lo != null && (
+                  <p>{t("drawer.enuscInterval", { lo: String(comuna.properties.RS03_lo), hi: String(comuna.properties.RS03_hi) })}</p>
+                )}
+                {m.id === "CL01" && comuna?.properties.CL01_d != null && (
+                  <p>{t("drawer.hotFuture", { d: String(comuna.properties.CL01_d) })}</p>
+                )}
+                {m.id === "CL03" && comuna?.properties.CL03_d != null && (
+                  <p>{t("drawer.rainFuture", { d: String(comuna.properties.CL03_d) })}</p>
+                )}
+                {m.id === "RS05" && zone?.properties.fault_km != null && (
+                  <p>{t("drawer.faultKm", { km: String(zone.properties.fault_km) })}</p>
+                )}
+                {m.id === "EN03" && comuna?.properties.EN03_day65 != null && (
+                  <p>{t("drawer.noiseExposure", { day: Math.round(Number(comuna.properties.EN03_day65) * 100), night: Math.round(Number(comuna.properties.EN03_night55) * 100) })}</p>
+                )}
+                {m.id === "IN01" && fromZone !== undefined && zone && (
+                  <p>{ACCESS_GROUPS.map((g) => `${t(`drawer.acc_${g}`)} ${zone.properties[`IN01_${g}`] == null ? ">20" : `~${Math.round(Number(zone.properties[`IN01_${g}`]))}`} min`).join(" · ")}<br />{t("drawer.accNote")}</p>
+                )}
+                {m.id === "EC02" && comuna && prices?.comunas[String(comuna.properties.code)] && (
+                  <PriceDetail p={prices.comunas[String(comuna.properties.code)]} period={prices.period} locale={locale} />
+                )}
               </div>
             );
           })}
         </div>
       ))}
     </div>
+  );
+}
+
+function PriceDetail({ p, period, locale }: { p: PricesFile["comunas"][string]; period: [string, string]; locale: string }) {
+  const t = useTranslations("drawer");
+  const nf = new Intl.NumberFormat(locale === "es" ? "es-CL" : "en-US");
+  const years = Object.entries(p.years).filter(([y]) => y >= "2019");
+  return (
+    <p>
+      {t("ec02Sample", { n: nf.format(p.n), from: fmtDate(period[0]), to: fmtDate(period[1]), p25: nf.format(p.p25), p75: nf.format(p.p75) })}
+      <br />
+      {t("ec02Trend")}: {years.map(([y, v]) => `${y} ${nf.format(v.median)}`).join(" · ")}
+    </p>
   );
 }
 
@@ -331,7 +455,7 @@ function Evidence() {
       {METRICS.map((m) => (
         <div className="at-observation" key={m.id}>
           <strong>{m.id} · {t(`metrics.${m.id}`)}</strong>
-          <p>{t("drawer.sources", { sources: m.sources.join(", ") })}</p>
+          <p>{m.demo ? t("drawer.sources", { sources: m.sources.join(", ") }) : t(`drawer.method_${m.id}`)}</p>
           <span className="at-status">{m.levels.map((l) => t(`levels.${l}`)).join(" · ")}</span>
         </div>
       ))}

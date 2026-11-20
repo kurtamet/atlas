@@ -1,49 +1,138 @@
 {
-  "meta": { "title": "Atlas Chile · Every place, in context", "description": "Explore Chile layer by layer: climate, environment, daily life, urban life, risks and value." },
-  "nav": { "label": "Main navigation", "explore": "Explore", "trends": "Data & trends", "partners": "Organizations", "account": "My reports" },
-  "note": { "left": "DEVELOPMENT BUILD · Demo values", "right": "Working name · ATLAS CHILE" },
-  "footer": { "tagline": "ATLAS CHILE · Territorial intelligence", "methods": "Methodology", "api": "Integrations & API", "language": "Language" },
+  "meta": {
+    "title": "Atlas Chile · Every place, in context",
+    "description": "Explore Chile layer by layer: climate, environment, daily life, urban life, risks and value."
+  },
+  "nav": {
+    "label": "Main navigation",
+    "explore": "Explore",
+    "trends": "Data & trends",
+    "partners": "Organizations",
+    "account": "My reports"
+  },
+  "note": {
+    "left": "DEVELOPMENT BUILD · Demo values",
+    "right": "Working name · ATLAS CHILE"
+  },
+  "footer": {
+    "tagline": "ATLAS CHILE · Territorial intelligence",
+    "methods": "Methodology",
+    "api": "Integrations & API",
+    "language": "Language"
+  },
   "explore": {
     "searchLabel": "Address, listing link or criteria",
     "searchPlaceholder": "Address, link or criteria (e.g. “quiet and near the metro”)",
     "analyze": "Analyze",
     "demo": "Demo values",
-    "zoomIn": "Zoom in", "zoomOut": "Zoom out", "recenter": "Back to Santiago",
-    "propertyTitle": "Look into a property", "propertyText": "Search an address to see its surroundings and what still needs checking."
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "recenter": "Back to Santiago",
+    "propertyTitle": "Look into a property",
+    "propertyText": "Search an address to see its surroundings and what still needs checking."
   },
   "layers": {
-    "heading": "Layers", "collapse": "Show or hide layers",
+    "heading": "Layers",
+    "collapse": "Show or hide layers",
     "hint": "One color layer at a time. Intensity follows the indicator value; broader levels stay as outlines.",
     "methods": "Sources & methodology",
     "indicator": "Indicator"
   },
-  "levels": { "N": "country", "C": "comuna", "D": "calculation zone (~600 m)", "B": "block", "O": "property" },
-  "legend": { "levelNow": "Map scale: {level}", "dataAt": "Data at {level} level", "fallback": "No finer data; keeping the {level} level.", "noData": "No data at this scale", "less": "less", "more": "more", "worse": "worse", "better": "better" },
+  "levels": {
+    "N": "country",
+    "C": "comuna",
+    "D": "calculation zone (~600 m)",
+    "B": "block",
+    "O": "property"
+  },
+  "legend": {
+    "levelNow": "Map scale: {level}",
+    "dataAt": "Data at {level} level",
+    "fallback": "No finer data; keeping the {level} level.",
+    "noData": "No data at this scale",
+    "less": "less",
+    "more": "more",
+    "worse": "worse",
+    "better": "better",
+    "ec02": "Real data: SII F2890, deeds {from}–{to}. All property types, no floor area.",
+    "in04": "Real data: DTPM GTFS, weekday 7–9 am, stops within 500 m straight line. Zones without buildings shown faint.",
+    "in01": "Real data: Overture Maps and DTPM GTFS. Grocery, pharmacy, primary care and transit; 100 = all within 5 min, 0 = 20+ min. Minutes estimated from straight-line distance.",
+    "so01": "Real data: INE Census 2024 by block. Residents per km² of each cell; for the comuna, the density the average resident lives at (empty hills don't dilute it).",
+    "en03": "Real data: Greater Santiago Urban Noise Map 2023 (MMA, 2024). Mean daytime Ld in the open space of blocks, excluding carriageways; 5 dB classes.",
+    "hazards": "Real data: MINVU RM (PRMS risk areas and hazard studies). % of residents (Census 2024) living inside the official zone. Each hazard separately; outside a polygon does not mean no risk.",
+    "en04": "Real data: Sentinel-2 (Copernicus), 17 January 2026, 10 m. Mean NDVI: in the dry summer only trees and irrigation stay green.",
+    "climate": "Real data: ARClim (MMA, CR2), historical climate 1980–2010 by comuna (~5 km model, no neighbourhood detail).",
+    "rs03": "Real data: INE and SPD, ENUSC 2024 small-area estimates (experimental statistics). % of households victim of a violent crime in 12 months; comuna level only."
+  },
   "families": {
-    "climate": "Climate", "environment": "Environment", "access": "Daily life", "urban": "Urban life", "risk": "Safety & risks", "value": "Value & change"
+    "climate": "Climate",
+    "environment": "Environment",
+    "access": "Daily life",
+    "urban": "Urban life",
+    "risk": "Safety & risks",
+    "value": "Value & change"
   },
   "metrics": {
-    "CL01": "Hot days (≥30 °C)", "CL03": "Annual precipitation",
-    "EN04": "Vegetation (NDVI)", "EN03": "Night-time noise", "EN01": "Annual PM2.5",
-    "IN01": "Basic services on foot", "IN04": "Public transport",
+    "CL01": "Hot days (>30 °C)",
+    "CL03": "Annual precipitation",
+    "EN04": "Vegetation (NDVI)",
+    "EN03": "Traffic noise (day)",
+    "EN01": "Annual PM2.5",
+    "IN01": "Daily services on foot",
+    "IN04": "Public transport supply",
     "SO01": "Population density",
-    "RS01": "Recorded violent crime", "RS03": "Victimization (ENUSC)",
-    "EC01": "Asking price, apartments"
+    "RS01": "Recorded violent crime",
+    "RS03": "Violent crime victimization (ENUSC)",
+    "EC01": "Asking price, apartments",
+    "EC02": "Median sale price",
+    "RS07": "Flood zones",
+    "RS09": "Landslides and ground collapse",
+    "RS05": "Very poor seismic soil"
   },
   "drawer": {
-    "label": "Selected place card", "close": "Close card",
-    "territory": "Comuna", "zone": "Calculation zone", "address": "Address",
+    "label": "Selected place card",
+    "close": "Close card",
+    "territory": "Comuna",
+    "zone": "Calculation zone",
+    "address": "Address",
     "region": "Santiago Metropolitan Region · Chile",
-    "summary": "Summary", "evidence": "Sources & coverage",
+    "summary": "Summary",
+    "evidence": "Sources & coverage",
     "atLevel": "{level} level",
     "status": "Demo",
     "sources": "Planned sources: {sources}",
-    "demoNote": "Values in this build are synthetic and only test the interface. Comuna geometries are real.",
+    "demoNote": "Sale prices, transit and daily services are real data; other values in this build are synthetic. Comuna geometries are real.",
     "matches": "Matching comunas",
     "matchesNote": "Ranked by: {criteria}",
-    "teaserEyebrow": "Property analysis", "teaserTitle": "The information. And what it means.",
+    "teaserEyebrow": "Property analysis",
+    "teaserTitle": "The information. And what it means.",
     "teaserText": "Estimated value, records, surroundings and priority checks in a single report.",
-    "teaserCta": "See full report"
+    "teaserCta": "See full report",
+    "real": "Real data",
+    "ec02Sample": "{n} sales, {from}–{to}. Interquartile range {p25}–{p75} UF.",
+    "ec02Trend": "Median by year (UF)",
+    "method_EC02": "SII form F2890 (registered transfers). Sales from 500 to 100,000 UF; a deal covering several rols (apartment + parking + storage) counts once. No type or floor area until the SII catastro is joined.",
+    "method_IN04": "DTPM GTFS (Red Metropolitana de Movilidad). Weekday 7–9 am departures per hour at stops and stations within 500 m straight line of the zone center; not walking time over streets. Comuna: zone average weighted by building count (Overture).",
+    "acc_food": "Grocery",
+    "acc_pharmacy": "Pharmacy",
+    "acc_health": "Health",
+    "acc_transport": "Stop",
+    "accNote": "Estimated minutes: straight line ×1.3 at 4.5 km/h, not an actual route.",
+    "method_IN01": "Overture Maps (places with confidence ≥0.5) and DTPM GTFS stops. Four equally weighted groups: grocery, pharmacy, primary care, transit; score 100 at ≤5 min, 0 at ≥20 min. Minutes estimated from straight-line distance ×1.3 at 4.5 km/h. Measures distance, not service quality.",
+    "method_SO01": "INE Census 2024 block cartography (n_per). Each block is assigned to the ~600 m cell containing its center; gross density = residents / cell area. Comuna value: population-weighted mean of cell densities. Cells without residents have no value.",
+    "method_EN03": "MMA Greater Santiago Urban Noise Map 2023 (published April 2024). The day map (Ld) is published as colored tiles; we decode each ~30 m pixel to its 5 dB class and average pixels below 75 dBA within the cell (carriageways are drawn above 75, buildings have no value). Comuna: population-weighted mean (Census 2024). Official exposure by comuna (residents above 65 dBA day, 55 dBA night) is shown in the card.",
+    "noiseExposure": "Official MMA: {day}% of residents above 65 dBA by day, {night}% above 55 dBA at night.",
+    "method_RS07": "MINVU SEREMI/SERVIU RM, OTRAS_AMENAZAS_RMS service. Flooding: PRMS recurrently floodable areas and groundwater outcrop, high flood zone, river floods and hyperconcentrated flows. Mass movement: PRMS landslide and collapse areas, high-hazard debris flows. Seismic: soils with very poor seismic response. Value: % of Census 2024 residents (block centers) inside the area; hazards are not summed. Metropolitan source scale: not a substitute for a site study.",
+    "method_RS09": "MINVU SEREMI/SERVIU RM, OTRAS_AMENAZAS_RMS service. Flooding: PRMS recurrently floodable areas and groundwater outcrop, high flood zone, river floods and hyperconcentrated flows. Mass movement: PRMS landslide and collapse areas, high-hazard debris flows. Seismic: soils with very poor seismic response. Value: % of Census 2024 residents (block centers) inside the area; hazards are not summed. Metropolitan source scale: not a substitute for a site study.",
+    "method_RS05": "MINVU SEREMI/SERVIU RM, OTRAS_AMENAZAS_RMS service. Flooding: PRMS recurrently floodable areas and groundwater outcrop, high flood zone, river floods and hyperconcentrated flows. Mass movement: PRMS landslide and collapse areas, high-hazard debris flows. Seismic: soils with very poor seismic response. Value: % of Census 2024 residents (block centers) inside the area; hazards are not summed. Metropolitan source scale: not a substitute for a site study.",
+    "faultKm": "Distance to the San Ramón fault (MINVU trace): {km} km.",
+    "method_EN04": "Sentinel-2 L2A (Copernicus, ESA), cloud-free scene of 2026-01-17, tiles 19HCD and 19HCC via Element84 COGs on AWS. NDVI = (B8 − B4)/(B8 + B4) at 10 m; clouds, shadows and water removed using the SCL band. Cell: mean of its pixels. Comuna: Census 2024 population-weighted mean. One summer date: measures green cover, not park quality.",
+    "method_CL01": "ARClim (Ministry of Environment, CR2), comunas layer: days per year with maximum above 30 °C, historical period 1980–2010. The card shows the projected change to 2035–2065 under SSP2-4.5 (model mean). Source resolution ~5 km: comuna level only.",
+    "method_CL03": "ARClim (MMA, CR2), comunas layer: annual accumulated precipitation, historical period 1980–2010. The card shows the projected change to 2035–2065 under SSP2-4.5. The post-2010 megadrought is not in the historical mean.",
+    "hotFuture": "Projection 2035–2065 (SSP2-4.5): +{d} days per year.",
+    "rainFuture": "Projection 2035–2065 (SSP2-4.5): {d}% rainfall.",
+    "method_RS03": "INE and Undersecretariat for Crime Prevention: comuna SAE estimates of the ENUSC 2024 VHDV indicator (experimental statistics) with 95% confidence interval. Measures households victim of robbery with violence or intimidation, snatching and assault. Not downscaled to neighbourhoods.",
+    "enuscInterval": "95% interval: {lo}–{hi}%. Experimental estimate."
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",
@@ -52,17 +141,45 @@
     "outside": "This address is outside the comunas available in this build."
   },
   "pages": {
-    "trends": { "eyebrow": "Territorial observatory", "title": "The territory, through data.", "lead": "Thematic analysis, comparable series and context to understand how places change.", "soon": "Section in preparation." },
-    "partners": { "eyebrow": "For organizations", "title": "Context for your users. Information for their decisions.", "lead": "Maps, indicators and reports embedded where people already search and work.",
-      "portals": "Portals & platforms", "portalsTitle": "The surroundings, inside every listing.", "portalsText": "An embedded card, a map or indicators. Report access from your own flow.",
-      "agencies": "Agencies & professionals", "agenciesTitle": "A common base for every analysis.", "agenciesText": "Report packs, batch requests and client delivery from one workspace.",
-      "public": "Municipalities & media", "publicTitle": "Territorial information for everyone.", "publicText": "Free public embeds that bring local context to residents and readers." },
-    "methods": { "eyebrow": "Methodology", "title": "Clear data. Clear conclusions.", "lead": "Every indicator keeps its source, date, scale and status: observed, documented or estimated.",
-      "a": "Sources & coverage", "aText": "Available detail varies by place and indicator. A comuna-level figure keeps that scope on a property card.",
-      "b": "Explainable models", "bText": "Estimates come with their method and limits. Missing information stays visible.",
-      "c": "Reports", "cText": "The report brings together evidence, calculations and analysis. Checks that need documents or a visit are marked explicitly.",
-      "d": "Updates", "dText": "Each source's date accompanies the indicator. Historical versions are kept apart from current observations.",
-      "back": "Back to the atlas" },
-    "account": { "eyebrow": "Workspace", "title": "Your analyses. One place.", "lead": "Reports, batch requests and client delivery for professionals and organizations.", "soon": "Account access arrives in a later phase." }
+    "trends": {
+      "eyebrow": "Territorial observatory",
+      "title": "The territory, through data.",
+      "lead": "Thematic analysis, comparable series and context to understand how places change.",
+      "soon": "Section in preparation."
+    },
+    "partners": {
+      "eyebrow": "For organizations",
+      "title": "Context for your users. Information for their decisions.",
+      "lead": "Maps, indicators and reports embedded where people already search and work.",
+      "portals": "Portals & platforms",
+      "portalsTitle": "The surroundings, inside every listing.",
+      "portalsText": "An embedded card, a map or indicators. Report access from your own flow.",
+      "agencies": "Agencies & professionals",
+      "agenciesTitle": "A common base for every analysis.",
+      "agenciesText": "Report packs, batch requests and client delivery from one workspace.",
+      "public": "Municipalities & media",
+      "publicTitle": "Territorial information for everyone.",
+      "publicText": "Free public embeds that bring local context to residents and readers."
+    },
+    "methods": {
+      "eyebrow": "Methodology",
+      "title": "Clear data. Clear conclusions.",
+      "lead": "Every indicator keeps its source, date, scale and status: observed, documented or estimated.",
+      "a": "Sources & coverage",
+      "aText": "Available detail varies by place and indicator. A comuna-level figure keeps that scope on a property card.",
+      "b": "Explainable models",
+      "bText": "Estimates come with their method and limits. Missing information stays visible.",
+      "c": "Reports",
+      "cText": "The report brings together evidence, calculations and analysis. Checks that need documents or a visit are marked explicitly.",
+      "d": "Updates",
+      "dText": "Each source's date accompanies the indicator. Historical versions are kept apart from current observations.",
+      "back": "Back to the atlas"
+    },
+    "account": {
+      "eyebrow": "Workspace",
+      "title": "Your analyses. One place.",
+      "lead": "Reports, batch requests and client delivery for professionals and organizations.",
+      "soon": "Account access arrives in a later phase."
+    }
   }
 }

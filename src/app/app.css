@@ -41,3 +41,6 @@
 .atlas-root .at-match{display:flex;justify-content:space-between;width:100%;border:0;border-bottom:1px solid var(--at-line);background:none;padding:8px 0;font-size:12px;text-align:left}
 .atlas-root .at-match span{color:var(--at-muted);font-size:11px}
 .atlas-root .at-search-message{position:absolute;z-index:6;bottom:78px;left:50%;transform:translateX(-50%);background:var(--at-surface);border:1px solid var(--at-line);border-radius:6px;padding:6px 11px;font-size:11px;color:var(--at-muted);box-shadow:0 1px 4px #00000015;max-width:calc(100% - 165px);text-align:center}
+/* keep the layer list clear of the legend when a family has many layers */
+.atlas-root .at-layers{max-height:calc(100% - 360px);overflow-y:auto}
+.atlas-root .at-legend{max-height:330px;overflow:hidden}
