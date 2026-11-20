@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import ObjectReport, { type PriceInfo } from "./ObjectReport";
+import { buildReportInput } from "@/lib/report/input";
+import { requestReport } from "@/lib/report/client";
 import type { AreaCollection } from "@/lib/geo";
 import { pointFacts, observations, type PointFacts, type PoisFile, type HazardsFile, type Observation, type PoiGroup, type LngLat } from "@/lib/object/facts";
 
@@ -42,6 +44,7 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
   const t = useTranslations("object");
   const [facts, setFacts] = useState<PointFacts | null>(null);
   const [open, setOpen] = useState(false);
+  const locale = useLocale();
   useEffect(() => {
     let live = true;
     loadCtx().then(([p, h]) => live && setFacts(pointFacts(lngLat, p, h))).catch(() => live && setFacts(null));
@@ -51,6 +54,13 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
   const area = footprintArea(footprint);
   const height = Number(osm.render_height);
   const obs = facts ? observations(facts, { zone, comuna }) : null;
+  const getReport = () => {
+    if (!facts || !obs) return;
+    requestReport(buildReportInput({ locale: locale === "en" ? "en" : "es", title, lngLat, area, height: Number.isFinite(height) && height > 0 ? height : undefined, facts, obs, zone, comuna, zones, comunas, price, pricePeriod }), locale);
+  };
+  // teaser: the card shows the first findings; the paid report explains all of them
+  const SHOWN = 2;
+  const hidden = obs ? Math.max(0, obs.cons.length - SHOWN) + Math.max(0, obs.pros.length - SHOWN) : 0;
   const lvl = (o: Observation) => t(`lvl_${o.level}`);
   const item = (o: Observation) => (
     <li key={o.key}>
@@ -76,13 +86,13 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
           {obs.cons.length > 0 && (
             <div className="at-observation at-obs-cons">
               <strong>{t("cons")}</strong>
-              <ul>{obs.cons.map(item)}</ul>
+              <ul>{obs.cons.slice(0, SHOWN).map(item)}</ul>
             </div>
           )}
           {obs.pros.length > 0 && (
             <div className="at-observation at-obs-pros">
               <strong>{t("pros")}</strong>
-              <ul>{obs.pros.map(item)}</ul>
+              <ul>{obs.pros.slice(0, SHOWN).map(item)}</ul>
             </div>
           )}
           <div className="at-observation">
@@ -97,9 +107,16 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
             </ul>
             <small>{t("walkNote")}</small>
           </div>
-          <div className="at-observation at-obs-unknown">
-            <strong>{t("unknown")}</strong>
-            <ul>{obs.unknown.map((o) => <li key={o.key}>{t(`obs.${o.key}`)}</li>)}</ul>
+          <div className="at-teaser">
+            <span className="at-eyebrow">{t("teaserEyebrow")}</span>
+            <strong>{hidden > 0 ? t("teaserMore", { n: hidden }) : t("teaserTitle")}</strong>
+            <ul>
+              <li>{t("teaserA")}</li>
+              <li>{t("teaserB")}</li>
+              <li>{t("teaserC")}</li>
+            </ul>
+            <button type="button" className="at-primary" onClick={getReport}>{t("teaserCta")}</button>
+            <small>{t("teaserNote")}</small>
           </div>
         </>
       )}
@@ -122,6 +139,7 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
           comunas={comunas}
           price={price}
           pricePeriod={pricePeriod}
+          onReport={getReport}
         />
       )}
       <p className="at-family-head" style={{ marginTop: 18 }}>{t("context")}</p>

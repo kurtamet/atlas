@@ -6,7 +6,8 @@ import { formatValue } from "@/lib/layers/style";
 import type { PointFacts, Observation, PoiGroup, LngLat } from "@/lib/object/facts";
 import type { AreaCollection } from "@/lib/geo";
 
-export interface PriceInfo { n: number; median: number; p25: number; p75: number; years: Record<string, { n: number; median: number }> }
+import type { PriceInfo } from "@/lib/report/input";
+export type { PriceInfo };
 
 const GROUPS: PoiGroup[] = ["metro", "transport", "food", "pharmacy", "health", "park", "school"];
 
@@ -32,6 +33,7 @@ export default function ObjectReport(props: {
   comunas: AreaCollection | null;
   price?: PriceInfo;
   pricePeriod?: [string, string];
+  onReport: () => void;
 }) {
   const t = useTranslations();
   const r = useTranslations("report");
@@ -159,7 +161,7 @@ export default function ObjectReport(props: {
             <span className="at-eyebrow">{t("drawer.teaserEyebrow")}</span>
             <h3>{t("drawer.teaserTitle")}</h3>
             <p>{r("paidAdds")}</p>
-            <button type="button" className="at-primary" disabled title={t("pages.account.soon")}>{t("drawer.teaserCta")}</button>
+            <button type="button" className="at-primary" onClick={props.onReport}>{t("drawer.teaserCta")}</button>
           </div>
         </div>
         <p className="at-subline">{r("disclaimer")}</p>
