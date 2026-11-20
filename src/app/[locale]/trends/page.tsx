@@ -1,15 +1,8 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
+import TrendsView from "@/components/trends/TrendsView";
 
 export default async function TrendsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations("pages.trends");
-  return (
-    <section className="at-page">
-      <p className="at-eyebrow">{t("eyebrow")}</p>
-      <h1>{t("title")}</h1>
-      <p className="at-lead">{t("lead")}</p>
-      <p className="at-lead">{t("soon")}</p>
-    </section>
-  );
+  return <TrendsView />;
 }
