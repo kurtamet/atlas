@@ -13,9 +13,17 @@ export interface ComunaRow {
 }
 
 type Dict<T> = Record<string, T>;
-const load = <T,>(f: string): Promise<T> => fetch(`/data/${f}`).then((r) => r.json() as Promise<T>);
+type Loader = <T>(file: string) => Promise<T>;
+const fetchLoader: Loader = <T,>(f: string) => fetch(`/data/${f}`).then((r) => r.json() as Promise<T>);
 
-export async function loadComunaTable(): Promise<ComunaRow[]> {
+/** subscriber-only parts of the table: yearly prices and derived extras (changes, projections) */
+export const FREE_LAYERS = new Set(["EC02", "SO01", "IN01", "EN04"]);
+export const FREE_EDGE = 5;
+
+/** what a free visitor receives: comuna values (the same numbers the map shows), no series or extras */
+export const freeView = (rows: ComunaRow[]): ComunaRow[] => rows.map((r) => ({ ...r, extras: {}, prices: null }));
+
+export async function loadComunaTable(load: Loader = fetchLoader): Promise<ComunaRow[]> {
   const [fc, prices, transit, access, censo, noise, hazards, ndvi, climate, enusc, air, crime] = await Promise.all([
     load<{ features: Array<{ properties: { code: number | string; name: string } }> }>("comunas.geojson"),
     load<{ comunas: Dict<{ median: number; years: Dict<{ n: number; median: number }> }> }>("prices-comunas.json"),

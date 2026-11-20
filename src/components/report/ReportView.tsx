@@ -9,7 +9,14 @@ export default function ReportView() {
   const d = useTranslations("reportDoc");
   const [rep, setRep] = useState<StoredReport | null | undefined>(undefined);
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("id") ?? "";
+    const q = new URLSearchParams(window.location.search);
+    const saved = q.get("saved");
+    if (saved) {
+      // a report kept in the account
+      fetch(`/api/reports/${saved}`, { cache: "no-store" }).then((r) => (r.ok ? (r.json() as Promise<StoredReport>) : null)).then(setRep).catch(() => setRep(null));
+      return;
+    }
+    const id = q.get("id") ?? "";
     const load = () => setRep(readReport(id));
     load();
     const onStorage = (e: StorageEvent) => e.key === storageKey(id) && load();
@@ -22,7 +29,7 @@ export default function ReportView() {
   return (
     <div className="rd-wrap">
       <div className="rd-toolbar">
-        <span>{rep.ai ? d("ready") : rep.error ? d("failed") : d("generating")}</span>
+        <span>{rep.ai ? d("ready") : rep.error ? d("failed") : d("generating")}{rep.ai && rep.savedId ? ` · ${d("savedToAccount")}` : ""}</span>
         {rep.ai && <button type="button" className="at-primary" onClick={() => window.print()}>{d("pdf")}</button>}
       </div>
       {rep.ai && rep.source ? <ReportDocument input={rep.input} ai={rep.ai} source={rep.source} /> : (
