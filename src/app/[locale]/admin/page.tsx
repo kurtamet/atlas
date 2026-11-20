@@ -23,9 +23,10 @@ export default async function AdminPage({ params }: { params: Promise<{ locale: 
   const db = adminClient();
   if (!account || account.role !== "admin" || !db) notFound();
   const t = await getTranslations("admin");
-  const { data } = await db.from("profiles")
-    .select("id, email, full_name, company, segment, role, created_at, subscriptions(status, current_period_end), purchases(status, credits, kind, amount_clp), reports(created_at, paid_with), crm_notes(body, created_at)")
+  const { data, error } = await db.from("profiles")
+    .select("id, email, full_name, company, segment, role, created_at, subscriptions(status, current_period_end), purchases(status, credits, kind, amount_clp), reports(created_at, paid_with), crm_notes!crm_notes_user_id_fkey(body, created_at)")
     .order("created_at", { ascending: false }).limit(500);
+  if (error) console.error("admin: customers query failed", error.message);
   const rows = (data ?? []) as Row[];
   const now = requestTime();
   const fmt = (s: string) => new Date(s).toLocaleDateString(locale === "es" ? "es-CL" : "en-US", { day: "numeric", month: "short", year: "2-digit" });
