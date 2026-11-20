@@ -7,8 +7,13 @@ import { loadComunaTable, median, type ComunaRow } from "@/lib/data/comunas";
 import { metricValue } from "@/lib/report/input";
 import { PercentileStrip } from "@/components/report/charts";
 import { RankBars, PriceLines, ChangeBars, Dumbbells, Scatter } from "./charts";
+import { Locked } from "./Locked";
+import { useAccess } from "@/lib/access";
 
 const REAL = METRICS.filter((m) => !m.demo);
+/** free tier: these layers' rankings, their top and bottom five, and the profile of one comuna */
+const FREE_LAYERS = new Set(["EC02", "SO01", "IN01", "EN04"]);
+const FREE_EDGE = 5;
 
 export default function TrendsView() {
   const t = useTranslations();
@@ -19,11 +24,22 @@ export default function TrendsView() {
   const [comuna, setComuna] = useState<string | null>("13120");
   const [xId, setX] = useState("IN01");
   const [yId, setY] = useState("EC02");
+  const { subscriber } = useAccess();
   useEffect(() => { loadComunaTable().then(setRows).catch(() => setRows([])); }, []);
 
   const m = metricById(metric);
   const ranked = useMemo(() => (rows ?? []).filter((r) => r.values[metric] !== undefined).map((r) => ({ code: r.code, name: r.name, value: r.values[metric] })).sort((a, b) => b.value - a.value), [rows, metric]);
   const sel = rows?.find((r) => r.code === comuna) ?? null;
+  const layerLocked = !subscriber && !FREE_LAYERS.has(metric);
+  const shownRank = subscriber ? ranked : ranked.map((r, i) => (i < FREE_EDGE || i >= ranked.length - FREE_EDGE || r.code === comuna ? r : { code: `x${i}`, name: "", value: 0, locked: true }));
+  const exportCsv = () => {
+    const ids = REAL.map((x) => x.id);
+    const lines = [["code", "comuna", ...ids].join(","), ...(rows ?? []).map((r) => [r.code, `"${r.name}"`, ...ids.map((id) => r.values[id] ?? "")].join(","))];
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" }));
+    a.download = "atlas-comunas.csv";
+    a.click();
+  };
   if (!rows) return <section className="at-page"><p className="at-lead">{tr("loading")}</p></section>;
 
   // prices over time: selected comuna vs median of comunas, years with data for most comunas
@@ -41,7 +57,7 @@ export default function TrendsView() {
       <select value={value} onChange={(e) => on(e.target.value)}>
         {FAMILIES.map((f) => (
           <optgroup key={f.id} label={t(`families.${f.id}`)}>
-            {REAL.filter((x) => x.family === f.id).map((x) => <option key={x.id} value={x.id}>{t(`metrics.${x.id}`)}</option>)}
+            {REAL.filter((x) => x.family === f.id).map((x) => <option key={x.id} value={x.id}>{t(`metrics.${x.id}`)}{!subscriber && !FREE_LAYERS.has(x.id) ? ` · ${tr("subOnly")}` : ""}</option>)}
           </optgroup>
         ))}
       </select>
@@ -68,7 +84,8 @@ export default function TrendsView() {
       <section className="tr-card tr-wide">
         <h2>{tr("rankTitle", { metric: t(`metrics.${metric}`) })}</h2>
         <p className="tr-sub">{m.unit} · {tr("rankSub")}</p>
-        <RankBars rows={ranked} color={familyById(m.family).color} selected={comuna} onSelect={setComuna} unit={m.unit} decimals={m.decimals} locale={locale} />
+        {layerLocked ? <Locked rows={10} /> : <RankBars rows={shownRank} color={familyById(m.family).color} selected={comuna} onSelect={setComuna} unit={m.unit} decimals={m.decimals} locale={locale} />}
+        {!subscriber && !layerLocked && <p className="tr-note tr-upsell">{tr("rankUpsell", { n: ranked.length - 2 * FREE_EDGE })}</p>}
         <p className="tr-note">{t(`drawer.method_${metric}`)}</p>
       </section>
 
@@ -92,8 +109,8 @@ export default function TrendsView() {
       <section className="tr-card">
         <h2>{tr("priceTitle")}</h2>
         <p className="tr-sub">{tr("priceSub")}</p>
-        <PriceLines years={years} comuna={selLine} all={allMed} comunaName={sel?.name ?? ""} allName={tr("allComunas")} locale={locale} />
-        {sel?.prices && lastYear && sel.prices.years[lastYear] && (
+        {!subscriber ? <Locked rows={6} compact /> : <PriceLines years={years} comuna={selLine} all={allMed} comunaName={sel?.name ?? ""} allName={tr("allComunas")} locale={locale} />}
+        {subscriber && sel?.prices && lastYear && sel.prices.years[lastYear] && (
           <p className="tr-note">{tr("priceNote", { comuna: sel.name, year: lastYear, n: sel.prices.years[lastYear].n.toLocaleString(locale) })}</p>
         )}
       </section>
@@ -101,26 +118,28 @@ export default function TrendsView() {
       <section className="tr-card">
         <h2>{tr("crimeTitle")}</h2>
         <p className="tr-sub">{tr("crimeSub")}</p>
-        <ChangeBars rows={crimeChg} selected={comuna} worseIfUp unit="%" locale={locale} />
+        {!subscriber ? <Locked rows={8} compact /> : <ChangeBars rows={crimeChg} selected={comuna} worseIfUp unit="%" locale={locale} />}
       </section>
 
       <section className="tr-card">
         <h2>{tr("heatTitle")}</h2>
         <p className="tr-sub">{tr("heatSub")}</p>
-        <Dumbbells rows={hot} unit={metricById("CL01").unit} locale={locale} nowLabel={tr("heatNow")} futureLabel={tr("heatFuture")} />
+        {!subscriber ? <Locked rows={8} compact /> : <Dumbbells rows={hot} unit={metricById("CL01").unit} locale={locale} nowLabel={tr("heatNow")} futureLabel={tr("heatFuture")} />}
       </section>
 
       <section className="tr-card tr-wide">
         <h2>{tr("scatterTitle")}</h2>
         <p className="tr-sub">{tr("scatterSub")}</p>
+        {!subscriber ? <Locked rows={7} /> : (<>
         <div className="tr-filters">
           {metricSelect(xId, setX, tr("axisX"))}
           {metricSelect(yId, setY, tr("axisY"))}
         </div>
         <Scatter points={scatter} xLabel={`${t(`metrics.${xId}`)} (${metricById(xId).unit})`} yLabel={`${t(`metrics.${yId}`)} (${metricById(yId).unit})`} selected={comuna} onSelect={setComuna} locale={locale} xDec={metricById(xId).decimals} yDec={metricById(yId).decimals} />
+        </>)}
       </section>
 
-      <p className="tr-note tr-foot">{tr("foot")}</p>
+      <p className="tr-note tr-foot">{tr("foot")} {subscriber && <button type="button" className="at-secondary tr-csv" onClick={exportCsv}>{tr("csv")}</button>}</p>
     </div>
   );
 }

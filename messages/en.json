@@ -381,6 +381,12 @@
     "scatterSub": "Each dot is a comuna. Pick two layers to see whether they move together (e.g. price and access to services).",
     "axisX": "Horizontal axis",
     "axisY": "Vertical axis",
-    "foot": "Open data processed by Atlas Chile. Each layer's method is in the map (Sources and coverage). Comuna-level values; zone layers are aggregated weighted by population."
+    "foot": "Open data processed by Atlas Chile. Each layer's method is in the map (Sources and coverage). Comuna-level values; zone layers are aggregated weighted by population.",
+    "subOnly": "subscription",
+    "lockTitle": "Available with a subscription",
+    "lockText": "Every layer and comuna, prices over time, crime, climate, layer relationships and data download.",
+    "lockCta": "Subscribe",
+    "rankUpsell": "{n} more comunas with a subscription.",
+    "csv": "Download CSV"
   }
 }

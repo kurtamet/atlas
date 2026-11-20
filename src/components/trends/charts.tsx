@@ -12,7 +12,7 @@ const fmtFor = (locale: string, dec = 0) => new Intl.NumberFormat(locale === "es
 
 /** comunas ranked by one metric; the selected comuna is drawn in full colour, the rest lighter */
 export function RankBars({ rows, color, selected, onSelect, unit, decimals, locale }: {
-  rows: Array<{ code: string; name: string; value: number }>;
+  rows: Array<{ code: string; name: string; value: number; locked?: boolean }>;
   color: string;
   selected: string | null;
   onSelect: (code: string) => void;
@@ -28,6 +28,13 @@ export function RankBars({ rows, color, selected, onSelect, unit, decimals, loca
     <svg viewBox={`0 0 ${W} ${H}`} className="tr-chart" role="img">
       {rows.map((r, i) => {
         const y = i * RH + 3, on = r.code === selected;
+        // subscriber-only row: a skeleton without name or value (locked rows carry no data)
+        if (r.locked) return (
+          <g key={r.code} aria-hidden="true">
+            <rect x={L - 98} y={y + 4} width={90} height={8} rx={4} fill="#e3e6e1" />
+            <rect x={L} y={y + 2} width={(W - L - R) * (0.15 + ((i * 37) % 40) / 100)} height={RH - 7} rx={3} fill="#e3e6e1" />
+          </g>
+        );
         return (
           <g key={r.code} className="tr-hit" onClick={() => onSelect(r.code)}>
             <title>{`${r.name}: ${fmt.format(r.value)} ${unit}`}</title>

@@ -381,6 +381,12 @@
     "scatterSub": "Cada punto es una comuna. Elige dos capas para ver si van juntas (por ejemplo, precio y acceso a servicios).",
     "axisX": "Eje horizontal",
     "axisY": "Eje vertical",
-    "foot": "Datos abiertos procesados por Atlas Chile. Cada capa tiene su método en el mapa (Fuentes y cobertura). Valores a nivel comuna; las capas de zona se agregan ponderando por población."
+    "foot": "Datos abiertos procesados por Atlas Chile. Cada capa tiene su método en el mapa (Fuentes y cobertura). Valores a nivel comuna; las capas de zona se agregan ponderando por población.",
+    "subOnly": "suscripción",
+    "lockTitle": "Disponible con la suscripción",
+    "lockText": "Todas las capas y comunas, precios en el tiempo, delitos, clima, relación entre capas y descarga de datos.",
+    "lockCta": "Suscribirme",
+    "rankUpsell": "{n} comunas más con la suscripción.",
+    "csv": "Descargar CSV"
   }
 }

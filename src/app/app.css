@@ -180,3 +180,12 @@
 .atlas-root .tr-card .rd-chart .rd-t{fill:var(--at-ink)}
 @media (max-width:900px){.atlas-root .tr{grid-template-columns:1fr;padding:18px}}
 .atlas-root .tr-tall{grid-row:span 3}
+.atlas-root .tr-locked{position:relative;min-height:220px;border-radius:8px;overflow:hidden;background:var(--at-paper)}
+.atlas-root .tr-locked-compact{min-height:180px}
+.atlas-root .tr-skeleton{padding:16px;filter:blur(2px);opacity:.8}
+.atlas-root .tr-skeleton i{display:block;height:11px;margin:9px 0;border-radius:4px;background:var(--at-line)}
+.atlas-root .tr-lock{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px;text-align:center;background:color-mix(in srgb,var(--at-surface) 50%,transparent)}
+.atlas-root .tr-lock p{margin:0;max-width:420px;font-size:13px;color:var(--at-muted)}
+.atlas-root .tr-lock-cta{text-decoration:none;display:inline-block}
+.atlas-root .tr-upsell{color:var(--at-brand)}
+.atlas-root .tr-csv{margin-left:10px}
