@@ -2,23 +2,58 @@
 
 Two routes, both raw:
  a) crawl the CEAD site for published spreadsheets (comunal reports, .xlsx/.xls/.csv) and download them;
- b) save the interactive "Estadísticas delictuales" page with its scripts, and try its data endpoint
-    for Región Metropolitana comunas, 2023-2025, rates per 100k by crime group.
+ b) save the interactive "Estadísticas delictuales" page and query its table endpoint the same way the
+    page does: all Región Metropolitana comunas, every crime group, 2023-2025, rates per 100k and counts.
 Everything goes to data-chile/cead/; the log tells what worked so the parser can be finished.
 """
-import re, urllib.parse
+import os, re, urllib.parse
 from common import fetch, log, out, save
 
 S = "cead"
-BASE = "https://cead.spd.gov.cl"
-PAGES = ["/", "/estadisticas-delictuales/", "/centro-de-documentacion/", "/estadisticas-regionales/",
-         "/estadisticas-comunales/", "/biblioteca/", "/reportes-estadisticos/"]
+# cead.spd.gov.cl stopped resolving after the 2025 move to the Ministerio de Seguridad Pública;
+# try the likely new homes and follow links from the Subsecretaría's site.
+CANDIDATES = ["https://cead.minsegpublica.gob.cl", "https://cead.spd.gov.cl", "https://cead.subprevenciondeldelito.gob.cl",
+              "https://cead.seguridadpublica.gob.cl", "https://subprevenciondeldelito.gob.cl/cead", "https://www.subprevenciondeldelito.gob.cl/cead"]
+DISCOVER = ["https://subprevenciondeldelito.gob.cl/", "https://www.subprevenciondeldelito.gob.cl/", "https://www.minsegpublica.gob.cl/",
+            "https://www.gob.cl/instituciones/"]
+BASE = CANDIDATES[0]
+
+
+def find_base():
+    """first candidate that answers; else any 'cead' link found on the ministry sites"""
+    for c in CANDIDATES:
+        st, body, final = fetch(c + "/", retries=0, timeout=20)
+        log(S, f"try {c}: HTTP {st}")
+        if st == 200:
+            return final.rstrip("/")
+    for d in DISCOVER:
+        st, body, final = fetch(d, retries=0, timeout=20)
+        log(S, f"discover {d}: HTTP {st}, {len(body)} bytes")
+        if st != 200:
+            continue
+        save(out(S, "pages", "discover_" + re.sub(r"[^a-z0-9]", "_", d.lower())[:60] + ".html"), body)
+        for href in re.findall(r'href="([^"]+)"', body.decode("utf-8", "ignore")):
+            if re.search(r"cead|estadisticas-delictuales|estad%C3%ADsticas", href, re.I):
+                u = urllib.parse.urljoin(final, href)
+                log(S, f"  link: {u}")
+                st2, _, final2 = fetch(u, retries=0, timeout=20)
+                if st2 == 200:
+                    return final2.rstrip("/")
+    return None
+PAGES = ["/estadisticas-delictuales/", "/centro-de-documentacion/"]
 DOC = re.compile(r'href="([^"]+\.(?:xlsx|xls|csv|zip))"', re.I)
 SCRIPT = re.compile(r'<script[^>]+src="([^"]+)"', re.I)
 AJAX = re.compile(r'["\']([^"\']*(?:get_|ajax|admin-ajax|\.php)[^"\']*)["\']', re.I)
 
 
 def main():
+    global BASE
+    b = find_base()
+    if not b:
+        log(S, "CEAD site not found under any known address; see pages/discover_*.html")
+        return
+    BASE = b
+    log(S, f"using {BASE}")
     seen_docs, endpoints = set(), set()
     for p in PAGES:
         st, body, final = fetch(BASE + p)
@@ -51,18 +86,83 @@ def main():
         f.write("\n".join(sorted(endpoints)))
     log(S, f"{len(endpoints)} candidate endpoints written to endpoints.txt")
 
-    # guess at the interactive table's endpoint (as used by the site's own JS in recent years)
-    for ep in [e for e in endpoints if "estadisticas" in e.lower() and e.endswith(".php")][:3] or \
-              ["/wp-content/themes/gobcl-wp-master/data/get_estadisticas_delictuales.php"]:
-        url = urllib.parse.urljoin(BASE + "/", ep)
-        for medida in ("1", "2"):  # 1 = frecuencia, 2 = tasa por 100 mil (site convention)
-            st, body, _ = fetch(url, data={"medida": medida, "tipoVal": "2", "anio[]": ["2023", "2024", "2025"],
-                                           "region[]": ["13"], "seleccion": "2"},
-                                headers={"X-Requested-With": "XMLHttpRequest", "Referer": BASE + "/estadisticas-delictuales/"})
-            name = f"api_{ep.split('/')[-1]}_medida{medida}.txt"
-            log(S, f"POST {ep} medida={medida}: HTTP {st}, {len(body)} bytes")
-            save(out(S, name), body)
+    if not cead_tables(BASE):
+        log(S, "interactive tables failed; see api/*.html")
 
+
+OPT = re.compile(r'<option value="([^"]*)" data-section="([^"]*)"[^>]*>([^<]*)')
+MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
+          "Octubre", "Noviembre", "Diciembre"]
+
+
+def options(html, select_id):
+    m = re.search(r'<select id="%s".*?>(.*?)</select>' % select_id, html, re.S)
+    return OPT.findall(m.group(1)) if m else []
+
+
+def cead_tables(base):
+    """Query the site's own table endpoint (get_estadisticas_delictuales.php) the way its page does:
+    all RM comunas x all crime families/groups/subgroups, one year per request.
+    seleccion 1 = por unidad territorial, 2 = por delito; medida 1 = frecuencia, 2 = tasa por 100 mil;
+    tipoVal "1,2" = casos policiales (denuncias + detenciones flagrantes)."""
+    p = out(S, "pages", "estadisticas-delictuales.html")
+    try:
+        html = open(p, encoding="utf-8").read()
+    except OSError:
+        log(S, "no saved estadisticas-delictuales page")
+        return False
+    terr = options(html, "territorial-select")
+    crimes = options(html, "delitos-select")
+    years = [v for v, sec, _ in options(html, "temporalidad-select") if sec.startswith("A")]
+    com = [(v, t) for v, sec, t in terr if sec == "Comunas" and v.startswith("13") and len(v) == 5]
+    prov = [(v, t) for v, sec, t in terr if sec == "Provincias" and v.startswith("13")]
+    fam = [(v, t) for v, sec, t in crimes if sec.startswith("Familia")]
+    grp = [(v, t) for v, sec, t in crimes if sec == "Grupo"]
+    sub = [(v, t) for v, sec, t in crimes if sec == "Subgrupo"]
+    log(S, f"options: {len(com)} RM comunas, {len(fam)} families, {len(grp)} groups, {len(sub)} subgroups, years {years[:4]}")
+    if len(com) < 40 or not fam:
+        return False
+    want = [y for y in ("2025", "2024", "2023") if y in years] or years[1:4]
+    url = base + "/wp-content/themes/gobcl-wp-master/data/get_estadisticas_delictuales.php"
+    hdr = {"X-Requested-With": "XMLHttpRequest", "Referer": base + "/estadisticas-delictuales/",
+           "Origin": base, "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"}
+    # (seleccion, medida, year, descarga, family id or None = all crimes)
+    jobs = [(sel, med, y, d, None) for sel in ("1", "2") for med in ("2", "1") for y in want
+            for d in (("false", "true") if (sel, med) == ("1", "2") else ("false",))]
+    # comuna x family tables: the all-crimes table above has no breakdown by crime type per comuna
+    jobs += [("1", med, y, "false", f) for f, _ in fam for med in ("2", "1") for y in want[:2]]
+    ok = 0
+    for seleccion, medida, y, descarga, f in jobs:
+        ext = "xls" if descarga == "true" else "html"
+        name = f"sel{seleccion}_medida{medida}_{y}" + (f"_fam{f}" if f else "") + f".{ext}"
+        path = out(S, "api", name)
+        if os.path.exists(path) and os.path.getsize(path) > 8000:
+            ok += 1
+            continue  # already downloaded on an earlier run
+        fs = [x for x in fam if f in (None, x[0])]
+        pre = tuple(v for v, _ in fs)
+        gs = [x for x in grp if f is None or x[0].startswith(pre)]
+        ss = [x for x in sub if f is None or x[0].startswith(pre)]
+        data = {
+            "medida": medida, "tipoVal": "1,2", "anio[]": [y],
+            "trimestre[]": ["1", "2", "3", "4"],
+            "mes[]": [str(i) for i in range(1, 13)], "mes_nombres[]": MONTHS,
+            "region[]": ["13"], "region_nombres[]": ["Región Metropolitana"],
+            "provincia[]": [v for v, _ in prov], "provincias_nombres[]": [t for _, t in prov],
+            "comuna[]": [v for v, _ in com], "comuna_nombres[]": [t for _, t in com],
+            "familia[]": [v for v, _ in fs], "familia_nombres[]": [t for _, t in fs],
+            "grupo[]": [v for v, _ in gs], "grupo_nombres[]": [t for _, t in gs],
+            "subgrupo[]": [v for v, _ in ss], "subgrupo_nombres[]": [t for _, t in ss],
+            "seleccion": seleccion, "descarga": descarga,
+        }
+        st, body, _ = fetch(url, data=data, headers=hdr, timeout=180, retries=3)
+        # a real table mentions comuna names; the empty template is ~3 KB
+        good = st == 200 and len(body) > 8000 and b"Providencia" in body
+        log(S, f"table {name}: HTTP {st}, {len(body)} bytes{'' if good else '  (empty?)'}")
+        save(path, body)
+        ok += good
+    log(S, f"{ok} non-empty tables")
+    return ok > 0
 
 if __name__ == "__main__":
     main()

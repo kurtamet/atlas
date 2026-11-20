@@ -9,6 +9,7 @@ import { parseQuery, rankByCriteria, type Criterion } from "@/lib/search/parse";
 import { bboxOf, findContaining, valuesOf, type AreaCollection, type AreaFeature } from "@/lib/geo";
 import type { MapCommand } from "./MapView";
 import { SANTIAGO, SANTIAGO_ZOOM, zoomBy } from "./MapView";
+import ObjectCard from "./ObjectCard";
 
 const MapView = dynamic(() => import("./MapView"), { ssr: false });
 
@@ -28,8 +29,11 @@ interface AccessFile {
 const fmtDate = (d: string) => `${d.slice(4, 6)}/${d.slice(0, 4)}`;
 
 type Selection =
-  | { kind: "area"; level: "C" | "D"; id: string; comuna?: AreaFeature; zone?: AreaFeature; address?: string }
+  | { kind: "area"; level: "C" | "D"; id: string; comuna?: AreaFeature; zone?: AreaFeature; address?: string; object?: ObjectPick }
   | { kind: "matches"; criteria: Criterion[]; items: Array<{ code: string; name: string; score: number }> };
+
+/** a picked building or geocoded point (level O) */
+interface ObjectPick { lngLat: [number, number]; footprint: GeoJSON.Geometry | null; osm: Record<string, string | number> }
 
 /** real layers shipped as plain value maps, merged by zone id / comuna code */
 const SIMPLE_LAYERS: Array<[string, string]> = [["ndvi.json", "EN04"]];
@@ -63,8 +67,14 @@ export default function Explorer() {
     const loadSimple = () => Promise.all(SIMPLE_LAYERS.map(([file, metric]) => load(file).then((d) => ({ metric, zones: d.zones ?? {}, comunas: d.comunas ?? {} }))));
     load("chile.geojson").then(setChile);
     // Real layers are merged into the comuna features; demo values stay for the rest.
-    Promise.all([load("comunas.geojson"), load("prices-comunas.json"), load("transit.json"), load("access.json"), load("censo.json"), load("noise.json"), load("hazards.json"), loadSimple(), load("climate.json"), load("enusc.json")]).then(([fc, prices, transit, access, censo, noise, hazards, simple, climate, enusc]: [AreaCollection, PricesFile, { comunas: Record<string, number> }, AccessFile, CensoFile, NoiseFile, HazardFile, SimpleLayer[], { comunas: Record<string, Record<string, number>> }, { comunas: Record<string, Record<string, number | string>> }]) => {
+    Promise.all([load("comunas.geojson"), load("prices-comunas.json"), load("transit.json"), load("access.json"), load("censo.json"), load("noise.json"), load("hazards.json"), loadSimple(), load("climate.json"), load("enusc.json"), load("air.json"), load("crime.json")]).then(([fc, prices, transit, access, censo, noise, hazards, simple, climate, enusc, air, crime]: [AreaCollection, PricesFile, { comunas: Record<string, number> }, AccessFile, CensoFile, NoiseFile, HazardFile, SimpleLayer[], { comunas: Record<string, Record<string, number>> }, { comunas: Record<string, Record<string, number | string>> }, { comunas: Record<string, Record<string, number | string>> }, { comunas: Record<string, Record<string, number | null>> }]) => {
       for (const f of fc.features) {
+        const cr = crime.comunas[String(f.properties.code)];
+        if (cr) Object.assign(f.properties, cr);
+        else delete f.properties.RS01;
+        const ai = air.comunas[String(f.properties.code)];
+        if (ai) Object.assign(f.properties, ai);
+        else delete f.properties.EN01;
         const en = enusc.comunas[String(f.properties.code)];
         if (en) Object.assign(f.properties, en);
         else delete f.properties.RS03;
@@ -132,15 +142,38 @@ export default function Explorer() {
     setMetricId(metricsOfFamily(f)[0].id);
   }
 
-  function selectArea(level: "C" | "D", props: Record<string, string | number>, address?: string) {
+  function selectArea(level: "C" | "D", props: Record<string, string | number>, address?: string, object?: ObjectPick) {
     if (level === "C") {
       const comuna = comunaByCode.get(String(props.code));
-      setSelection({ kind: "area", level, id: String(props.code), comuna, address });
+      setSelection({ kind: "area", level, id: String(props.code), comuna, address, object });
     } else {
       const zone = zones?.features.find((z) => z.properties.id === props.id);
-      setSelection({ kind: "area", level, id: String(props.id), zone, comuna: comunaByCode.get(String(props.comuna)), address });
+      setSelection({ kind: "area", level, id: String(props.id), zone, comuna: comunaByCode.get(String(props.comuna)), address, object });
     }
     setTab("summary");
+  }
+
+  /** open the object card for a point (building click or geocoded address) */
+  function selectObject(obj: ObjectPick, address?: string): boolean {
+    const zone = findContaining(zones, obj.lngLat);
+    const comuna = findContaining(comunas, obj.lngLat);
+    if (zone) selectArea("D", zone.properties, address, obj);
+    else if (comuna) selectArea("C", comuna.properties, address, obj);
+    else return false;
+    if (!address) {
+      // reverse geocoding (Photon/OSM) only labels the card; facts never depend on it
+      const [lon, lat] = obj.lngLat;
+      fetch(`https://photon.komoot.io/reverse?lon=${lon}&lat=${lat}&limit=1`)
+        .then((r) => r.json())
+        .then((d) => {
+          const p = d.features?.[0]?.properties;
+          if (!p) return;
+          const label = p.street ? `${p.street} ${p.housenumber ?? ""}`.trim() : p.name;
+          if (label) setSelection((s) => (s?.kind === "area" && s.object === obj ? { ...s, address: label } : s));
+        })
+        .catch(() => {});
+    }
+    return true;
   }
 
   async function onSearch(e: React.FormEvent) {
@@ -193,12 +226,8 @@ export default function Explorer() {
           const p = hit.properties ?? {};
           const label = [p.street ? `${p.street} ${p.housenumber ?? ""}`.trim() : p.name, p.district ?? p.city].filter(Boolean).join(", ");
           setMarker(pt);
-          fly({ kind: "fly", center: pt, zoom: 15 });
-          const zone = findContaining(zones, pt);
-          const comuna = findContaining(comunas, pt);
-          if (zone) selectArea("D", zone.properties, label);
-          else if (comuna) selectArea("C", comuna.properties, label);
-          else {
+          fly({ kind: "fly", center: pt, zoom: 17 });
+          if (!selectObject({ lngLat: pt, footprint: null, osm: {} }, label)) {
             setSelection(null);
             setMessage(t("search.outside"));
             return;
@@ -270,6 +299,11 @@ export default function Explorer() {
             setMarker(null);
             selectArea(level as "C" | "D", props);
           }}
+          onPickObject={(lngLat, footprint, osm) => {
+            setMarker(null);
+            selectObject({ lngLat, footprint, osm });
+          }}
+          objectShape={selection?.kind === "area" ? selection.object?.footprint ?? null : null}
         />
         <div className="at-map-top">
           <div className="at-map-location">
@@ -304,7 +338,7 @@ export default function Explorer() {
         <aside className="at-drawer" aria-label={t("drawer.label")} aria-live="polite">
           <div className="at-drawer-top">
             <span className="at-eyebrow">
-              {selection.kind === "matches" ? t("drawer.matches") : selection.address ? t("drawer.address") : selection.level === "D" ? t("drawer.zone") : t("drawer.territory")}
+              {selection.kind === "matches" ? t("drawer.matches") : selection.object ? t("object.eyebrow") : selection.address ? t("drawer.address") : selection.level === "D" ? t("drawer.zone") : t("drawer.territory")}
             </span>
             <button type="button" className="at-close" aria-label={t("drawer.close")} onClick={() => { setSelection(null); setMarker(null); }}>×</button>
           </div>
@@ -317,7 +351,7 @@ export default function Explorer() {
             }} />
           ) : (
             <>
-              <h2>{selection.address ?? String(selection.comuna?.properties.name)}</h2>
+              <h2>{selection.address ?? (selection.object ? t("object.noAddress") : String(selection.comuna?.properties.name))}</h2>
               <p className="at-subline">
                 {selection.address ? `${selection.comuna?.properties.name} · ` : ""}
                 {selection.level === "D" ? `${t("drawer.zone")} ${selection.zone?.properties.id} · ` : ""}
@@ -327,6 +361,20 @@ export default function Explorer() {
                 <button type="button" aria-pressed={tab === "summary"} onClick={() => setTab("summary")}>{t("drawer.summary")}</button>
                 <button type="button" aria-pressed={tab === "evidence"} onClick={() => setTab("evidence")}>{t("drawer.evidence")}</button>
               </div>
+              {tab === "summary" && selection.object && (
+                <ObjectCard
+                  lngLat={selection.object.lngLat}
+                  footprint={selection.object.footprint}
+                  osm={selection.object.osm}
+                  zone={selection.zone?.properties}
+                  comuna={selection.comuna?.properties}
+                  title={selection.address ?? t("object.noAddress")}
+                  zones={zones}
+                  comunas={comunas}
+                  price={prices?.comunas[String(selection.comuna?.properties.code)]}
+                  pricePeriod={prices?.period}
+                />
+              )}
               {tab === "summary" ? (
                 <PlaceValues zone={selection.zone} comuna={selection.comuna} locale={locale} prices={prices} />
               ) : (
@@ -376,6 +424,8 @@ function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType
           {metric.id === "EN04" && <p className="at-legend-scale">{t("legend.en04")}</p>}
           {(metric.id === "CL01" || metric.id === "CL03") && <p className="at-legend-scale">{t("legend.climate")}</p>}
           {metric.id === "RS03" && <p className="at-legend-scale">{t("legend.rs03")}</p>}
+          {metric.id === "RS01" && <p className="at-legend-scale">{t("legend.rs01")}</p>}
+          {metric.id === "EN01" && <p className="at-legend-scale">{t("legend.en01")}</p>}
           {["RS05", "RS07", "RS09"].includes(metric.id) && <p className="at-legend-scale">{t("legend.hazards")}</p>}
         </>
       ) : (
@@ -404,6 +454,12 @@ function PlaceValues({ zone, comuna, locale, prices }: { zone?: AreaFeature; com
                   <b>{formatValue(m, value, locale)}<small>{m.unit}</small></b>
                 </div>
                 <span className="at-status">{t("drawer.atLevel", { level: t(`levels.${level}`) })} · {m.demo ? t("drawer.status") : t("drawer.real")}</span>
+                {m.id === "EN01" && comuna?.properties.EN01_st != null && (
+                  <p>{t("drawer.airStation", { st: String(comuna.properties.EN01_st), v: String(comuna.properties.EN01_stv), km: String(comuna.properties.EN01_km) })}</p>
+                )}
+                {m.id === "RS01" && comuna?.properties.RS01_chg != null && (
+                  <p>{t("drawer.crimeChange", { chg: (Number(comuna.properties.RS01_chg) > 0 ? "+" : "") + String(comuna.properties.RS01_chg), prop: String(comuna.properties.RS01_prop ?? "—") })}</p>
+                )}
                 {m.id === "RS03" && comuna?.properties.RS03_lo != null && (
                   <p>{t("drawer.enuscInterval", { lo: String(comuna.properties.RS03_lo), hi: String(comuna.properties.RS03_hi) })}</p>
                 )}

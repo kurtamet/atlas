@@ -21,9 +21,17 @@ def main():
     if st == 200:
         save(out(S, "region_M.html"), body)
 
+    # Región Metropolitana stations from the list (keys like D12); fall back to the known range
+    try:
+        import json
+        codes = [x["key"] for x in json.loads(open(out(S, "stations.json"), "rb").read())
+                 if "Metropolitana" in str(x.get("region", ""))]
+    except Exception:
+        codes = []
+    codes = codes or [f"D{n:02d}" for n in range(1, 41)]
+    log(S, f"stations: {', '.join(codes)}")
     got = 0
-    for n in range(1, 41):
-        code = f"D{n:02d}"
+    for code in codes:
         for macro, tag in ((f"./RM/{code}/Cal/PM25//PM25.diario.diario.ic", "PM25_daily"),
                            (f"./RM/{code}/Cal/PM10//PM10.diario.diario.ic", "PM10_daily")):
             url = (f"{BASE}/cgi-bin/APUB-MMA/apub.tsindico2.cgi?outtype=xcl&macro={macro}"
@@ -31,6 +39,9 @@ def main():
             st, body, _ = fetch(url, timeout=90)
             ok = st == 200 and body.count(b"\n") > 30
             log(S, f"{code} {tag}: HTTP {st}, {len(body)} bytes{' OK' if ok else ''}")
+            # rows look like 230101;0000;validated;preliminary;unvalidated; - an all-empty series means no data
+            if ok and sum(1 for ln in body.splitlines()[1:] if any(c.strip() for c in ln.split(b";")[2:5])) < 30:
+                ok = False
             if ok:
                 save(out(S, f"{code}_{tag}.csv"), body)
                 got += 1
