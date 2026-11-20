@@ -3,13 +3,15 @@
  *
  * One structured-output call: Claude gets the compact facts and returns short texts per block.
  * Without ANTHROPIC_API_KEY (local preview) or on failure it answers with the rule-based draft,
- * so the template always renders. Payment gating goes in front of this route later.
+ * so the template always renders. A signed-in user's report is saved to their account (savedId).
+ * Payment gating goes in front of this route once payments are live.
  */
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { ReportAI, SYSTEM_PROMPT } from "@/lib/report/schema";
 import { promptPayload, type ReportInput } from "@/lib/report/input";
 import { ruleDraft } from "@/lib/report/fallback";
+import { saveReport } from "@/lib/report/save";
 import es from "../../../../messages/es.json";
 import en from "../../../../messages/en.json";
 
@@ -25,7 +27,9 @@ export async function POST(req: Request) {
     return Response.json({ error: "invalid input" }, { status: 400 });
   }
   const msgs = input.locale === "en" ? en : es;
-  const rules = () => Response.json({ ai: ruleDraft(input, msgs), source: "rules" });
+  const answer = async (ai: ReportAI, source: "claude" | "rules", model?: string) =>
+    Response.json({ ai, source, model, savedId: await saveReport(input, ai, source) });
+  const rules = () => answer(ruleDraft(input, msgs), "rules");
   if (!process.env.ANTHROPIC_API_KEY) return rules();
 
   try {
@@ -46,7 +50,7 @@ export async function POST(req: Request) {
       return rules();
     }
     console.info("report usage", res.usage.input_tokens, res.usage.output_tokens, res.usage.cache_read_input_tokens);
-    return Response.json({ ai: res.parsed_output, source: "claude", model: res.model });
+    return answer(res.parsed_output, "claude", res.model);
   } catch (e) {
     if (e instanceof Anthropic.RateLimitError) console.warn("report: rate limited");
     else if (e instanceof Anthropic.APIError) console.error("report: API error", e.status, e.message);

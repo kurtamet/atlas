@@ -3,17 +3,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { FAMILIES, METRICS, familyById, metricById } from "@/lib/layers/registry";
 import { formatValue } from "@/lib/layers/style";
-import { loadComunaTable, median, type ComunaRow } from "@/lib/data/comunas";
+import { median, FREE_LAYERS, FREE_EDGE, type ComunaRow } from "@/lib/data/comunas";
 import { metricValue } from "@/lib/report/input";
 import { PercentileStrip } from "@/components/report/charts";
 import { RankBars, PriceLines, ChangeBars, Dumbbells, Scatter } from "./charts";
 import { Locked } from "./Locked";
-import { useAccess } from "@/lib/access";
+import { useAccess, previewQuery } from "@/lib/access";
 
 const REAL = METRICS.filter((m) => !m.demo);
-/** free tier: these layers' rankings, their top and bottom five, and the profile of one comuna */
-const FREE_LAYERS = new Set(["EC02", "SO01", "IN01", "EN04"]);
-const FREE_EDGE = 5;
 
 export default function TrendsView() {
   const t = useTranslations();
@@ -24,8 +21,15 @@ export default function TrendsView() {
   const [comuna, setComuna] = useState<string | null>("13120");
   const [xId, setX] = useState("IN01");
   const [yId, setY] = useState("EC02");
-  const { subscriber } = useAccess();
-  useEffect(() => { loadComunaTable().then(setRows).catch(() => setRows([])); }, []);
+  const access = useAccess();
+  const [served, setServed] = useState(false);
+  // the server decides what we receive: free visitors get no series or extras
+  useEffect(() => {
+    if (access.loading) return;
+    fetch(`/api/trends${previewQuery()}`, { cache: "no-store" }).then((r) => r.json() as Promise<{ subscriber: boolean; rows: ComunaRow[] }>)
+      .then((d) => { setRows(d.rows); setServed(d.subscriber); }).catch(() => setRows([]));
+  }, [access.loading, access.subscriber]);
+  const subscriber = served;
 
   const m = metricById(metric);
   const ranked = useMemo(() => (rows ?? []).filter((r) => r.values[metric] !== undefined).map((r) => ({ code: r.code, name: r.name, value: r.values[metric] })).sort((a, b) => b.value - a.value), [rows, metric]);

@@ -1,6 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useMe } from "@/lib/access";
 
 const NAV = [
   { href: "/", key: "explore" },
@@ -11,6 +12,7 @@ const NAV = [
 export default function Header() {
   const t = useTranslations();
   const pathname = usePathname();
+  const { me } = useMe();
   return (
     <>
       <header className="at-header">
@@ -27,7 +29,7 @@ export default function Header() {
           ))}
         </nav>
         <Link href="/account" className="at-account" aria-current={pathname === "/account" ? "page" : undefined}>
-          <span className="at-account-label">{t("nav.account")}</span>
+          <span className="at-account-label">{me && !me.email && me.configured ? t("nav.signIn") : t("nav.account")}</span>
         </Link>
       </header>
       <div className="at-note">
