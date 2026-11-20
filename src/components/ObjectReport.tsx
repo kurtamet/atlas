@@ -5,8 +5,11 @@ import { FAMILIES, metricsOfFamily, type Metric } from "@/lib/layers/registry";
 import { formatValue } from "@/lib/layers/style";
 import type { PointFacts, Observation, PoiGroup, LngLat } from "@/lib/object/facts";
 import type { AreaCollection } from "@/lib/geo";
+import { buildReportInput, ruleVerdict } from "@/lib/report/input";
+import { ScoreBars, FAVOUR } from "./report/charts";
 
-export interface PriceInfo { n: number; median: number; p25: number; p75: number; years: Record<string, { n: number; median: number }> }
+import type { PriceInfo } from "@/lib/report/input";
+export type { PriceInfo };
 
 const GROUPS: PoiGroup[] = ["metro", "transport", "food", "pharmacy", "health", "park", "school"];
 
@@ -32,6 +35,7 @@ export default function ObjectReport(props: {
   comunas: AreaCollection | null;
   price?: PriceInfo;
   pricePeriod?: [string, string];
+  onReport: () => void;
 }) {
   const t = useTranslations();
   const r = useTranslations("report");
@@ -53,6 +57,10 @@ export default function ObjectReport(props: {
     if (typeof c === "number") return { v: c, level: "C" as const, pct: percentile(props.comunas, m.id, c) };
     return null;
   };
+  // free preview of the report's first page: scores and verdict are deterministic, texts stay blurred
+  const preview = buildReportInput({ locale: locale === "en" ? "en" : "es", title: props.title, lngLat: props.lngLat, area: props.area, height: props.height, facts, obs, zone, comuna, zones: props.zones, comunas: props.comunas, price: props.price, pricePeriod: props.pricePeriod });
+  const verdict = ruleVerdict(preview);
+  const d = useTranslations("reportDoc");
   const yesNo = (b: boolean) => (b ? r("yes") : r("no"));
   const item = (x: Observation) => <li key={x.key}>{o(`obs.${x.key}`, x.params ?? {})} <small className="at-obs-level">{o(`lvl_${x.level}`)}</small></li>;
   const years = props.price ? Object.entries(props.price.years).sort(([a], [b]) => a.localeCompare(b)).slice(-6) : [];
@@ -69,7 +77,29 @@ export default function ObjectReport(props: {
               {String(comuna?.name ?? "")}{zone ? ` · ${t("drawer.zone")} ${String(zone.id)}` : ""} · {props.lngLat[1].toFixed(5)}, {props.lngLat[0].toFixed(5)}
             </p>
           </div>
-          <button type="button" className="at-close" aria-label={t("drawer.close")} onClick={onClose}>×</button>
+          <div className="at-report-actions">
+            <button type="button" className="at-primary" onClick={props.onReport}>{t("drawer.teaserCta")}</button>
+            <button type="button" className="at-close" aria-label={t("drawer.close")} onClick={onClose}>×</button>
+          </div>
+        </div>
+
+        <div className="at-report-preview">
+          <div>
+            <span className="at-eyebrow">{r("previewEyebrow")}</span>
+            <p className="at-preview-verdict"><span className="rd-badge" style={{ background: verdict === "favorable" ? FAVOUR.good : verdict === "mixed" ? FAVOUR.mid : FAVOUR.bad }}>{d(`verdict_${verdict}`)}</span> {r("previewCounts", { pros: obs.pros.length, cons: obs.cons.length })}</p>
+            <ScoreBars rows={(["daily", "environment", "safety", "climate"] as const).map((k) => ({ label: d(`score_${k}`), value: preview.scores[k] }))} />
+          </div>
+          <div className="at-preview-locked" aria-hidden="true">
+            <div className="at-preview-blur">
+              <b>{d("strengths")}</b><i /><i /><i className="s" />
+              <b>{d("risks")}</b><i /><i className="s" />
+              <b>{d("checks")}</b><i /><i /><i className="s" />
+            </div>
+            <div className="at-preview-lock">
+              <p>{r("previewLocked")}</p>
+              <button type="button" className="at-primary" onClick={props.onReport}>{t("drawer.teaserCta")}</button>
+            </div>
+          </div>
         </div>
 
         <div className="at-report-grid">
@@ -78,6 +108,7 @@ export default function ObjectReport(props: {
             {obs.cons.length > 0 && <div className="at-obs-cons"><strong>{o("cons")}</strong><ul>{obs.cons.map(item)}</ul></div>}
             {obs.pros.length > 0 && <div className="at-obs-pros"><strong>{o("pros")}</strong><ul>{obs.pros.map(item)}</ul></div>}
             {!obs.cons.length && !obs.pros.length && <p>{r("noFlags")}</p>}
+            <p className="at-report-hint">{r("explainedInReport")}</p>
 
             <h2>{o("identified")}</h2>
             <p>
@@ -159,7 +190,7 @@ export default function ObjectReport(props: {
             <span className="at-eyebrow">{t("drawer.teaserEyebrow")}</span>
             <h3>{t("drawer.teaserTitle")}</h3>
             <p>{r("paidAdds")}</p>
-            <button type="button" className="at-primary" disabled title={t("pages.account.soon")}>{t("drawer.teaserCta")}</button>
+            <button type="button" className="at-primary" onClick={props.onReport}>{t("drawer.teaserCta")}</button>
           </div>
         </div>
         <p className="at-subline">{r("disclaimer")}</p>
