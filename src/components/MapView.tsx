@@ -95,6 +95,21 @@ const BASE_STYLE: StyleSpecification = {
     { id: "selected-zone", type: "line", source: "zones", filter: ["==", ["get", "id"], ""], paint: { "line-color": "#202d29", "line-width": 2 } },
     { id: "object-fill", type: "fill", source: "object", paint: { "fill-color": "#234f43", "fill-opacity": 0.35 } },
     { id: "object-line", type: "line", source: "object", paint: { "line-color": "#202d29", "line-width": 2.2 } },
+    // street names along the line from neighbourhood zoom, house numbers (OSM addresses) at object zoom
+    {
+      id: "street-names", type: "symbol", source: "omt", "source-layer": "transportation_name", minzoom: 14,
+      filter: ["in", ["get", "class"], ["literal", ["motorway", "trunk", "primary", "secondary", "tertiary", "minor", "service"]]],
+      layout: {
+        "symbol-placement": "line", "text-field": ["coalesce", ["get", "name:es"], ["get", "name"]], "text-font": ["Noto Sans Regular"],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 14, 10, 17, 13], "text-max-angle": 30, "symbol-spacing": 280,
+      },
+      paint: { "text-color": "#2c3a34", "text-halo-color": "#ffffff", "text-halo-width": 1.5 },
+    },
+    {
+      id: "housenumbers", type: "symbol", source: "omt", "source-layer": "housenumber", minzoom: 17,
+      layout: { "text-field": ["get", "housenumber"], "text-font": ["Noto Sans Regular"], "text-size": 10, "text-padding": 2 },
+      paint: { "text-color": "#56635c", "text-halo-color": "#ffffffcc", "text-halo-width": 1.2 },
+    },
     {
       id: "comuna-labels", type: "symbol", source: "labels", minzoom: 9.5,
       layout: { "text-field": ["get", "name"], "text-font": ["Noto Sans Regular"], "text-size": ["interpolate", ["linear"], ["zoom"], 10, 10, 14, 13], "text-max-width": 7 },

@@ -65,7 +65,8 @@
     "climate": "Real data: ARClim (MMA, CR2), historical climate 1980–2010 by comuna (~5 km model, no neighbourhood detail).",
     "rs03": "Real data: INE and SPD, ENUSC 2024 small-area estimates (experimental statistics). % of households victim of a violent crime in 12 months; comuna level only.",
     "en01": "Real data: SINCA (MMA), 10 stations in the Metropolitan Region, annual mean 2023–2025. Comuna value interpolated from stations: a coarse surface.",
-    "rs01": "Real data: CEAD, Ministry of Public Security, 2025 police cases. Crimes against life or physical integrity + violent robberies per 100k residents; counted where they happen, so commercial comunas rank high."
+    "rs01": "Real data: CEAD, Ministry of Public Security, 2025 police cases. Crimes against life or physical integrity + violent robberies per 100k residents; counted where they happen, so commercial comunas rank high.",
+    "composite": "0–100 index of how a place compares with the rest of Greater Santiago: the average of climate, environment, daily life and safety & risks. No prices or density. A first impression; each layer has the detail."
   },
   "families": {
     "climate": "Climate",
@@ -73,7 +74,8 @@
     "access": "Daily life",
     "urban": "Urban life",
     "risk": "Safety & risks",
-    "value": "Value & change"
+    "value": "Value & change",
+    "composite": "Composite"
   },
   "metrics": {
     "CL01": "Hot days (>30 °C)",
@@ -90,7 +92,8 @@
     "EC02": "Median sale price",
     "RS07": "Flood zones",
     "RS09": "Landslides and ground collapse",
-    "RS05": "Very poor seismic soil"
+    "RS05": "Very poor seismic soil",
+    "QX00": "Composite: overall quality"
   },
   "drawer": {
     "label": "Selected place card",
@@ -142,7 +145,8 @@
     "crimeChange": "Change vs 2024: {chg}%. Non-violent property crime: {prop} per 100k.",
     "more": "See all indicators",
     "rankPct_C": "Higher than {pct}% of comunas",
-    "rankPct_D": "Higher than {pct}% of zones"
+    "rankPct_D": "Higher than {pct}% of zones",
+    "method_QX00": "Average over families (climate, environment, daily life, safety & risks) of the percentiles of their real layers, oriented so that 100 is best. Prices, density and rain are left out."
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",
