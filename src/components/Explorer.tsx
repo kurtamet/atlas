@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useLocale, useTranslations } from "next-intl";
-import { FAMILIES, METRICS, metricById, metricsOfFamily, type FamilyId, type Level } from "@/lib/layers/registry";
+import { FAMILIES, METRICS, familyById, metricById, metricsOfFamily, type FamilyId, type Level } from "@/lib/layers/registry";
 import { planLayers } from "@/lib/layers/priority";
 import { formatValue, rampFor } from "@/lib/layers/style";
 import { parseQuery, rankByCriteria, type Criterion } from "@/lib/search/parse";
@@ -10,6 +10,7 @@ import { bboxOf, findContaining, valuesOf, type AreaCollection, type AreaFeature
 import type { MapCommand } from "./MapView";
 import { SANTIAGO, SANTIAGO_ZOOM, zoomBy } from "./MapView";
 import ObjectCard from "./ObjectCard";
+import AreaModal from "./AreaModal";
 
 const MapView = dynamic(() => import("./MapView"), { ssr: false });
 
@@ -54,7 +55,7 @@ export default function Explorer() {
   const [metricId, setMetricId] = useState("EN04");
   const [zoom, setZoom] = useState(SANTIAGO_ZOOM);
   const [selection, setSelection] = useState<Selection | null>(null);
-  const [tab, setTab] = useState<"summary" | "evidence">("summary");
+  const [areaOpen, setAreaOpen] = useState(false);
   const [command, setCommand] = useState<MapCommand | null>(null);
   const [marker, setMarker] = useState<[number, number] | null>(null);
   const [query, setQuery] = useState("");
@@ -150,7 +151,7 @@ export default function Explorer() {
       const zone = zones?.features.find((z) => z.properties.id === props.id);
       setSelection({ kind: "area", level, id: String(props.id), zone, comuna: comunaByCode.get(String(props.comuna)), address, object });
     }
-    setTab("summary");
+    setAreaOpen(false);
   }
 
   /** open the object card for a point (building click or geocoded address) */
@@ -357,11 +358,7 @@ export default function Explorer() {
                 {selection.level === "D" ? `${t("drawer.zone")} ${selection.zone?.properties.id} · ` : ""}
                 {t("drawer.region")}
               </p>
-              <div className="at-detail-tabs">
-                <button type="button" aria-pressed={tab === "summary"} onClick={() => setTab("summary")}>{t("drawer.summary")}</button>
-                <button type="button" aria-pressed={tab === "evidence"} onClick={() => setTab("evidence")}>{t("drawer.evidence")}</button>
-              </div>
-              {tab === "summary" && selection.object && (
+              {selection.object ? (
                 <ObjectCard
                   lngLat={selection.object.lngLat}
                   footprint={selection.object.footprint}
@@ -374,18 +371,19 @@ export default function Explorer() {
                   price={prices?.comunas[String(selection.comuna?.properties.code)]}
                   pricePeriod={prices?.period}
                 />
-              )}
-              {tab === "summary" ? (
-                <PlaceValues zone={selection.zone} comuna={selection.comuna} locale={locale} prices={prices} />
               ) : (
-                <Evidence />
+                <>
+                  <AreaSummary zone={selection.zone} comuna={selection.comuna} metricId={metricId} zones={zones} comunas={comunas} locale={locale} />
+                  <button type="button" className="at-primary at-more" onClick={() => setAreaOpen(true)}>{t("drawer.more")}</button>
+                </>
               )}
-              <div className="at-report-teaser">
-                <span className="at-eyebrow">{t("drawer.teaserEyebrow")}</span>
-                <h3>{t("drawer.teaserTitle")}</h3>
-                <p>{t("drawer.teaserText")}</p>
-                <button type="button" className="at-primary" disabled title={t("pages.account.soon")}>{t("drawer.teaserCta")}</button>
-              </div>
+              {areaOpen && !selection.object && (
+                <AreaModal onClose={() => setAreaOpen(false)} title={String(selection.comuna?.properties.name ?? "")} subtitle={selection.level === "D" ? `${t("drawer.zone")} ${selection.zone?.properties.id}` : t("drawer.region")}>
+                  <PlaceValues zone={selection.zone} comuna={selection.comuna} locale={locale} prices={prices} />
+                  <h3 className="at-area-h">{t("drawer.evidence")}</h3>
+                  <Evidence />
+                </AreaModal>
+              )}
             </>
           )}
         </aside>
@@ -431,6 +429,40 @@ function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType
       ) : (
         <p className="at-legend-scale">{t("legend.noData")}</p>
       )}
+    </div>
+  );
+}
+
+/** the drawer's short view of a comuna/zone: the active layer with its rank, then a few key indicators */
+const KEY_METRICS = ["EC02", "IN01", "RS01", "EN03", "EN04", "CL01"];
+function AreaSummary({ zone, comuna, metricId, zones, comunas, locale }: { zone?: AreaFeature; comuna?: AreaFeature; metricId: string; zones: AreaCollection | null; comunas: AreaCollection | null; locale: string }) {
+  const t = useTranslations();
+  const pick = (id: string) => {
+    const m = metricById(id);
+    const z = zone && m.levels.includes("D") ? (zone.properties[id] as number | undefined) : undefined;
+    if (typeof z === "number") return { m, v: z, level: "D" as Level, all: zones };
+    const c = comuna?.properties[id] as number | undefined;
+    return typeof c === "number" ? { m, v: c, level: "C" as Level, all: comunas } : { m, v: undefined, level: "C" as Level, all: comunas };
+  };
+  const main = pick(metricId);
+  const vals = main.v === undefined ? [] : (main.all?.features ?? []).map((f) => f.properties[metricId]).filter((x): x is number => typeof x === "number" && Number.isFinite(x));
+  const pct = vals.length >= 5 && main.v !== undefined ? Math.round((100 * vals.filter((x) => x < main.v!).length) / vals.length) : null;
+  return (
+    <div className="at-area-sum">
+      <div className="at-area-main" style={{ borderColor: familyById(main.m.family).color }}>
+        <span>{t(`metrics.${metricId}`)}</span>
+        <b>{formatValue(main.m, main.v, locale)}<small>{main.m.unit}</small></b>
+        <small>{pct !== null ? t(`drawer.rankPct_${main.level}`, { pct }) : t("drawer.atLevel", { level: t(`levels.${main.level}`) })}{main.m.demo ? ` · ${t("drawer.status")}` : ""}</small>
+      </div>
+      {KEY_METRICS.filter((id) => id !== metricId).slice(0, 5).map((id) => {
+        const k = pick(id);
+        return (
+          <div className="at-value-row at-area-row" key={id}>
+            <span><i className="at-layer-dot" style={{ background: familyById(k.m.family).color }} />{t(`metrics.${id}`)}</span>
+            <b>{formatValue(k.m, k.v, locale)}<small>{k.m.unit}</small></b>
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -139,7 +139,10 @@
     "method_EN01": "SINCA (Ministry of Environment): daily validated (or preliminary) PM2.5 from 10 Metropolitan Region stations, 2023–2025; years with ≥75% of days. Comuna value: inverse-distance-squared interpolation to the comuna's population centre. With few stations this is coarse; the card shows the nearest station. Chilean annual standard: 20 µg/m³.",
     "airStation": "Nearest station: {st}, {v} µg/m³ measured, {km} km away.",
     "method_RS01": "CEAD (Ministry of Public Security): 2025 police cases (reports + in-flagrante arrests) in the families 'crimes against life or physical integrity' and 'violent robberies'; annual rate per 100k residents = sum of monthly rates. Counted where the crime happened, not where the victim lives: comunas with a large daytime population (Santiago, Providencia) get inflated per-resident rates. Comuna level only.",
-    "crimeChange": "Change vs 2024: {chg}%. Non-violent property crime: {prop} per 100k."
+    "crimeChange": "Change vs 2024: {chg}%. Non-violent property crime: {prop} per 100k.",
+    "more": "See all indicators",
+    "rankPct_C": "Higher than {pct}% of comunas",
+    "rankPct_D": "Higher than {pct}% of zones"
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",
@@ -193,7 +196,7 @@
     "eyebrow": "Object",
     "noAddress": "Selected building",
     "identified": "What was identified",
-    "building": "Building footprint (OpenStreetMap), ~{area} m².",
+    "building": "Building footprint (Overture Maps: OSM, Microsoft, Google), ~{area} m².",
     "height": "Recorded height ~{h} m (may be estimated).",
     "pointOnly": "Address point; the building is not identified. Zoom in and tap the building to refine.",
     "identityNote": "The footprint is not the legal parcel boundary and does not identify an apartment.",

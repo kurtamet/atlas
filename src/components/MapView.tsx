@@ -6,6 +6,7 @@ import { familyById } from "@/lib/layers/registry";
 import type { LayerPlan } from "@/lib/layers/priority";
 import { fillColorExpression } from "@/lib/layers/style";
 import type { AreaCollection, BBox } from "@/lib/geo";
+import { pickPart } from "@/lib/geo";
 
 export const SANTIAGO: [number, number] = [-70.62, -33.46];
 export const SANTIAGO_ZOOM = 10;
@@ -42,6 +43,14 @@ export const OBJECT_ZOOM = 15;
 
 const EMPTY = { type: "FeatureCollection", features: [] } as const;
 
+/**
+ * Building footprints: our own Overture tiles for Gran Santiago (far more complete than the OSM
+ * building layer of the basemap), served as PMTiles from Supabase Storage. Without them we fall back
+ * to the basemap buildings.
+ */
+const SB = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const BUILDINGS_URL = process.env.NEXT_PUBLIC_BUILDINGS_URL ?? (SB ? `${SB}/storage/v1/object/public/tiles/buildings-stgo.pmtiles` : "");
+
 // Basemap: OpenFreeMap vector tiles (OpenMapTiles schema) restyled with the concept palette.
 // If the tiles are unreachable the data layers still render on the plain land background.
 const BASE_STYLE: StyleSpecification = {
@@ -54,6 +63,7 @@ const BASE_STYLE: StyleSpecification = {
     zones: { type: "geojson", data: EMPTY as never, promoteId: "id" },
     labels: { type: "geojson", data: "/data/comuna-labels.geojson" },
     object: { type: "geojson", data: EMPTY as never },
+    ...(BUILDINGS_URL ? { bld: { type: "vector" as const, url: `pmtiles://${BUILDINGS_URL}`, attribution: "© Overture Maps · OSM · Microsoft · Google" } } : {}),
   },
   layers: [
     { id: "bg", type: "background", paint: { "background-color": "#f0f2ee" } },
@@ -66,7 +76,7 @@ const BASE_STYLE: StyleSpecification = {
     { id: "zones-fill", type: "fill", source: "zones", paint: { "fill-opacity": ["case", [">", ["coalesce", ["get", "bld"], 0], 0], 0.85, 0.25] } },
     { id: "zones-line", type: "line", source: "zones", minzoom: 13, paint: { "line-color": "#ffffff", "line-width": ["interpolate", ["linear"], ["zoom"], 13, 0.2, 16, 0.8], "line-opacity": 0.35 } },
     // building footprints (OpenMapTiles building layer) at object zoom, light so the data color still reads
-    { id: "buildings", type: "fill", source: "omt", "source-layer": "building", minzoom: OBJECT_ZOOM, paint: { "fill-color": "#ffffff", "fill-opacity": ["interpolate", ["linear"], ["zoom"], OBJECT_ZOOM, 0.15, 17, 0.45], "fill-outline-color": "#5f6f66" } },
+    { id: "buildings", type: "fill", source: BUILDINGS_URL ? "bld" : "omt", "source-layer": "building", minzoom: OBJECT_ZOOM, paint: { "fill-color": "#ffffff", "fill-opacity": ["interpolate", ["linear"], ["zoom"], OBJECT_ZOOM, 0.15, 17, 0.45], "fill-outline-color": "#5f6f66" } },
     // roads above fills so the street grid stays readable through the color
     {
       id: "roads", type: "line", source: "omt", "source-layer": "transportation", minzoom: 9,
@@ -113,6 +123,10 @@ export default function MapView(props: Props) {
     (async () => {
       const maplibre = await import("maplibre-gl");
       maplibre.setWorkerUrl("/vendor/maplibre-gl-worker.mjs");
+      if (BUILDINGS_URL) {
+        const { Protocol } = await import("pmtiles");
+        maplibre.addProtocol("pmtiles", new Protocol().tile);
+      }
       if (disposed || !container.current) return;
       const map = new maplibre.Map({
         container: container.current,
@@ -137,7 +151,8 @@ export default function MapView(props: Props) {
         if (map.getZoom() >= OBJECT_ZOOM) {
           const b = map.queryRenderedFeatures(e.point, { layers: ["buildings"] })[0];
           if (b) {
-            latest.current.onPickObject([e.lngLat.lng, e.lngLat.lat], b.geometry as GeoJSON.Geometry, b.properties as Record<string, string | number>);
+            const at: [number, number] = [e.lngLat.lng, e.lngLat.lat];
+            latest.current.onPickObject(at, pickPart(b.geometry as GeoJSON.Geometry, at), b.properties as Record<string, string | number>);
             return;
           }
         }

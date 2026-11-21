@@ -5,14 +5,13 @@ import ObjectReport, { type PriceInfo } from "./ObjectReport";
 import { buildReportInput } from "@/lib/report/input";
 import { requestReport } from "@/lib/report/client";
 import type { AreaCollection } from "@/lib/geo";
-import { pointFacts, observations, type PointFacts, type PoisFile, type HazardsFile, type Observation, type PoiGroup, type LngLat } from "@/lib/object/facts";
+import { pointFacts, observations, type PointFacts, type PoisFile, type HazardsFile, type Observation, type LngLat } from "@/lib/object/facts";
 
 /** object context files are loaded once, on the first object card */
 let ctxPromise: Promise<[PoisFile, HazardsFile]> | null = null;
 const loadCtx = () =>
   (ctxPromise ??= Promise.all([fetch("/data/obj/pois.json").then((r) => r.json()), fetch("/data/obj/hazards.json").then((r) => r.json())]));
 
-const GROUPS: PoiGroup[] = ["metro", "transport", "food", "pharmacy", "health", "park", "school"];
 
 /** footprint area in m² (local projection, shoelace) */
 export function footprintArea(g: GeoJSON.Geometry | null): number | null {
@@ -97,31 +96,17 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
           )}
           <div className="at-observation">
             <strong>{t("walk")}</strong>
-            <ul className="at-walk">
-              {GROUPS.filter((g) => facts!.minutes[g] !== undefined).map((g) => (
-                <li key={g}>
-                  <span>{t(`g_${g}`)}{g === "metro" && facts!.metroName ? ` · ${facts!.metroName}` : ""}</span>
-                  <b>{facts!.minutes[g]! > 60 ? ">60" : `~${facts!.minutes[g]}`} min</b>
-                </li>
-              ))}
-            </ul>
-            <small>{t("walkNote")}</small>
+            <p className="at-walk-line">
+              {(["metro", "food", "park"] as const).filter((g) => facts!.minutes[g] !== undefined)
+                .map((g) => `${t(`g_${g}`)} ${facts!.minutes[g]! > 60 ? ">60" : `~${facts!.minutes[g]}`} min`).join(" · ")}
+            </p>
           </div>
+          <button type="button" className="at-secondary at-more" onClick={() => setOpen(true)}>{t("more")}</button>
           <div className="at-teaser">
-            <span className="at-eyebrow">{t("teaserEyebrow")}</span>
             <strong>{hidden > 0 ? t("teaserMore", { n: hidden }) : t("teaserTitle")}</strong>
-            <ul>
-              <li>{t("teaserA")}</li>
-              <li>{t("teaserB")}</li>
-              <li>{t("teaserC")}</li>
-            </ul>
             <button type="button" className="at-primary" onClick={getReport}>{t("teaserCta")}</button>
-            <small>{t("teaserNote")}</small>
           </div>
         </>
-      )}
-      {obs && (
-        <button type="button" className="at-secondary at-more" onClick={() => setOpen(true)}>{t("more")}</button>
       )}
       {open && facts && obs && (
         <ObjectReport
@@ -142,7 +127,6 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
           onReport={getReport}
         />
       )}
-      <p className="at-family-head" style={{ marginTop: 18 }}>{t("context")}</p>
     </div>
   );
 }
