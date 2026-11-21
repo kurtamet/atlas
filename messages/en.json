@@ -281,7 +281,8 @@
       "ds_V": "Other uses",
       "titleRol": "SII catastro · rol {rol}",
       "noteRol": "Rol data (semester 2026-2); located by its address.",
-      "noteRolMz": "Rol data (semester 2026-2); approximate location: centre of its manzana."
+      "noteRolMz": "Rol data (semester 2026-2); approximate location: centre of its manzana.",
+      "avaluoRol": "Tax valuation ~{uf} UF (not a market price)."
     }
   },
   "report": {

@@ -281,7 +281,8 @@
       "ds_V": "Otros usos",
       "titleRol": "Catastro SII · rol {rol}",
       "noteRol": "Datos del rol (semestre 2026-2); ubicado por su dirección.",
-      "noteRolMz": "Datos del rol (semestre 2026-2); ubicación aproximada: centro de su manzana."
+      "noteRolMz": "Datos del rol (semestre 2026-2); ubicación aproximada: centro de su manzana.",
+      "avaluoRol": "Avalúo fiscal ~{uf} UF (no es precio de mercado)."
     }
   },
   "report": {
