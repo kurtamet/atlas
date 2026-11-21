@@ -51,6 +51,12 @@ export default function ReportDocument({ input, ai, source }: { input: ReportInp
           <h2>{ai.headline}</h2>
           <p>{ai.summary}</p>
         </div>
+        {ai.overview && (
+          <div className="rd-overview">
+            <h3 className="rd-h">{d("overview")}</h3>
+            <p>{ai.overview}</p>
+          </div>
+        )}
         <div className="rd-tiles">
           <div><b>{input.walk.metro !== undefined ? `~${input.walk.metro} min` : "—"}</b><span>{d("tileMetro")}{input.metroName ? ` · ${input.metroName}` : ""}</span></div>
           <div><b>{input.price ? `${num(input.price.median)} UF` : "—"}</b><span>{d("tilePrice", { comuna: input.object.comuna })}</span></div>

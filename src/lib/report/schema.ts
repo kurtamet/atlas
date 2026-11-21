@@ -10,6 +10,7 @@ export const ReportAI = z.object({
   headline: z.string().describe("one sentence, max 110 characters, the main takeaway about this location"),
   verdict: z.enum(["favorable", "mixed", "caution"]),
   summary: z.string().describe("2–3 sentences for a buyer, plain language, cites the key numbers"),
+  overview: z.string().describe("the Summary section: one paragraph of 4–6 sentences that pulls the whole report together — what kind of place this is, what the numbers mean for living or investing here, the main trade-off and who it suits best; adds to the headline and summary instead of repeating them"),
   strengths: z.array(z.object({ title: z.string().describe("max 50 characters"), detail: z.string().describe("1–2 sentences with the number"), evidence })).describe("2–5 items"),
   risks: z.array(z.object({
     title: z.string().describe("max 50 characters"),
@@ -39,4 +40,5 @@ Rules:
 - Say which level a figure describes when it matters ("in the comuna", "in this zone").
 - Crime rates (RS01) are counted where crimes happen, so commercial comunas look high per resident; RS03 is a survey estimate. Mention this only if crime is a key point.
 - Be balanced and specific; short sentences; no marketing language.
+- "catastro" (when present) is SII catastro data for this building or, with "rol", for one property: units, main use (destino: H homes, C retail, O offices…), median unit m², year built, avalúo fiscal in UF (a tax valuation, much lower than market prices — never present it as a price) and, if the building sold recently, the median UF per built m² of its sales ("ufm2", "nd" deals). Compare ufm2 with the EC01 metric when both exist.
 - Write in the language given by "locale" (es = Chilean Spanish, en = English). Keep metric ids only inside "evidence".`;

@@ -396,7 +396,9 @@
     "ev_walk_park": "distancia a plaza o parque",
     "ev_walk_transport": "distancia a paradero",
     "ev_hazard_fault": "Falla San Ramón",
-    "savedToAccount": "guardado en tu cuenta"
+    "savedToAccount": "guardado en tu cuenta",
+    "overview": "Resumen",
+    "fb_overview": "Este resumen lo redacta la IA a partir de todos los datos del informe. En esta vista previa sin IA se muestran solo las fortalezas y los puntos de atención detectados por reglas para {comuna}."
   },
   "trends": {
     "loading": "Cargando datos…",

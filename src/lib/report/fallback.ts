@@ -28,6 +28,7 @@ export function ruleDraft(i: ReportInput, m: Msgs): ReportAI {
     headline: fill(m.reportDoc[`fb_headline_${verdict}`], { comuna: i.object.comuna }),
     verdict,
     summary: fill(m.reportDoc.fb_summary, { pros: i.flags.pros.length, cons: i.flags.cons.length, comuna: i.object.comuna }),
+    overview: fill(m.reportDoc.fb_overview, { comuna: i.object.comuna }),
     strengths: i.flags.pros.slice(0, 5).map((f) => ({ title: shortTitle(text(f)), detail: text(f), evidence: EVIDENCE[f.key] ?? f.key })),
     risks: i.flags.cons.slice(0, 5).map((f) => ({ title: shortTitle(text(f)), detail: text(f), severity: high.has(f.key) ? "high" : "medium", mitigation: m.reportDoc.fb_mitigation, evidence: EVIDENCE[f.key] ?? f.key })),
     value: { position: i.price ? "in_line" : "unknown", comment: i.price ? fill(m.reportDoc.fb_value, { comuna: i.object.comuna, median: new Intl.NumberFormat(i.locale === "es" ? "es-CL" : "en-US").format(i.price.median), n: comunaPrices.length }) : m.reportDoc.fb_noValue },

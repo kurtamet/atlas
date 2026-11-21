@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     const client = new Anthropic();
     const res = await client.beta.messages.parse({
       model: MODEL,
-      max_tokens: 4000,
+      max_tokens: 16000, // thinking is always on and counts toward this; a low cap would cut the JSON
       // the system prompt is identical for every report, so it is cached
       system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
       messages: [{ role: "user", content: JSON.stringify(promptPayload(input)) }],
