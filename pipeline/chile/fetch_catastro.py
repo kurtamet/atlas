@@ -10,11 +10,13 @@ What it does:
   2. Opens a real Chromium window, signs in on the SII login page (one attempt only: wrong passwords
      count toward SII's lockout) and opens the service
      https://www4.sii.cl/sismunInternet6/?caller=DETALLE_CAT_Y_ROL_COBRO
-  3. Selects Región Metropolitana and goes through every comuna by itself; each file the service sends
-     (Detalle Catastral zip, Rol de cobro txt) is saved to data-chile/catastro/files/<comuna>_<n>.<ext>.
-     If something is missing, download it by hand in the same window: the files are still caught.
-  4. It logs which service calls the page makes (method, address, form field names; no cookies, no
-     clave) to data-chile/catastro/api-log.jsonl. Send that log to Claude: with it the next version
+  3. Inside that signed-in page it makes the same two calls the page makes when you pick a comuna
+     (obtenerArchivosVigente, then descargaArchivo) for every Región Metropolitana comuna, and saves each
+     file under its SII name, e.g. data-chile/catastro/files/BRTMPCATAS_2026_2_15108.zip. Files already
+     there are skipped, so it can be re-run. Nothing is clicked. If something is missing, download it by
+     hand in the same window: those files are still caught.
+  4. It logs which service calls the page makes (method, address, GWT method names; no cookies,
+     no clave, no RUT) to data-chile/catastro/api-log.jsonl. Send that log to Claude: with it the next version
      will download all Santiago comunas without clicks.
 
 Close the browser window (or press Ctrl+C) when the downloads are done.
@@ -25,6 +27,7 @@ import os
 import re
 import sys
 import time
+from urllib.parse import urlencode
 
 try:
     from playwright.sync_api import sync_playwright
@@ -78,47 +81,105 @@ def safe_fields(post):
         return out
 
 
-def auto_download(page, label, idle):
-    """Región Metropolitana → every comuna: select it, press any 'Detalle catastral' / 'Rol de cobro'
-    control that appears, and wait for the files."""
-    page.wait_for_selector("select", timeout=30000)
-    idle(1500)
-    region = page.locator("select").nth(0)
-    opts = region.locator("option").all_inner_texts()
-    rm = next((o for o in opts if re.search(r"metropolitana", o, re.I)), None)
-    if not rm:
-        raise RuntimeError("no encontré la Región Metropolitana en la lista")
-    region.select_option(label=rm)
-    idle(2500)
-    comuna_sel = page.locator("select").nth(1)
-    comunas = [o.strip() for o in comuna_sel.locator("option").all_inner_texts() if o.strip() and not o.lower().startswith("seleccione")]
-    print(f"Región Metropolitana: {len(comunas)} comunas. Descargando…")
-    for i, c in enumerate(comunas, 1):
-        label["now"] = c
-        before = len(os.listdir(FILES))
-        comuna_sel.select_option(label=c)
-        idle(2500)
-        for txt in (r"detalle\s*catastral", r"rol\s*de\s*cobro"):
-            ctl = page.locator("a, button, input[type=button]").filter(has_text=re.compile(txt, re.I))
-            for k in range(ctl.count()):
-                el = ctl.nth(k)
-                if el.is_visible():
-                    try:
-                        el.click(timeout=3000)
-                        idle(1500)
-                    except Exception:
-                        pass
-        # wait until files stop arriving (large comunas take a while)
-        quiet, last = 0, len(os.listdir(FILES))
-        for _ in range(60):
-            idle(1000)
-            now = len(os.listdir(FILES))
-            quiet = quiet + 1 if now == last else 0
-            last = now
-            if quiet >= (4 if now > before else 15):
-                break
-        got = len(os.listdir(FILES)) - before
-        print(f"[{i}/{len(comunas)}] {c}: {got} archivo(s)")
+KNOWN_CODES = [  # SII comuna codes (not CUT) seen for Región Metropolitana; topped up from the page's own region data
+    13167, 14109, 14127, 14155, 14156, 14157, 14158, 14166, 14201, 14202, 14502, 14503, 14602, 14603, 14605,
+    15108, 15128, 15132, 15151, 15161, 16110, 16131, 16154, 16164, 16165, 16402, 16403,
+]
+FACADE = "https://www4.sii.cl/sismunInternet6/facade"
+DOWNLOAD = "https://www4.sii.cl/sismunInternet6/descargaArchivo"
+FILE_RE = re.compile(r"[A-Za-z0-9_\-]+\.(?:zip|txt|gz|rar)")
+UUID_RE = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+POST_JS = """async ([url, body, headers]) => {
+  const r = await fetch(url, {method: 'POST', body, headers, credentials: 'include'});
+  return [r.status, await r.text()];
+}"""
+
+
+def gwt_strings(body):
+    """'7|0|N|s1|...|sN|refs' -> (strings, refs)"""
+    parts = body.split("|")
+    n = int(parts[2])
+    return parts[3:3 + n], parts[3 + n:]
+
+
+def gwt_body(strings, refs):
+    return "|".join(["7", "0", str(len(strings))] + strings + refs)
+
+
+def api_download(page, ctx, state, body, dv, label, idle):
+    """Ask the service for each comuna's current files (obtenerArchivosVigente) and fetch them (descargaArchivo),
+    the same two calls the page makes when you pick a comuna."""
+    for _ in range(30):
+        if state.get("headers"):
+            break
+        idle(1000)
+    hdr = state.get("headers") or {}
+    if not hdr.get("x-gwt-permutation"):
+        raise RuntimeError("la página del servicio no cargó (sin llamadas al facade)")
+    headers = {k: v for k, v in hdr.items() if k in ("content-type", "x-gwt-permutation", "x-gwt-module-base")}
+
+    def call(payload):
+        status, text = page.evaluate(POST_JS, [FACADE, payload, headers])
+        return status, text
+
+    strong = state["strong"]
+    base = "https://www4.sii.cl/sismunInternet6/"
+    # comuna codes: the region data the page loads, plus the ones already seen
+    codes = set(KNOWN_CODES)
+    st, txt = call(gwt_body([base, strong, "cl.sii.sdi.diid.sismun.web.client.service.Facade", "getDatosRegionales"],
+                            ["1", "2", "3", "4", "0", ""]))
+    if st == 200:
+        codes |= {int(x) for x in re.findall(r"(?<![\d.])(1[3-6]\d{3})(?![\d.])", txt)}
+    codes = sorted(codes)
+    if len(codes) > 200:  # the region data matched too much: stay with what we know
+        codes = sorted(KNOWN_CODES)
+
+    def files_request(code):
+        tpl = state.get("template")
+        if tpl:  # a real request the page made: swap the comuna code only
+            strings, refs = gwt_strings(tpl)
+            strings = list(strings)
+            strings[state["code_idx"]] = str(code)
+            return gwt_body(strings, refs)
+        return gwt_body([base, strong, "cl.sii.sdi.diid.sismun.web.client.service.Facade", "obtenerArchivosVigente",
+                         "cl.sii.sdi.diid.sismun.to.DatosUsuarioTo/3014193288", "java.lang.Boolean/476441737",
+                         "PUBLICADO", str(code), "13", "('DETALLE_CATASTRAL','ROL_DE_COBRO')", dv, body],
+                        "1|2|3|4|1|5|5|0|0|6|0|-2|7|8|9|0|0|0|0|0|10|11|12|".split("|"))
+
+    print(f"Probando {len(codes)} códigos de comuna del SII…")
+    got_any = False
+    for i, code in enumerate(codes, 1):
+        label["now"] = str(code)
+        st, txt = call(files_request(code))
+        if st != 200 or not txt.startswith("//OK"):
+            if i == 1 or not got_any:
+                print(f"  {code}: el servicio respondió {st} {txt[:60]!r}")
+            continue
+        names = list(dict.fromkeys(FILE_RE.findall(txt)))
+        ids = list(dict.fromkeys(UUID_RE.findall(txt)))
+        if not names:
+            continue
+        for k, name in enumerate(names):
+            dest = os.path.join(FILES, name)
+            if os.path.exists(dest) and os.path.getsize(dest) > 0:
+                print(f"[{i}/{len(codes)}] {code}: {name} ya estaba")
+                got_any = True
+                continue
+            fid = ids[k] if k < len(ids) else (ids[0] if ids else "")
+            ext = name.rsplit(".", 1)[1]
+            q = {"nombreDocumento": name, "extension": ext, "acc": "download", "id": fid, "mediaType": "application/octet-stream"}
+            res = ctx.request.get(DOWNLOAD + "?" + urlencode(q), headers={"referer": base}, timeout=600000)
+            data = res.body()
+            if res.status != 200 or len(data) < 100:
+                print(f"[{i}/{len(codes)}] {code}: {name} falló ({res.status}, {len(data)} bytes)")
+                continue
+            with open(dest, "wb") as fh:
+                fh.write(data)
+            got_any = True
+            print(f"[{i}/{len(codes)}] {code}: {name} ({len(data) / 1e6:.1f} MB)")
+        idle(300)
+    if not got_any:
+        raise RuntimeError("el servicio no devolvió archivos; elige una comuna a mano en la ventana para que copie la llamada real")
 
 
 def main():
@@ -132,12 +193,29 @@ def main():
         ctx = browser.new_context(accept_downloads=True, locale="es-CL")
         page = ctx.new_page()
 
+        state = {}  # facade headers + one real obtenerArchivosVigente request, kept in memory only
+
         def on_request(req):
             if "zeusr.sii.cl" in req.url or req.resource_type not in ("xhr", "fetch", "document"):
                 return
+            post = req.post_data or ""
+            fields = safe_fields(post)
+            if post.startswith("7|0|"):  # GWT-RPC: the body carries the RUT, so log the method name only
+                try:
+                    strings, _ = gwt_strings(post)
+                    method = strings[3]
+                    if req.url.startswith(FACADE):
+                        state["headers"] = {k.lower(): v for k, v in req.headers.items()}
+                        state["strong"] = strings[1]
+                        if method == "obtenerArchivosVigente":
+                            idx = next(j for j, x in enumerate(strings) if re.fullmatch(r"1[3-6]\d{3}", x))
+                            state["template"], state["code_idx"] = post, idx
+                except (ValueError, IndexError, StopIteration):
+                    method = "?"
+                fields = {"gwt_method": method}
             api_log.write(json.dumps({"t": time.strftime("%H:%M:%S"), "method": req.method, "url": req.url.split("?")[0],
                                       "query": req.url.split("?", 1)[1][:300] if "?" in req.url else None,
-                                      "fields": safe_fields(req.post_data)}, ensure_ascii=False) + "\n")
+                                      "fields": fields}, ensure_ascii=False) + "\n")
             api_log.flush()
 
         def on_response(res):
@@ -195,9 +273,17 @@ def main():
             page.goto(SERVICE, wait_until="domcontentloaded")
 
         try:
-            auto_download(page, label, idle)
+            api_download(page, ctx, state, body, dv, label, idle)
         except Exception as e:
-            print(f"La descarga automática se detuvo ({type(e).__name__}: {e}). Puedes seguir a mano en la ventana.")
+            print(f"La descarga automática se detuvo ({type(e).__name__}: {e}).")
+            if not state.get("template"):
+                input("Elige la Región Metropolitana y una comuna en la ventana (para que vea la llamada real), "
+                      "luego presiona Enter aquí… ")
+                idle(1000)
+                try:
+                    api_download(page, ctx, state, body, dv, label, idle)
+                except Exception as e2:
+                    print(f"Tampoco funcionó ({type(e2).__name__}: {e2}). Puedes seguir a mano en la ventana.")
 
         print("\nSi falta algo, descárgalo a mano en la ventana: los archivos se guardan solos en:\n  " + FILES)
         print("Cierra la ventana cuando termines.\n")
