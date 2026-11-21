@@ -9,6 +9,9 @@ because the OpenStreetMap building layer of the basemap misses a large share of 
 Step 1 reads s3://overturemaps-us-west-2/release/<release>/theme=buildings/type=building/ (anonymous, pyarrow)
 filtered to the bbox of public/data/comunas.geojson. Step 2 writes one zoom level (z15) of vector
 tiles, layer "building", with render_height (m) and levels; MapLibre overzooms it up to z18.
+With --facts (bld_facts.parquet from pipeline/catastro_buildings.py, keyed by the row index of --download) each
+building also carries SII catastro aggregates: u (homes units), nr (rols), ds (main destino), m2u (median unit m²),
+yr (median year built), av (median avalúo fiscal per unit, UF), nd + ufm2 (recent sales and their median UF/m²).
 The .pmtiles file is uploaded to Supabase Storage (public bucket "tiles") and read with HTTP range requests.
 """
 import argparse
@@ -57,6 +60,24 @@ def download(release, bbox, out):
     print(f"downloaded {t.num_rows} buildings -> {out}")
 
 
+FACT_KEYS = {"u": 0, "nr": 0, "ds": None, "m2u": 0, "yr": 0, "av": -1, "nd": 0, "ufm2": 1}  # key -> rounding digits
+
+
+def load_facts(path):
+    t = pq.read_table(path).to_pylist()
+    out = {}
+    for r in t:
+        p = {}
+        for k, nd in FACT_KEYS.items():
+            v = r.get(k)
+            if v is None:
+                continue
+            p[k] = v if nd is None else (int(round(v, nd)) if nd <= 0 else round(float(v), nd))
+        out[int(r["bid"])] = p
+    print(f"catastro facts for {len(out)} buildings")
+    return out
+
+
 def to_tile_space(c):
     """lon/lat -> z15 tile coordinates (x right, y down), vectorized"""
     n = 1 << Z
@@ -66,8 +87,9 @@ def to_tile_space(c):
     return np.column_stack([x, y])
 
 
-def build_tiles(src, out):
+def build_tiles(src, out, facts=None):
     t = pq.read_table(src)
+    extra = load_facts(facts) if facts else {}
     geoms = shapely.from_wkb(t.column("geometry").to_numpy(zero_copy_only=False))
     height = t.column("height").to_pylist()
     floors = t.column("num_floors").to_pylist()
@@ -100,6 +122,7 @@ def build_tiles(src, out):
                 props["render_height"] = round(float(h), 1)
             if floors[i]:
                 props["levels"] = int(floors[i])
+            props.update(extra.get(i, {}))
             features.append({"geometry": local.wkb, "properties": props, "id": i + 1})
         if not features:
             continue
@@ -116,7 +139,7 @@ def build_tiles(src, out):
          "max_lon_e7": int(tox(max(xs) + 1) * 1e7), "max_lat_e7": int(toy(min(ys)) * 1e7),
          "center_zoom": Z, "center_lon_e7": int(-70.62 * 1e7), "center_lat_e7": int(-33.46 * 1e7)},
         {"name": "atlas-buildings-stgo", "attribution": "© Overture Maps Foundation, OpenStreetMap, Microsoft, Google",
-         "vector_layers": [{"id": "building", "fields": {"render_height": "Number", "levels": "Number"}, "minzoom": Z, "maxzoom": Z}]},
+         "vector_layers": [{"id": "building", "fields": {"render_height": "Number", "levels": "Number", **{k: "String" if k == "ds" else "Number" for k in FACT_KEYS}}, "minzoom": Z, "maxzoom": Z}]},
     )
     print(f"wrote {len(entries)} tiles -> {out} ({os.path.getsize(out) / 1e6:.1f} MB)")
 
@@ -127,10 +150,11 @@ def main():
     ap.add_argument("--comunas", default="public/data/comunas.geojson")
     ap.add_argument("--download", required=True)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--facts")
     a = ap.parse_args()
     if not os.path.exists(a.download):
         download(a.release, bbox_of_comunas(a.comunas), a.download)
-    build_tiles(a.download, a.out)
+    build_tiles(a.download, a.out, a.facts)
 
 
 if __name__ == "__main__":

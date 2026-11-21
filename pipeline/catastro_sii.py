@@ -48,6 +48,7 @@ def main():
     ap.add_argument("--comunas", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--facts")
+    ap.add_argument("--deals", help="parquet of the EC01 deals (homes rol, deed date, UF, m², UF/m²)")
     ap.add_argument("--from", dest="date_from", default="20241001")
     ap.add_argument("--to", dest="date_to", default="20260930")
     a = ap.parse_args()
@@ -94,7 +95,8 @@ def main():
       from deals d, unnest(d.rols) u(rol)""")
     con.execute("""create table homes as
       select dr.deal, any_value(dr.fname) fname, any_value(dr.price_uf) price_uf, any_value(c.code) code,
-             count(*) filter (where r.destino = 'H') nh, max(r.m2) filter (where r.destino = 'H') m2
+             count(*) filter (where r.destino = 'H') nh, max(r.m2) filter (where r.destino = 'H') m2,
+             max(r.mz) filter (where r.destino = 'H') hmz, max(r.pr) filter (where r.destino = 'H') hpr, any_value(dr.FE) fe
       from deal_rols dr join codes c on c.fname = dr.fname join rol r on r.code = c.code and r.mz = dr.mz and r.pr = dr.pr
       group by dr.deal""")
     con.execute("""create table ec01 as select *, price_uf / m2 ufm2 from homes
@@ -125,12 +127,15 @@ def main():
                 [names]).fetchone()
         out["comunas"][cut] = round(med, 1)
         out["detail"][cut] = {"n": n, "p25": round(p25, 1), "p75": round(p75, 1), "m2": round(m2)}
-    json.dump(out, open(a.out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    json.dump(out, open(a.out, "w", encoding="utf-8"), ensure_ascii=False, indent=1, sort_keys=True)
     print(f"EC01 for {len(out['comunas'])}/{len(cut_by_name)} comunas; deals used: {con.execute('select count(*) from ec01').fetchone()[0]}")
     missing = sorted(set(cut_by_name) - {k for k, v in cut_by_name.items() if v in out["comunas"]})
     if missing:
         print("missing:", missing)
 
+    if a.deals:
+        con.execute(f"""copy (select code, hmz mz, hpr pr, fe, round(price_uf, 1) price_uf, m2, round(ufm2, 2) ufm2 from ec01)
+                        to '{a.deals}' (format parquet)""")
     if a.facts:
         con.execute("create table fcodes as select code, fname from codes")
         con.execute(f"""copy (select r.*, c.fname comuna_name from rol r left join fcodes c using (code))
