@@ -49,7 +49,7 @@ const EMPTY = { type: "FeatureCollection", features: [] } as const;
  * to the basemap buildings.
  */
 const SB = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const BUILDINGS_URL = process.env.NEXT_PUBLIC_BUILDINGS_URL ?? (SB ? `${SB}/storage/v1/object/public/tiles/buildings-stgo.pmtiles` : "");
+const BUILDINGS_URL = process.env.NEXT_PUBLIC_BUILDINGS_URL ?? (SB ? `${SB}/storage/v1/object/public/tiles/buildings-stgo-v2.pmtiles` : "");
 
 // Basemap: OpenFreeMap vector tiles (OpenMapTiles schema) restyled with the concept palette.
 // If the tiles are unreachable the data layers still render on the plain land background.

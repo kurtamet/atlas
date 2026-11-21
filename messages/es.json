@@ -253,7 +253,30 @@
     "teaserB": "Precio de la comuna y su tendencia, para quién conviene",
     "teaserC": "Qué verificar antes de comprar y argumentos para negociar",
     "teaserCta": "Obtener informe completo",
-    "teaserNote": "Vista previa: el pago se activará pronto. PDF de 4 páginas."
+    "teaserNote": "Vista previa: el pago se activará pronto. PDF de 4 páginas.",
+    "cat": {
+      "title": "Catastro SII",
+      "units": "{n} unidades",
+      "year": "construido ~{y}",
+      "m2unit": "~{m2} m² por unidad",
+      "m2": "~{m2} m² construidos",
+      "avaluo": "Avalúo fiscal mediano ~{uf} UF por unidad (no es precio de mercado).",
+      "sales": "Compraventas 2024-2026: ~{ufm2} UF/m² (mediana, {n} operaciones).",
+      "note": "Datos del rol vinculados al edificio por dirección; puede incluir predios vecinos.",
+      "ds_H": "Vivienda",
+      "ds_C": "Comercio",
+      "ds_O": "Oficinas",
+      "ds_I": "Industria",
+      "ds_E": "Educación",
+      "ds_W": "Sitio eriazo",
+      "ds_Q": "Culto",
+      "ds_S": "Salud",
+      "ds_G": "Hotel",
+      "ds_D": "Deporte",
+      "ds_P": "Administración pública",
+      "ds_T": "Transporte",
+      "ds_V": "Otros usos"
+    }
   },
   "report": {
     "eyebrow": "Ficha completa gratuita · sin IA",

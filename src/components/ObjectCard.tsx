@@ -28,6 +28,16 @@ export function footprintArea(g: GeoJSON.Geometry | null): number | null {
   return Math.round(area);
 }
 
+export interface CatastroFacts { u: number; nr: number; ds?: string; m2u?: number; yr?: number; av?: number; nd?: number; ufm2?: number }
+
+/** SII catastro aggregates carried by the building tile (pipeline/catastro_buildings.py); null when the footprint has none */
+export function catastroOf(p: Record<string, string | number>): CatastroFacts | null {
+  const n = (k: string) => (p[k] === undefined || p[k] === null || p[k] === "" ? undefined : Number(p[k]));
+  const nr = n("nr");
+  if (!nr) return null;
+  return { u: n("u") ?? 0, nr, ds: p.ds ? String(p.ds) : undefined, m2u: n("m2u"), yr: n("yr"), av: n("av"), nd: n("nd"), ufm2: n("ufm2") };
+}
+
 export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title, zones, comunas, price, pricePeriod }: {
   lngLat: LngLat;
   footprint: GeoJSON.Geometry | null;
@@ -53,6 +63,7 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
   const area = footprintArea(footprint);
   const height = Number(osm.render_height);
   const obs = facts ? observations(facts, { zone, comuna }) : null;
+  const cat = catastroOf(osm);
   const getReport = () => {
     if (!facts || !obs) return;
     requestReport(buildReportInput({ locale: locale === "en" ? "en" : "es", title, lngLat, area, height: Number.isFinite(height) && height > 0 ? height : undefined, facts, obs, zone, comuna, zones, comunas, price, pricePeriod }), locale);
@@ -78,6 +89,24 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
           <small>{t("identityNote")}</small>
         </p>
       </div>
+
+      {cat && (
+        <div className="at-observation">
+          <strong>{t("cat.title")}</strong>
+          <p>
+            {[
+              t.has(`cat.ds_${cat.ds}`) ? t(`cat.ds_${cat.ds}`) : null,
+              cat.u > 1 ? t("cat.units", { n: cat.u }) : null,
+              cat.yr ? t("cat.year", { y: cat.yr }) : null,
+              cat.m2u ? t(cat.u > 1 ? "cat.m2unit" : "cat.m2", { m2: cat.m2u }) : null,
+            ].filter(Boolean).join(" · ")}
+            {cat.av ? <><br />{t("cat.avaluo", { uf: cat.av.toLocaleString(locale) })}</> : null}
+            {cat.ufm2 && cat.nd ? <><br />{t("cat.sales", { ufm2: Math.round(cat.ufm2), n: cat.nd })}</> : null}
+            <br />
+            <small>{t("cat.note")}</small>
+          </p>
+        </div>
+      )}
 
       {!obs && <p className="at-subline">{t("loading")}</p>}
       {obs && (

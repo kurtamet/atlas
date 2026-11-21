@@ -253,7 +253,30 @@
     "teaserB": "Comuna price level and trend, who it suits",
     "teaserC": "What to check before buying and negotiation arguments",
     "teaserCta": "Get the full report",
-    "teaserNote": "Preview: payment will be enabled soon. 4-page PDF."
+    "teaserNote": "Preview: payment will be enabled soon. 4-page PDF.",
+    "cat": {
+      "title": "SII catastro",
+      "units": "{n} units",
+      "year": "built ~{y}",
+      "m2unit": "~{m2} m² per unit",
+      "m2": "~{m2} m² built",
+      "avaluo": "Median tax valuation ~{uf} UF per unit (not a market price).",
+      "sales": "Sales 2024-2026: ~{ufm2} UF/m² (median, {n} deals).",
+      "note": "Rol data linked to the building by address; may include neighbouring plots.",
+      "ds_H": "Housing",
+      "ds_C": "Retail",
+      "ds_O": "Offices",
+      "ds_I": "Industry",
+      "ds_E": "Education",
+      "ds_W": "Vacant lot",
+      "ds_Q": "Worship",
+      "ds_S": "Health",
+      "ds_G": "Hotel",
+      "ds_D": "Sports",
+      "ds_P": "Public administration",
+      "ds_T": "Transport",
+      "ds_V": "Other uses"
+    }
   },
   "report": {
     "eyebrow": "Full free card · no AI",
