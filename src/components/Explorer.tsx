@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useLocale, useTranslations } from "next-intl";
 import { FAMILIES, METRICS, familyById, metricById, metricsOfFamily, type FamilyId, type Level } from "@/lib/layers/registry";
@@ -10,6 +10,7 @@ import { bboxOf, findContaining, valuesOf, type AreaCollection, type AreaFeature
 import type { MapCommand } from "./MapView";
 import { SANTIAGO, SANTIAGO_ZOOM, zoomBy } from "./MapView";
 import ObjectCard from "./ObjectCard";
+import { COMPOSITE_ID, addComposite, getMetric } from "@/lib/layers/composite";
 import AreaModal from "./AreaModal";
 
 const MapView = dynamic(() => import("./MapView"), { ssr: false });
@@ -51,8 +52,10 @@ export default function Explorer() {
   const [comunas, setComunas] = useState<AreaCollection | null>(null);
   const [zones, setZones] = useState<AreaCollection | null>(null);
   const [prices, setPrices] = useState<PricesFile | null>(null);
-  const [family, setFamily] = useState<FamilyId>("environment");
-  const [metricId, setMetricId] = useState("EN04");
+  // the composite layer opens first: overall quality before any single indicator
+  const [family, setFamily] = useState<FamilyId | "composite">("composite");
+  const [metricId, setMetricId] = useState(COMPOSITE_ID);
+  const compositeDone = useRef(false);
   const [zoom, setZoom] = useState(SANTIAGO_ZOOM);
   const [selection, setSelection] = useState<Selection | null>(null);
   const [areaOpen, setAreaOpen] = useState(false);
@@ -133,14 +136,23 @@ export default function Explorer() {
     );
   }, []);
 
-  const metric = metricById(metricId);
+  // composite needs both levels loaded; computed once, then the collections are re-set so the map redraws
+  useEffect(() => {
+    if (!comunas || !zones || compositeDone.current) return;
+    compositeDone.current = true;
+    addComposite(comunas, zones);
+    setComunas({ ...comunas });
+    setZones({ ...zones });
+  }, [comunas, zones]);
+
+  const metric = getMetric(metricId, metricById);
   const plan = useMemo(() => planLayers(metric, zoom, AVAILABLE_LEVELS), [metric, zoom]);
   const comunaByCode = useMemo(() => new Map(comunas?.features.map((f) => [String(f.properties.code), f]) ?? []), [comunas]);
   const fly = (c: Omit<MapCommand, "seq">) => setCommand((prev) => ({ ...c, seq: (prev?.seq ?? 0) + 1 }));
 
-  function chooseFamily(f: FamilyId) {
+  function chooseFamily(f: FamilyId | "composite") {
     setFamily(f);
-    setMetricId(metricsOfFamily(f)[0].id);
+    setMetricId(f === "composite" ? COMPOSITE_ID : metricsOfFamily(f)[0].id);
   }
 
   function selectArea(level: "C" | "D", props: Record<string, string | number>, address?: string, object?: ObjectPick) {
@@ -256,6 +268,13 @@ export default function Explorer() {
           <span className="at-count">{t(`families.${family}`)}</span>
         </div>
         <div className="at-layer-list" role="radiogroup">
+          <div className="at-layer-row">
+            <label className="at-layer-label">
+              <input type="radio" name="family" checked={family === "composite"} onChange={() => chooseFamily("composite")} />
+              <span className="at-layer-dot at-composite-dot" />
+              {t("families.composite")}
+            </label>
+          </div>
           {FAMILIES.map((f) => (
             <div className="at-layer-row" key={f.id}>
               <label className="at-layer-label">
@@ -394,7 +413,7 @@ export default function Explorer() {
 
 function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType<typeof planLayers>; period?: [string, string] }) {
   const t = useTranslations();
-  const metric = metricById(metricId);
+  const metric = getMetric(metricId, metricById);
   const ramp = rampFor(metric);
   const [lo, hi] = metric.domain;
   return (
@@ -404,9 +423,11 @@ function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType
         <>
           <div className="at-ramp">{ramp.map((c) => <span key={c} style={{ background: c }} />)}</div>
           <div className="at-ramp-labels">
-            <span>{lo}</span>
-            <span>{metric.unit}</span>
-            <span>{hi}</span>
+            {metric.id === COMPOSITE_ID ? (
+              <><span>{t("legend.worse")}</span><span /><span>{t("legend.better")}</span></>
+            ) : (
+              <><span>{lo}</span><span>{metric.unit}</span><span>{hi}</span></>
+            )}
           </div>
           <p className="at-legend-scale">
             {t("legend.levelNow", { level: t(`levels.${plan.viewLevel}`) })} · <strong>{t("legend.dataAt", { level: t(`levels.${plan.fillLevel}`) })}</strong>
@@ -415,6 +436,7 @@ function Legend({ metricId, plan, period }: { metricId: string; plan: ReturnType
           {!metric.demo && metric.id === "EC02" && period && (
             <p className="at-legend-scale">{t("legend.ec02", { from: fmtDate(period[0]), to: fmtDate(period[1]) })}</p>
           )}
+          {metric.id === COMPOSITE_ID && <p className="at-legend-scale">{t("legend.composite")}</p>}
           {metric.id === "IN04" && <p className="at-legend-scale">{t("legend.in04")}</p>}
           {metric.id === "IN01" && <p className="at-legend-scale">{t("legend.in01")}</p>}
           {metric.id === "SO01" && <p className="at-legend-scale">{t("legend.so01")}</p>}
@@ -438,7 +460,7 @@ const KEY_METRICS = ["EC02", "IN01", "RS01", "EN03", "EN04", "CL01"];
 function AreaSummary({ zone, comuna, metricId, zones, comunas, locale }: { zone?: AreaFeature; comuna?: AreaFeature; metricId: string; zones: AreaCollection | null; comunas: AreaCollection | null; locale: string }) {
   const t = useTranslations();
   const pick = (id: string) => {
-    const m = metricById(id);
+    const m = getMetric(id, metricById);
     const z = zone && m.levels.includes("D") ? (zone.properties[id] as number | undefined) : undefined;
     if (typeof z === "number") return { m, v: z, level: "D" as Level, all: zones };
     const c = comuna?.properties[id] as number | undefined;

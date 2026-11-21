@@ -9,6 +9,7 @@ function mix(hex: string, withHex: string, t: number): string {
 
 /** 5-step sequential ramp from a pale tint to the family color: intensity follows the value. */
 export function rampFor(metric: Metric): string[] {
+  if (metric.ramp) return metric.ramp;
   const base = familyById(metric.family).color;
   return [0.88, 0.66, 0.44, 0.22, 0].map((t) => mix(base, "#f7f8f4", t));
 }

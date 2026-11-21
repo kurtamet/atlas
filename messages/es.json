@@ -65,7 +65,8 @@
     "climate": "Datos reales: ARClim (MMA, CR2), clima histórico 1980–2010 por comuna (modelo de ~5 km, sin detalle por barrio).",
     "rs03": "Datos reales: INE y SPD, ENUSC 2024, estimación para áreas pequeñas (estadística experimental). % de hogares víctimas de un delito violento en 12 meses; solo nivel comuna.",
     "en01": "Datos reales: SINCA (MMA), 10 estaciones de la RM, promedio anual 2023–2025. Valor comunal interpolado desde las estaciones: superficie gruesa.",
-    "rs01": "Datos reales: CEAD, Ministerio de Seguridad Pública, casos policiales 2025. Delitos contra la vida o integridad + robos violentos por 100 mil residentes; se cuentan donde ocurren, por eso las comunas comerciales salen altas."
+    "rs01": "Datos reales: CEAD, Ministerio de Seguridad Pública, casos policiales 2025. Delitos contra la vida o integridad + robos violentos por 100 mil residentes; se cuentan donde ocurren, por eso las comunas comerciales salen altas.",
+    "composite": "Índice 0–100 de calidad del lugar frente al resto del Gran Santiago: promedio de clima, medio ambiente, vida cotidiana y seguridad y riesgos. Sin precios ni densidad. Es una primera impresión; cada capa tiene el detalle."
   },
   "families": {
     "climate": "Clima",
@@ -73,7 +74,8 @@
     "access": "Vida cotidiana",
     "urban": "Vida urbana",
     "risk": "Seguridad y riesgos",
-    "value": "Valor y cambios"
+    "value": "Valor y cambios",
+    "composite": "Composite"
   },
   "metrics": {
     "CL01": "Días calurosos (>30 °C)",
@@ -90,7 +92,8 @@
     "EC02": "Precio mediano de compraventas",
     "RS07": "Zonas de inundación",
     "RS09": "Remoción en masa y derrumbes",
-    "RS05": "Suelo de muy mala respuesta sísmica"
+    "RS05": "Suelo de muy mala respuesta sísmica",
+    "QX00": "Composite: calidad general"
   },
   "drawer": {
     "label": "Ficha del lugar seleccionado",
@@ -142,7 +145,8 @@
     "crimeChange": "Cambio frente a 2024: {chg}%. Delitos contra la propiedad no violentos: {prop} por 100 mil.",
     "more": "Ver todos los indicadores",
     "rankPct_C": "Más alto que el {pct}% de las comunas",
-    "rankPct_D": "Más alto que el {pct}% de las zonas"
+    "rankPct_D": "Más alto que el {pct}% de las zonas",
+    "method_QX00": "Promedio por familias (clima, medio ambiente, vida cotidiana, seguridad y riesgos) de los percentiles de sus capas reales, orientados para que 100 sea mejor. No incluye precios, densidad ni lluvia."
   },
   "search": {
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",

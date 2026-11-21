@@ -66,6 +66,8 @@ export interface Metric {
   decimals: number;
   /** true while values are synthetic placeholders (phase 0); real layers set false */
   demo: boolean;
+  /** own color ramp instead of the family tint (only the composite layer uses it) */
+  ramp?: string[];
 }
 
 export const METRICS: Metric[] = [
