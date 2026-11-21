@@ -153,7 +153,10 @@
     "link": "Listing links will be analyzed in an upcoming version.",
     "notFound": "We couldn't find “{q}” in Chile. Try street, number and comuna.",
     "searching": "Searching…",
-    "outside": "This address is outside the comunas available in this build."
+    "outside": "This address is outside the comunas available in this build.",
+    "rolNotFound": "Rol {rol} was not found in the catastro of the available comunas. Add the comuna, e.g. “rol {rol} Ñuñoa”.",
+    "rolMany": "Rol {rol} exists in several comunas: {list}. Add the comuna, e.g. “rol {rol} Ñuñoa”.",
+    "rolNoGeo": "We found rol {rol} ({dir}) but cannot place it on the map yet."
   },
   "pages": {
     "trends": {
@@ -275,7 +278,10 @@
       "ds_D": "Sports",
       "ds_P": "Public administration",
       "ds_T": "Transport",
-      "ds_V": "Other uses"
+      "ds_V": "Other uses",
+      "titleRol": "SII catastro · rol {rol}",
+      "noteRol": "Rol data (semester 2026-2); located by its address.",
+      "noteRolMz": "Rol data (semester 2026-2); approximate location: centre of its manzana."
     }
   },
   "report": {

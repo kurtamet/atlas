@@ -153,7 +153,10 @@
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",
     "notFound": "No encontramos «{q}» en Chile. Prueba con calle, número y comuna.",
     "searching": "Buscando…",
-    "outside": "La dirección está fuera de las comunas disponibles en esta versión."
+    "outside": "La dirección está fuera de las comunas disponibles en esta versión.",
+    "rolNotFound": "No encontramos el rol {rol} en el catastro de las comunas disponibles. Agrega la comuna, p. ej. «rol {rol} Ñuñoa».",
+    "rolMany": "El rol {rol} existe en varias comunas: {list}. Agrega la comuna, p. ej. «rol {rol} Ñuñoa».",
+    "rolNoGeo": "Encontramos el rol {rol} ({dir}), pero aún no podemos ubicarlo en el mapa."
   },
   "pages": {
     "trends": {
@@ -275,7 +278,10 @@
       "ds_D": "Deporte",
       "ds_P": "Administración pública",
       "ds_T": "Transporte",
-      "ds_V": "Otros usos"
+      "ds_V": "Otros usos",
+      "titleRol": "Catastro SII · rol {rol}",
+      "noteRol": "Datos del rol (semestre 2026-2); ubicado por su dirección.",
+      "noteRolMz": "Datos del rol (semestre 2026-2); ubicación aproximada: centro de su manzana."
     }
   },
   "report": {

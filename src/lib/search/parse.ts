@@ -18,7 +18,9 @@ export type ParsedQuery =
   | { kind: "link"; url: string }
   | { kind: "comuna"; name: string }
   | { kind: "criteria"; criteria: Criterion[] }
-  | { kind: "address"; text: string };
+  | { kind: "address"; text: string }
+  /** SII rol "manzana-predio", optionally with the comuna name ("rol 1234-56 Ñuñoa") */
+  | { kind: "rol"; mz: number; pr: number; comuna?: string };
 
 export const normalize = (s: string) =>
   s
@@ -92,6 +94,14 @@ export function parseQuery(input: string, comunaNames: string[]): ParsedQuery {
   const q = normalize(raw);
   const comuna = comunaNames.find((n) => normalize(n) === q);
   if (comuna) return { kind: "comuna", name: comuna };
+
+  // SII rol: "rol 1234-56", "1234-56", "1234-56 las condes"
+  const rol = /(?:^|\s)(rol\s*(?:n[o°º]?\s*)?)?(\d{1,5})\s*-\s*(\d{1,5})(?=\s|$)/.exec(q);
+  if (rol) {
+    const rest = (q.slice(0, rol.index) + " " + q.slice(rol.index + rol[0].length)).replace(/\b(rol|comuna|de|en)\b/g, " ").trim();
+    const named = comunaNames.find((n) => rest === normalize(n)) ?? (rest ? comunaNames.find((n) => ` ${rest} `.includes(` ${normalize(n)} `)) : undefined);
+    if (rol[1] || !rest || named) return { kind: "rol", mz: Number(rol[2]), pr: Number(rol[3]), ...(named ? { comuna: named } : {}) };
+  }
 
   // A digit usually means a street number → treat as address.
   if (/\d/.test(q)) return { kind: "address", text: raw };
