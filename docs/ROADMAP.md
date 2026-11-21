@@ -23,3 +23,11 @@ Decided items waiting for their turn. Newest decisions first.
   - type, area, year and avalúo in the object card;
   - rol → address search.
 - Claude API key on Vercel for real AI reports.
+
+## Report extras (later)
+
+- Photo of the building in the paid report (discussed 2026-11-21).
+  - Google Street View Static API: fetched live when the report is built, never stored. Showing it inside a downloadable PDF needs a legal check of the Google Maps Platform terms.
+  - Mapillary (CC BY-SA, free API) as the open alternative; coverage in Santiago is uneven.
+  - Always available: an "open in Street View" link and a map snapshot with the building outlined.
+- Floor plans are not in the SII catastro. They are kept by the municipality's DOM (building permit, recepción final), with no common API. For now the report adds them to "what to check".
