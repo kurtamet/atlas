@@ -34,3 +34,8 @@ npm run data:demo  # пересобрать демо-данные в public/data
 | EC02 цена сделок, коммуна | `prices_f2890.py` | SII F2890 (sii.cl/destacados/transparencia) + UF с sii.cl (`pipeline/uf_daily.csv`) |
 | IN04 транспорт, зоны и коммуны | `transit_gtfs.py` | DTPM GTFS (dtpm.cl/index.php/gtfs-vigente) |
 | Веса заселённости зон | `zone_weights.py` | Overture buildings, `s3://overturemaps-us-west-2/release/<release>/theme=buildings/type=building/` (pyarrow, фильтр по bbox) |
+
+### Здания и кадастр
+
+- `pipeline/buildings_tiles.py`: контуры зданий Overture (OSM + Microsoft + Google, ~1,47 млн для Gran Santiago) → `buildings-stgo.pmtiles` (z15, ~25 MB), загружается в Supabase Storage (публичный bucket `tiles`). Карта читает его через протокол `pmtiles://`, а без Supabase показывает здания из базовой карты.
+- `pipeline/chile/fetch_catastro.py`: запускается на своём компьютере. Спрашивает RUT и clave, входит на SII в окне Chromium и сохраняет файлы Detalle Catastral в `data-chile/catastro/files/`. Вызовы сервиса (без секретов) пишет в `api-log.jsonl`.

@@ -139,7 +139,10 @@
     "method_EN01": "SINCA (Ministerio del Medio Ambiente): MP2,5 diario validado (o preliminar) de 10 estaciones de la Región Metropolitana, 2023–2025; se usan años con ≥75% de días. Valor comunal: interpolación por inverso de la distancia al cuadrado hacia el centro poblado de la comuna. Con pocas estaciones es una superficie gruesa; la ficha muestra la estación más cercana. Norma anual chilena: 20 µg/m³.",
     "airStation": "Estación más cercana: {st}, {v} µg/m³ medido, a {km} km.",
     "method_RS01": "CEAD (Ministerio de Seguridad Pública): casos policiales 2025 (denuncias + detenciones flagrantes) de las familias «delitos contra la vida o integridad de las personas» y «robos violentos», tasa anual por 100 mil habitantes = suma de las tasas mensuales. Es donde ocurrió el delito, no donde vive la víctima: en comunas con mucha población flotante (Santiago, Providencia) la tasa por residente se infla. Solo nivel comuna.",
-    "crimeChange": "Cambio frente a 2024: {chg}%. Delitos contra la propiedad no violentos: {prop} por 100 mil."
+    "crimeChange": "Cambio frente a 2024: {chg}%. Delitos contra la propiedad no violentos: {prop} por 100 mil.",
+    "more": "Ver todos los indicadores",
+    "rankPct_C": "Más alto que el {pct}% de las comunas",
+    "rankPct_D": "Más alto que el {pct}% de las zonas"
   },
   "search": {
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",
@@ -193,7 +196,7 @@
     "eyebrow": "Objeto",
     "noAddress": "Edificio seleccionado",
     "identified": "Qué se identificó",
-    "building": "Contorno de edificio (OpenStreetMap), huella ~{area} m².",
+    "building": "Contorno de edificio (Overture Maps: OSM, Microsoft, Google), huella ~{area} m².",
     "height": "Altura registrada ~{h} m (puede ser estimada).",
     "pointOnly": "Punto de la dirección; el edificio no está identificado. Haz zoom y toca el edificio para precisar.",
     "identityNote": "El contorno no es el límite legal del predio ni identifica un departamento.",
