@@ -85,7 +85,7 @@ export const METRICS: Metric[] = [
   { id: "RS01", family: "risk", levels: ["C"], unit: "por 100 mil hab.", domain: [600, 4000], direction: "more", sources: ["S19"], decimals: 0, demo: false },
   { id: "RS03", family: "risk", levels: ["C"], unit: "% hogares", domain: [4, 18], direction: "more", sources: ["S20"], decimals: 1, demo: false },
   { id: "EC02", family: "value", levels: ["C"], unit: "UF", domain: [1000, 10000], direction: "more", sources: ["S29"], decimals: 0, demo: false },
-  { id: "EC01", family: "value", levels: ["C", "D"], unit: "UF/m²", domain: [30, 140], direction: "more", sources: ["S23"], decimals: 0, demo: true },
+  { id: "EC01", family: "value", levels: ["C"], unit: "UF/m²", domain: [20, 100], direction: "more", sources: ["S29"], decimals: 0, demo: false },
 ];
 
 export const metricById = (id: string): Metric => {

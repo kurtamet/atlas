@@ -38,7 +38,7 @@ type Selection =
 interface ObjectPick { lngLat: [number, number]; footprint: GeoJSON.Geometry | null; osm: Record<string, string | number> }
 
 /** real layers shipped as plain value maps, merged by zone id / comuna code */
-const SIMPLE_LAYERS: Array<[string, string]> = [["ndvi.json", "EN04"]];
+const SIMPLE_LAYERS: Array<[string, string]> = [["ndvi.json", "EN04"], ["value.json", "EC01"]];
 interface SimpleLayer { metric: string; zones: Record<string, number>; comunas: Record<string, number> }
 interface HazardFile { comunas: Record<string, Record<string, number>>; zones: Record<string, Record<string, number>> }
 interface NoiseFile { comunas: Record<string, { EN03: number; day65?: number; night55?: number }>; zones: Record<string, number> }
