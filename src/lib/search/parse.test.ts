@@ -42,3 +42,17 @@ describe("rankByCriteria", () => {
     expect(r[2].coverage).toBe(0);
   });
 });
+
+describe("rol", () => {
+  const names = ["Las Condes", "Ñuñoa", "Santiago"];
+  it("reads rol with and without the word", () => {
+    expect(parseQuery("rol 1234-56", names)).toEqual({ kind: "rol", mz: 1234, pr: 56 });
+    expect(parseQuery("1234-56", names)).toEqual({ kind: "rol", mz: 1234, pr: 56 });
+    expect(parseQuery("Rol N° 512 - 7 Ñuñoa", names)).toEqual({ kind: "rol", mz: 512, pr: 7, comuna: "Ñuñoa" });
+    expect(parseQuery("1234-56, Las Condes", names)).toEqual({ kind: "rol", mz: 1234, pr: 56, comuna: "Las Condes" });
+  });
+  it("keeps addresses with dashes as addresses", () => {
+    expect(parseQuery("Pasaje 12-3 Villa Los Aromos", names).kind).toBe("address");
+    expect(parseQuery("Av. Providencia 1208", names).kind).toBe("address");
+  });
+});

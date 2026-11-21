@@ -1,4 +1,5 @@
 "use client";
+import type { RolHit } from "@/app/api/rol/route";
 import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useLocale, useTranslations } from "next-intl";
@@ -221,6 +222,42 @@ export default function Explorer() {
         setSelection({ kind: "matches", criteria: parsed.criteria, items: ranked.map(({ code, name, score }) => ({ code, name, score })) });
         const feats = ranked.map((r) => comunaByCode.get(r.code)).filter(Boolean) as AreaFeature[];
         if (feats.length) fly({ kind: "fit", bbox: bboxOf(feats) });
+        return;
+      }
+      case "rol": {
+        setMessage(t("search.searching"));
+        const rolTxt = `${parsed.mz}-${parsed.pr}`;
+        try {
+          const cut = parsed.comuna ? comunas?.features.find((f) => f.properties.name === parsed.comuna)?.properties.code : undefined;
+          const res = await fetch(`/api/rol?mz=${parsed.mz}&pr=${parsed.pr}${cut !== undefined ? `&cut=${cut}` : ""}`);
+          const hits: RolHit[] = res.ok ? (await res.json()).hits ?? [] : [];
+          if (!hits.length) {
+            setMessage(t("search.rolNotFound", { rol: rolTxt }));
+            return;
+          }
+          if (hits.length > 1) {
+            const names = hits.map((h) => String(comunaByCode.get(String(h.cut))?.properties.name ?? h.cut));
+            setMessage(t("search.rolMany", { rol: rolTxt, list: [...new Set(names)].join(", ") }));
+            return;
+          }
+          const h = hits[0];
+          if (h.lon === null || h.lat === null) {
+            setMessage(t("search.rolNoGeo", { rol: rolTxt, dir: h.dir }));
+            return;
+          }
+          const pt: [number, number] = [h.lon, h.lat];
+          setMarker(pt);
+          fly({ kind: "fly", center: pt, zoom: 17 });
+          const osm = { rol: rolTxt, nr: 1, u: h.ds === "H" ? 1 : 0, ds: h.ds, m2u: h.m2 || "", yr: h.yr || "", av: h.av || "", how: h.how };
+          if (!selectObject({ lngLat: pt, footprint: null, osm }, h.dir)) {
+            setSelection(null);
+            setMessage(t("search.outside"));
+            return;
+          }
+          setMessage(null);
+        } catch {
+          setMessage(t("search.rolNotFound", { rol: rolTxt }));
+        }
         return;
       }
       case "address": {

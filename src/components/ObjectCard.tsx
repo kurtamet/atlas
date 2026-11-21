@@ -92,7 +92,7 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
 
       {cat && (
         <div className="at-observation">
-          <strong>{t("cat.title")}</strong>
+          <strong>{osm.rol ? t("cat.titleRol", { rol: String(osm.rol) }) : t("cat.title")}</strong>
           <p>
             {[
               t.has(`cat.ds_${cat.ds}`) ? t(`cat.ds_${cat.ds}`) : null,
@@ -100,10 +100,10 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
               cat.yr ? t("cat.year", { y: cat.yr }) : null,
               cat.m2u ? t(cat.u > 1 ? "cat.m2unit" : "cat.m2", { m2: cat.m2u }) : null,
             ].filter(Boolean).join(" · ")}
-            {cat.av ? <><br />{t("cat.avaluo", { uf: cat.av.toLocaleString(locale) })}</> : null}
+            {cat.av ? <><br />{t(osm.rol ? "cat.avaluoRol" : "cat.avaluo", { uf: cat.av.toLocaleString(locale) })}</> : null}
             {cat.ufm2 && cat.nd ? <><br />{t("cat.sales", { ufm2: Math.round(cat.ufm2), n: cat.nd })}</> : null}
             <br />
-            <small>{t("cat.note")}</small>
+            <small>{osm.rol ? t(osm.how === "m" ? "cat.noteRolMz" : "cat.noteRol") : t("cat.note")}</small>
           </p>
         </div>
       )}
