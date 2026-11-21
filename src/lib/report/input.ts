@@ -3,6 +3,7 @@
  * Claude only receives this object (compact JSON) and returns short texts per block (schema.ts),
  * so tokens are spent on interpretation, never on layout, figures or charts.
  */
+import type { CatastroFacts } from "../object/catastro.ts";
 import { METRICS, type Metric, type FamilyId } from "../layers/registry.ts";
 import type { PointFacts, Observation, PoiGroup, LngLat } from "../object/facts.ts";
 
@@ -51,6 +52,8 @@ export interface ReportInput {
   scores: { daily: number | null; environment: number | null; safety: number | null; climate: number | null };
   /** comuna-level extras for context */
   extras: Record<string, number | string | null>;
+  /** SII catastro aggregates of the building (or of one rol), from the building tile or the rol search */
+  catastro?: (CatastroFacts & { rol?: string }) | null;
 }
 
 function percentile(all: AreaLike | null, id: string, v: number): number | null {
@@ -90,6 +93,7 @@ export function buildReportInput(a: {
   comunas: AreaLike | null;
   price?: PriceInfo;
   pricePeriod?: [string, string];
+  catastro?: (CatastroFacts & { rol?: string }) | null;
 }): ReportInput {
   const metrics = METRICS.map((m) => metricValue(m, a.zone, a.comuna, a.zones, a.comunas)).filter((x): x is MetricValue => !!x);
   const by = (id: string) => metrics.find((m) => m.id === id)?.favour;
@@ -128,12 +132,13 @@ export function buildReportInput(a: {
       RS01_chg: pick("RS01_chg"), RS01_prop: pick("RS01_prop"), RS03_lo: pick("RS03_lo"), RS03_hi: pick("RS03_hi"),
       EN03_day65: pick("EN03_day65"), EN03_night55: pick("EN03_night55"), CL01_future: pick("CL01_d"), EN01_station: pick("EN01_st"),
     },
+    catastro: a.catastro ?? null,
   };
 }
 
 /** what Claude sees: the same facts without presentation-only fields */
 export function promptPayload(i: ReportInput) {
-  return { locale: i.locale, object: i.object, metrics: i.metrics, walk: i.walk, metroName: i.metroName, hazards: i.hazards, price: i.price, flags: i.flags, scores: i.scores, extras: i.extras };
+  return { locale: i.locale, object: i.object, metrics: i.metrics, walk: i.walk, metroName: i.metroName, hazards: i.hazards, price: i.price, flags: i.flags, scores: i.scores, extras: i.extras, catastro: i.catastro ?? null };
 }
 
 /** verdict from scores and flags alone: used for the free preview and the no-AI draft */

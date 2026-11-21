@@ -396,7 +396,9 @@
     "ev_walk_park": "distance to a park",
     "ev_walk_transport": "distance to a bus stop",
     "ev_hazard_fault": "San Ramón Fault",
-    "savedToAccount": "saved to your account"
+    "savedToAccount": "saved to your account",
+    "overview": "Summary",
+    "fb_overview": "This summary is written by the AI from all the data in the report. This preview without AI shows only the strengths and points of attention detected by rules for {comuna}."
   },
   "trends": {
     "loading": "Loading data…",

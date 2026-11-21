@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import ObjectReport, { type PriceInfo } from "./ObjectReport";
 import { buildReportInput } from "@/lib/report/input";
+import { catastroOf } from "@/lib/object/catastro";
 import { requestReport } from "@/lib/report/client";
 import type { AreaCollection } from "@/lib/geo";
 import { pointFacts, observations, type PointFacts, type PoisFile, type HazardsFile, type Observation, type LngLat } from "@/lib/object/facts";
@@ -26,16 +27,6 @@ export function footprintArea(g: GeoJSON.Geometry | null): number | null {
       area += (i === 0 ? 1 : -1) * Math.abs(s / 2);
     });
   return Math.round(area);
-}
-
-export interface CatastroFacts { u: number; nr: number; ds?: string; m2u?: number; yr?: number; av?: number; nd?: number; ufm2?: number }
-
-/** SII catastro aggregates carried by the building tile (pipeline/catastro_buildings.py); null when the footprint has none */
-export function catastroOf(p: Record<string, string | number>): CatastroFacts | null {
-  const n = (k: string) => (p[k] === undefined || p[k] === null || p[k] === "" ? undefined : Number(p[k]));
-  const nr = n("nr");
-  if (!nr) return null;
-  return { u: n("u") ?? 0, nr, ds: p.ds ? String(p.ds) : undefined, m2u: n("m2u"), yr: n("yr"), av: n("av"), nd: n("nd"), ufm2: n("ufm2") };
 }
 
 export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title, zones, comunas, price, pricePeriod }: {
@@ -66,7 +57,7 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
   const cat = catastroOf(osm);
   const getReport = () => {
     if (!facts || !obs) return;
-    requestReport(buildReportInput({ locale: locale === "en" ? "en" : "es", title, lngLat, area, height: Number.isFinite(height) && height > 0 ? height : undefined, facts, obs, zone, comuna, zones, comunas, price, pricePeriod }), locale);
+    requestReport(buildReportInput({ locale: locale === "en" ? "en" : "es", title, lngLat, area, height: Number.isFinite(height) && height > 0 ? height : undefined, facts, obs, zone, comuna, zones, comunas, price, pricePeriod, catastro: cat ? { ...cat, ...(osm.rol ? { rol: String(osm.rol) } : {}) } : null }), locale);
   };
   // teaser: the card shows the first findings; the paid report explains all of them
   const SHOWN = 2;
