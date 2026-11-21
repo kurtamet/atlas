@@ -30,7 +30,7 @@ export const FREE_EDGE = 5;
 export const freeView = (rows: ComunaRow[]): ComunaRow[] => rows.map((r) => ({ ...r, extras: {}, prices: null }));
 
 export async function loadComunaTable(load: Loader = fetchLoader): Promise<ComunaRow[]> {
-  const [fc, prices, transit, access, censo, noise, hazards, ndvi, climate, enusc, air, crime] = await Promise.all([
+  const [fc, prices, transit, access, censo, noise, hazards, ndvi, climate, enusc, air, crime, value] = await Promise.all([
     load<{ features: Array<{ properties: { code: number | string; name: string } }> }>("comunas.geojson"),
     load<{ comunas: Dict<{ median: number; years: Dict<{ n: number; median: number }> }> }>("prices-comunas.json"),
     load<{ comunas: Dict<number> }>("transit.json"),
@@ -43,13 +43,14 @@ export async function loadComunaTable(load: Loader = fetchLoader): Promise<Comun
     load<{ comunas: Dict<Dict<number | string>> }>("enusc.json"),
     load<{ comunas: Dict<Dict<number | string>> }>("air.json"),
     load<{ comunas: Dict<Dict<number | null>> }>("crime.json"),
+    load<{ comunas: Dict<number> }>("value.json"),
   ]);
   const real = new Set(METRICS.filter((m) => !m.demo).map((m) => m.id));
   return fc.features.map(({ properties: p }) => {
     const c = String(p.code);
     const merged: Dict<unknown> = {
       ...(hazards.comunas[c] ?? {}), ...(climate.comunas[c] ?? {}), ...(enusc.comunas[c] ?? {}), ...(air.comunas[c] ?? {}), ...(crime.comunas[c] ?? {}),
-      IN04: transit.comunas[c], IN01: access.comunas[c], SO01: censo.comunas[c]?.SO01, EN03: noise.comunas[c]?.EN03, EN04: ndvi.comunas[c], EC02: prices.comunas[c]?.median,
+      IN04: transit.comunas[c], IN01: access.comunas[c], SO01: censo.comunas[c]?.SO01, EN03: noise.comunas[c]?.EN03, EN04: ndvi.comunas[c], EC02: prices.comunas[c]?.median, EC01: value.comunas[c],
     };
     const values: Dict<number> = {}, extras: Dict<number | string | null> = {};
     for (const [k, v] of Object.entries(merged)) {
