@@ -152,7 +152,8 @@
     "more": "See all indicators",
     "rankPct_C": "Higher than {pct}% of comunas",
     "rankPct_D": "Higher than {pct}% of zones",
-    "method_QX00": "Average over families (climate, environment, daily life, safety & risks) of the percentiles of their real layers, oriented so that 100 is best. Prices, density and rain are left out."
+    "method_QX00": "Average over families (climate, environment, daily life, safety & risks) of the percentiles of their real layers, oriented so that 100 is best. Prices, density and rain are left out.",
+    "reportHint": "Evaluating a property? Zoom in and tap a building: you get its free card and can order the full report."
   },
   "search": {
     "link": "Listing links will be analyzed in an upcoming version.",
@@ -409,7 +410,7 @@
   },
   "trends": {
     "loading": "Loading data…",
-    "lead": "Compare the {n} comunas of Greater Santiago across every real layer of the atlas and see how they change over time.",
+    "lead": "Compare the {n} comunas of Greater Santiago across every layer with real data and see how they change over time.",
     "rankTitle": "{metric}: comuna ranking",
     "rankSub": "pick the layer with the buttons; click a bar to pick that comuna",
     "profileTitle": "{comuna} profile",
@@ -551,7 +552,8 @@
     "choosePlan": "See plans and packs",
     "buyPack": "Buy a pack",
     "upgrade": "Change plan",
-    "billing": "Billing and cancellation"
+    "billing": "Billing and cancellation",
+    "planChanged": "Plan updated. The difference for the current month is charged (or credited) pro rata."
   },
   "admin": {
     "eyebrow": "Administration",
@@ -666,7 +668,7 @@
     "planFor_partner": "Agents and teams who back every listing and recommendation with data.",
     "planFor_unlimited": "Developers, flippers and offices with a steady flow of properties.",
     "perMonth": "/month",
-    "planSave": "{each} per report; 5 single reports would cost {value}",
+    "planSave": "{each} per report; {n} single reports would cost {value}",
     "unlimitedSave": "Unlimited reports: pays off from {n} reports a month",
     "fReports": "{n} full reports a month",
     "fUnlimited": "Unlimited full reports",
@@ -707,6 +709,7 @@
     "a_data": "Official and open sources: SII, INE, MINVU, MMA, DTPM, CEAD, ARClim, satellite imagery and OpenStreetMap. Each layer's method is in \"Sources and coverage\".",
     "legal": "Reports are indicative: they are not a valuation or legal or financial advice.",
     "err_failed": "We could not open checkout. Try again in a moment.",
-    "err_not_configured": "Payments are not active on this server yet."
+    "err_not_configured": "Payments are not active on this server yet.",
+    "switch": "Switch to this plan"
   }
 }

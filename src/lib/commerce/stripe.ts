@@ -216,3 +216,29 @@ export async function recordRenewal(invoice: Stripe.Invoice): Promise<void> {
   const { data: s } = await db.from("subscriptions").select("user_id, plan").eq("provider", "stripe").eq("provider_ref", id).maybeSingle();
   if (s) await db.from("purchases").upsert({ user_id: s.user_id, kind: "subscription", product: s.plan, credits: 0, amount_clp: invoice.amount_paid, status: "paid", provider: "stripe", provider_ref: invoice.id, paid_at: new Date().toISOString() }, { onConflict: "provider,provider_ref", ignoreDuplicates: true });
 }
+
+/**
+ * Plan change for someone who already pays a Stripe plan: switch the price of the existing
+ * subscription (prorated) instead of opening a second one. Returns false if there is no Stripe plan to change.
+ */
+export async function changePlan(userId: string, product: ProductId, locale: "es" | "en"): Promise<boolean> {
+  const db = adminClient();
+  const plan = planById(product);
+  if (!db || !plan) return false;
+  const { data: row } = await db.from("subscriptions").select("provider_ref").eq("user_id", userId).eq("provider", "stripe").eq("status", "active")
+    .gt("current_period_end", new Date().toISOString()).order("current_period_end", { ascending: false }).limit(1).maybeSingle();
+  if (!row?.provider_ref) return false;
+  const s = stripe();
+  const sub = await s.subscriptions.retrieve(row.provider_ref as string);
+  const item = sub.items.data[0];
+  if (!item) return false;
+  const price = await s.prices.create({ currency: "clp", unit_amount: plan.clp, recurring: { interval: "month" }, product_data: { name: `${BRAND} · ${NAMES[product][locale]}` } });
+  await s.subscriptions.update(sub.id, {
+    items: [{ id: item.id, price: price.id }],
+    proration_behavior: "always_invoice",
+    cancel_at_period_end: false,
+    metadata: { ...sub.metadata, product, plan: product },
+  });
+  await syncSubscription(sub.id, userId);
+  return true;
+}

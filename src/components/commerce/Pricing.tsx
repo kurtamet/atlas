@@ -43,7 +43,7 @@ export default function Pricing() {
               <p className="pr-for">{t(`planFor_${p.id}`)}</p>
               <p className="pr-price"><b>{fmt(p.clp)}</b><span>{t("perMonth")}</span></p>
               <p className="pr-save-line">
-                {s ? <><span className="pm-save">−{s.savePct}%</span> {t("planSave", { each: fmt(s.each), value: fmt(p.reports! * RETAIL_CLP) })}</> : <><span className="pm-save">∞</span> {t("unlimitedSave", { n: unlimitedBreakEven() })}</>}
+                {s ? <><span className="pm-save">−{s.savePct}%</span> {t("planSave", { each: fmt(s.each), n: p.reports!, value: fmt(p.reports! * RETAIL_CLP) })}</> : <><span className="pm-save">∞</span> {t("unlimitedSave", { n: unlimitedBreakEven() })}</>}
               </p>
               <ul className="pr-list">
                 <li>{p.reports ? t("fReports", { n: p.reports }) : t("fUnlimited")}</li>
@@ -54,7 +54,7 @@ export default function Pricing() {
               </ul>
               {current
                 ? <Link href="/account" className="at-secondary pm-block">{t("currentPlan")}</Link>
-                : <button type="button" className={p.id === "partner" ? "at-primary pm-block" : "at-secondary pm-block"} disabled={busy !== null} onClick={() => buy(p.id)}>{busy === p.id ? t("redirecting") : t("subscribe")}</button>}
+                : <button type="button" className={p.id === "partner" ? "at-primary pm-block" : "at-secondary pm-block"} disabled={busy !== null} onClick={() => buy(p.id)}>{busy === p.id ? t("redirecting") : me?.plan ? t("switch") : t("subscribe")}</button>}
             </article>
           );
         })}

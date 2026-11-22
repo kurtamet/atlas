@@ -9,9 +9,9 @@ import { saveProfile } from "./actions";
 export const dynamic = "force-dynamic";
 const SEGMENTS = ["agent", "investor", "flipper", "institution", "buyer", "other"] as const;
 
-export default async function AccountPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ auth?: string; checkout?: string }> }) {
+export default async function AccountPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ auth?: string; checkout?: string; changed?: string }> }) {
   const { locale } = await params;
-  const { auth, checkout } = await searchParams;
+  const { auth, checkout, changed } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations("pages.account");
   const a = await getTranslations("acct");
@@ -41,7 +41,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
     <section className="at-page ac">
       <p className="at-eyebrow">{t("eyebrow")}</p>
       <h1>{a("hello", { email: account.user.email ?? "" })}</h1>
-      {bought && <p className="ac-ok">{a("bought")}</p>}
+      {(bought || changed) && <p className="ac-ok">{a(changed ? "planChanged" : "bought")}</p>}
       <div className="ac-tiles">
         <div>
           <b>{account.role === "admin" ? a("planAdmin") : account.plan ? a(`plan_${account.plan}`) : a("planFree")}</b>

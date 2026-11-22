@@ -53,6 +53,11 @@ export async function currentAccount(): Promise<Account | null> {
     admin.rpc("report_credits", { uid: user.id }),
   ]);
   const role = profile.data?.role === "admin" ? "admin" : "user";
+  if (sub.error) {
+    // schema before 0004_commerce.sql: no plan columns yet, every active subscription is "unlimited"
+    const old = await admin.from("subscriptions").select("current_period_end").eq("user_id", user.id).eq("status", "active").gt("current_period_end", new Date().toISOString()).limit(1).maybeSingle();
+    if (old.data) Object.assign(sub, { data: { plan: "unlimited", current_period_start: null, current_period_end: old.data.current_period_end, cancel_at_period_end: false }, error: null });
+  }
   const plan = sub.data ? (planById(String(sub.data.plan))?.id ?? "unlimited") : null;
   let planReportsLeft: number | null = 0;
   if (role === "admin" || plan === "unlimited") planReportsLeft = null;

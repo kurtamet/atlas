@@ -4,8 +4,8 @@
  */
 import { NextResponse } from "next/server";
 import { currentAccount } from "@/lib/supabase/server";
-import { createCheckout, stripeConfigured } from "@/lib/commerce/stripe";
-import { isProduct } from "@/lib/commerce/plans";
+import { changePlan, createCheckout, stripeConfigured } from "@/lib/commerce/stripe";
+import { isProduct, planById } from "@/lib/commerce/plans";
 import { validInput } from "@/lib/report/generate";
 
 export async function POST(req: Request) {
@@ -16,10 +16,16 @@ export async function POST(req: Request) {
   if (!isProduct(product)) return NextResponse.json({ error: "unknown product" }, { status: 400 });
   if (product === "single" && !validInput(body.input)) return NextResponse.json({ error: "report input required" }, { status: 400 });
   const account = await currentAccount();
+  const locale = body.locale === "en" ? "en" : "es";
   try {
+    // already on a paid plan: switch it instead of opening a second subscription
+    if (account?.plan && planById(product)) {
+      if (account.plan === product) return NextResponse.json({ url: `${locale === "en" ? "/en" : ""}/account` });
+      if (await changePlan(account.user.id, product, locale)) return NextResponse.json({ url: `${locale === "en" ? "/en" : ""}/account?changed=1` });
+    }
     const url = await createCheckout({
       product,
-      locale: body.locale === "en" ? "en" : "es",
+      locale,
       origin: new URL(req.url).origin,
       cancelPath: String(body.back ?? "/"),
       user: account ? { id: account.user.id, email: account.user.email ?? null } : null,

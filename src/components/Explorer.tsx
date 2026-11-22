@@ -10,6 +10,7 @@ import { parseQuery, rankByCriteria, type Criterion } from "@/lib/search/parse";
 import { bboxOf, findContaining, valuesOf, type AreaCollection, type AreaFeature } from "@/lib/geo";
 import type { MapCommand } from "./MapView";
 import { SANTIAGO, SANTIAGO_ZOOM, zoomBy } from "./MapView";
+import { ReportInfoButton } from "./commerce/ReportInfo";
 import ObjectCard from "./ObjectCard";
 import { COMPOSITE_ID, addComposite, getMetric } from "@/lib/layers/composite";
 import AreaModal from "./AreaModal";
@@ -431,6 +432,7 @@ export default function Explorer() {
                 <>
                   <AreaSummary zone={selection.zone} comuna={selection.comuna} metricId={metricId} zones={zones} comunas={comunas} locale={locale} />
                   <button type="button" className="at-primary at-more" onClick={() => setAreaOpen(true)}>{t("drawer.more")}</button>
+                  <p className="pm-area-hint">{t("drawer.reportHint")} <ReportInfoButton /></p>
                 </>
               )}
               {areaOpen && !selection.object && (

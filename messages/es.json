@@ -152,7 +152,8 @@
     "more": "Ver todos los indicadores",
     "rankPct_C": "Más alto que el {pct}% de las comunas",
     "rankPct_D": "Más alto que el {pct}% de las zonas",
-    "method_QX00": "Promedio por familias (clima, medio ambiente, vida cotidiana, seguridad y riesgos) de los percentiles de sus capas reales, orientados para que 100 sea mejor. No incluye precios, densidad ni lluvia."
+    "method_QX00": "Promedio por familias (clima, medio ambiente, vida cotidiana, seguridad y riesgos) de los percentiles de sus capas reales, orientados para que 100 sea mejor. No incluye precios, densidad ni lluvia.",
+    "reportHint": "¿Evalúas una propiedad? Haz zoom y toca un edificio: verás su ficha gratis y podrás pedir el informe completo."
   },
   "search": {
     "link": "Los enlaces de anuncios se analizarán en una próxima versión.",
@@ -409,7 +410,7 @@
   },
   "trends": {
     "loading": "Cargando datos…",
-    "lead": "Compara las {n} comunas del Gran Santiago en todas las capas reales del atlas y mira cómo cambian en el tiempo.",
+    "lead": "Compara las {n} comunas del Gran Santiago en todas las capas con datos reales y mira cómo cambian en el tiempo.",
     "rankTitle": "{metric}: ranking de comunas",
     "rankSub": "elige la capa con los botones; haz clic en una barra para elegir la comuna",
     "profileTitle": "Perfil de {comuna}",
@@ -551,7 +552,8 @@
     "choosePlan": "Ver planes y packs",
     "buyPack": "Comprar un pack",
     "upgrade": "Cambiar de plan",
-    "billing": "Facturación y cancelación"
+    "billing": "Facturación y cancelación",
+    "planChanged": "Plan actualizado. La diferencia del mes en curso se cobra (o abona) de forma proporcional."
   },
   "admin": {
     "eyebrow": "Administración",
@@ -648,7 +650,7 @@
     "previewOn": "de vista completa gratis. Después, las tendencias completas son parte de la suscripción.",
     "plans": "Planes desde {from}/mes",
     "endedTitle": "Tu vista completa terminó.",
-    "endedText": "Las rankings completas, precios en el tiempo, comparación de comunas y la descarga de datos están en la suscripción, desde {from}/mes con informes incluidos.",
+    "endedText": "Los rankings completos, precios en el tiempo, comparación de comunas y la descarga de datos están en la suscripción, desde {from}/mes con informes incluidos.",
     "subscribe": "Ver planes"
   },
   "pricing": {
@@ -666,7 +668,7 @@
     "planFor_partner": "Corredores y equipos que respaldan con datos cada captación y cada recomendación.",
     "planFor_unlimited": "Inmobiliarias, flippers y oficinas con flujo constante de propiedades.",
     "perMonth": "/mes",
-    "planSave": "{each} por informe; 5 sueltos costarían {value}",
+    "planSave": "{each} por informe; {n} sueltos costarían {value}",
     "unlimitedSave": "Informes sin límite: conviene desde {n} informes al mes",
     "fReports": "{n} informes completos al mes",
     "fUnlimited": "Informes completos sin límite",
@@ -707,6 +709,7 @@
     "a_data": "De fuentes oficiales y abiertas: SII, INE, MINVU, MMA, DTPM, CEAD, ARClim, imágenes satelitales y OpenStreetMap. Cada capa tiene su método en «Fuentes y cobertura».",
     "legal": "Los informes son orientativos: no son una tasación ni asesoría legal o financiera.",
     "err_failed": "No pudimos abrir el pago. Inténtalo de nuevo en un momento.",
-    "err_not_configured": "Los pagos aún no están activos en este servidor."
+    "err_not_configured": "Los pagos aún no están activos en este servidor.",
+    "switch": "Cambiar a este plan"
   }
 }

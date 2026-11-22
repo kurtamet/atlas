@@ -35,7 +35,7 @@ export default function ReportDocument({ input, ai, source }: { input: ReportInp
   const page = (n: number) => <footer className="rd-foot"><span>PROMETEO · prometeo.land · {input.object.title}</span><span>{n}</span></footer>;
 
   // running footer of the printed PDF (Chrome/Edge page margin boxes); the on-screen sheets use .rd-foot
-  const pageCss = `@page{@bottom-left{content:${JSON.stringify(`ATLAS CHILE · ${input.object.title.replace(/[<>{}\\"]/g, "")}`)};font:8pt sans-serif;color:#8a948f}@bottom-right{content:counter(page);font:8pt sans-serif;color:#8a948f}}`;
+  const pageCss = `@page{@bottom-left{content:${JSON.stringify(`PROMETEO · ${input.object.title.replace(/[<>{}\\"]/g, "")}`)};font:8pt sans-serif;color:#8a948f}@bottom-right{content:counter(page);font:8pt sans-serif;color:#8a948f}}`;
 
   return (
     <article className="rd">

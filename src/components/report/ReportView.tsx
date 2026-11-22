@@ -17,26 +17,27 @@ export default function ReportView() {
   const locale = useLocale();
   const { me } = useMe();
   const [rep, setRep] = useState<StoredReport | null | undefined>(undefined);
-  const [mode, setMode] = useState<"local" | "saved" | "order" | "sample">("local");
-  const [link, setLink] = useState("");
+  // the page renders nothing until the report is loaded, so reading the URL on the first client render is safe
+  const [mode] = useState<"local" | "saved" | "order" | "sample">(() => {
+    if (typeof window === "undefined") return "local";
+    const q = new URLSearchParams(window.location.search);
+    return q.get("sample") === "1" ? "sample" : q.get("saved") ? "saved" : q.get("order") && q.get("session_id") ? "order" : "local";
+  });
+  const link = typeof window === "undefined" ? "" : window.location.href;
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     const saved = q.get("saved");
     const order = q.get("order");
     const session = q.get("session_id");
     if (q.get("sample") === "1") {
-      setMode("sample");
       fetch(`/sample/report-${locale === "en" ? "en" : "es"}.json`).then((r) => (r.ok ? (r.json() as Promise<StoredReport>) : null)).then(setRep).catch(() => setRep(null));
       return;
     }
     if (saved) {
-      setMode("saved");
       fetch(`/api/reports/${saved}`, { cache: "no-store" }).then((r) => (r.ok ? (r.json() as Promise<StoredReport>) : null)).then(setRep).catch(() => setRep(null));
       return;
     }
     if (order && session) {
-      setMode("order");
-      setLink(window.location.href);
       let live = true;
       let timer: ReturnType<typeof setTimeout>;
       const poll = (n: number) => {
@@ -55,7 +56,7 @@ export default function ReportView() {
           })
           .catch(() => live && setRep({ input: null, error: "network" } as unknown as StoredReport));
       };
-      setRep({ input: null } as unknown as StoredReport);
+      queueMicrotask(() => live && setRep((p) => p ?? ({ input: null } as unknown as StoredReport)));
       poll(0);
       return () => { live = false; clearTimeout(timer); };
     }
@@ -80,7 +81,7 @@ export default function ReportView() {
     return () => mo?.disconnect();
   }, [title]);
 
-  if (rep === undefined) return null;
+  if (rep === undefined) return <div className="rd-wrap"><div className="rd-wait"><div className="rd-spinner" /></div></div>;
   if (rep === null) return <section className="at-page"><h1>{d("notFound")}</h1><p className="at-lead">{d(mode === "local" ? "notFoundText" : "notFoundLink")}</p></section>;
   const payment = rep.error === "payment";
   const waitText = rep.error ? (payment ? b("paymentRequired") : mode === "order" ? b("orderFailed") : d("failedText")) : mode === "order" ? b("orderGenerating") : d("generatingText");
