@@ -436,8 +436,10 @@ export default function Explorer() {
               {areaOpen && !selection.object && (
                 <AreaModal onClose={() => setAreaOpen(false)} title={String(selection.comuna?.properties.name ?? "")} subtitle={selection.level === "D" ? `${t("drawer.zone")} ${selection.zone?.properties.id}` : t("drawer.region")}>
                   <PlaceValues zone={selection.zone} comuna={selection.comuna} locale={locale} prices={prices} />
-                  <h3 className="at-area-h">{t("drawer.evidence")}</h3>
-                  <Evidence />
+                  <details className="at-evidence">
+                    <summary className="at-area-h">{t("drawer.evidence")}</summary>
+                    <Evidence />
+                  </details>
                 </AreaModal>
               )}
             </>

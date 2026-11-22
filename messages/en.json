@@ -22,8 +22,8 @@
     "language": "Language"
   },
   "explore": {
-    "searchLabel": "Address, listing link or criteria",
-    "searchPlaceholder": "Address, link or criteria (e.g. “quiet and near the metro”)",
+    "searchLabel": "Address, SII rol or criteria",
+    "searchPlaceholder": "Address, SII rol or “quiet and near the metro”",
     "analyze": "Analyze",
     "demo": "Demo values",
     "zoomIn": "Zoom in",
@@ -434,11 +434,11 @@
   "acct": {
     "notConfigured": "Accounts are not configured on this server yet.",
     "signInTitle": "Sign in or create an account",
-    "signInText": "We e-mail you a sign-in link. No passwords.",
+    "signInText": "One step to sign in or sign up: enter your e-mail and we send you a PROMETEO link. If it is your first time, that link creates your account. No passwords.",
     "email": "E-mail",
     "sendLink": "Send link",
     "sending": "Sending…",
-    "sent": "Done. Check {email} and open the link in this same browser.",
+    "sent": "Done. We sent a PROMETEO e-mail to {email}. Open the link to sign in (it expires in 1 hour). If it does not arrive within a minute, check spam or promotions.",
     "sendError": "We couldn't send the link. Check the address and try again in a minute.",
     "linkFailed": "The link expired or was already used. Request a new one.",
     "hello": "Hello, {email}",

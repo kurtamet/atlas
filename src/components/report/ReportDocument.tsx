@@ -34,8 +34,12 @@ export default function ReportDocument({ input, ai, source }: { input: ReportInp
   const crime = metric("RS01");
   const page = (n: number) => <footer className="rd-foot"><span>ATLAS CHILE · {input.object.title}</span><span>{n}</span></footer>;
 
+  // running footer of the printed PDF (Chrome/Edge page margin boxes); the on-screen sheets use .rd-foot
+  const pageCss = `@page{@bottom-left{content:${JSON.stringify(`ATLAS CHILE · ${input.object.title.replace(/[<>{}\\"]/g, "")}`)};font:8pt sans-serif;color:#8a948f}@bottom-right{content:counter(page);font:8pt sans-serif;color:#8a948f}}`;
+
   return (
     <article className="rd">
+      <style>{pageCss}</style>
       {/* 1 — cover and verdict */}
       <section className="rd-page">
         <header className="rd-cover">
@@ -104,7 +108,7 @@ export default function ReportDocument({ input, ai, source }: { input: ReportInp
             <p className="rd-note">{d("priceNote")}</p>
           </>
         ) : <p className="rd-note">{d("noPrice")}</p>}
-        <div className="rd-callout"><span className="rd-pill rd-pill-dark">{d(`pos_${ai.value.position}`)}</span> {ai.value.comment}</div>
+        <div className="rd-callout"><span className="rd-pill rd-pill-dark">{d(`pos_${ai.value.position}`)}</span><p>{ai.value.comment}</p></div>
         <h3 className="rd-h">{d("audiences")}</h3>
         <table className="rd-table">
           <tbody>

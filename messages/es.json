@@ -22,8 +22,8 @@
     "language": "Idioma"
   },
   "explore": {
-    "searchLabel": "Dirección, enlace de anuncio o criterio",
-    "searchPlaceholder": "Dirección, enlace o criterio (p. ej. «tranquilo y cerca del metro»)",
+    "searchLabel": "Dirección, rol SII o criterio",
+    "searchPlaceholder": "Dirección, rol SII o «tranquilo y cerca del metro»",
     "analyze": "Analizar",
     "demo": "Valores de demostración",
     "zoomIn": "Acercar",
@@ -434,11 +434,11 @@
   "acct": {
     "notConfigured": "El acceso con cuenta aún no está configurado en este servidor.",
     "signInTitle": "Entrar o crear cuenta",
-    "signInText": "Te enviamos un enlace de acceso por correo. Sin contraseñas.",
+    "signInText": "Un solo paso para entrar o registrarte: escribe tu correo y te enviamos un enlace de PROMETEO. Si es tu primera vez, ese enlace crea tu cuenta. Sin contraseñas.",
     "email": "Correo",
     "sendLink": "Enviar enlace",
     "sending": "Enviando…",
-    "sent": "Listo. Revisa {email} y abre el enlace desde este mismo navegador.",
+    "sent": "Listo. Te enviamos un correo de PROMETEO a {email}. Abre el enlace para entrar (vence en 1 hora). Si no llega en un minuto, revisa spam o promociones.",
     "sendError": "No pudimos enviar el enlace. Revisa el correo e inténtalo de nuevo en un minuto.",
     "linkFailed": "El enlace expiró o ya se usó. Pide uno nuevo.",
     "hello": "Hola, {email}",
