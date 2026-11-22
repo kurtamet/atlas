@@ -9,7 +9,7 @@ export interface ComunaRow {
   name: string;
   values: Record<string, number>;
   extras: Record<string, number | string | null>;
-  prices: { years: Record<string, { n: number; median: number }> } | null;
+  prices: { median: number; p25?: number; p75?: number; years: Record<string, { n: number; median: number }> } | null;
 }
 
 type Dict<T> = Record<string, T>;
@@ -23,7 +23,7 @@ const fetchLoader: Loader = <T,>(f: string) => fetch(`/data/${f}`).then((r) => r
 export const TRENDS_PAYWALL = process.env.NEXT_PUBLIC_TRENDS_PAYWALL === "1";
 
 /** subscriber-only parts of the table: yearly prices and derived extras (changes, projections) */
-export const FREE_LAYERS = new Set(["EC02", "SO01", "IN01", "EN04"]);
+export const FREE_LAYERS = new Set(["QX00", "EC02", "SO01", "IN01", "EN04"]);
 export const FREE_EDGE = 5;
 
 /** what a free visitor receives: comuna values (the same numbers the map shows), no series or extras */
@@ -32,10 +32,10 @@ export const freeView = (rows: ComunaRow[]): ComunaRow[] => rows.map((r) => ({ .
 export async function loadComunaTable(load: Loader = fetchLoader): Promise<ComunaRow[]> {
   const [fc, prices, transit, access, censo, noise, hazards, ndvi, climate, enusc, air, crime, value] = await Promise.all([
     load<{ features: Array<{ properties: { code: number | string; name: string } }> }>("comunas.geojson"),
-    load<{ comunas: Dict<{ median: number; years: Dict<{ n: number; median: number }> }> }>("prices-comunas.json"),
+    load<{ comunas: Dict<{ median: number; p25?: number; p75?: number; years: Dict<{ n: number; median: number }> }> }>("prices-comunas.json"),
     load<{ comunas: Dict<number> }>("transit.json"),
     load<{ comunas: Dict<number> }>("access.json"),
-    load<{ comunas: Dict<{ SO01: number }> }>("censo.json"),
+    load<{ comunas: Dict<{ SO01: number; pop?: number }> }>("censo.json"),
     load<{ comunas: Dict<{ EN03: number }> }>("noise.json"),
     load<{ comunas: Dict<Dict<number>> }>("hazards.json"),
     load<{ comunas: Dict<number> }>("ndvi.json"),
@@ -50,7 +50,7 @@ export async function loadComunaTable(load: Loader = fetchLoader): Promise<Comun
     const c = String(p.code);
     const merged: Dict<unknown> = {
       ...(hazards.comunas[c] ?? {}), ...(climate.comunas[c] ?? {}), ...(enusc.comunas[c] ?? {}), ...(air.comunas[c] ?? {}), ...(crime.comunas[c] ?? {}),
-      IN04: transit.comunas[c], IN01: access.comunas[c], SO01: censo.comunas[c]?.SO01, EN03: noise.comunas[c]?.EN03, EN04: ndvi.comunas[c], EC02: prices.comunas[c]?.median, EC01: value.comunas[c],
+      IN04: transit.comunas[c], IN01: access.comunas[c], SO01: censo.comunas[c]?.SO01, pop: censo.comunas[c]?.pop, EN03: noise.comunas[c]?.EN03, EN04: ndvi.comunas[c], EC02: prices.comunas[c]?.median, EC01: value.comunas[c],
     };
     const values: Dict<number> = {}, extras: Dict<number | string | null> = {};
     for (const [k, v] of Object.entries(merged)) {
@@ -58,7 +58,7 @@ export async function loadComunaTable(load: Loader = fetchLoader): Promise<Comun
       else if (!real.has(k) && (typeof v === "number" || typeof v === "string")) extras[k] = v;
     }
     const pr = prices.comunas[c];
-    return { code: c, name: p.name, values, extras, prices: pr ? { years: pr.years } : null };
+    return { code: c, name: p.name, values, extras, prices: pr ? { median: pr.median, p25: pr.p25, p75: pr.p75, years: pr.years } : null };
   });
 }
 
