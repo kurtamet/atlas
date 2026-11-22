@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Tu enlace para entrar a PROMETEO</title></head>
+<body style="margin:0;padding:0;background:#eef1ed;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#1f2a26">
+<div style="display:none;max-height:0;overflow:hidden">Entra a tu cuenta con un clic. El enlace vence en 1 hora.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef1ed;padding:32px 12px">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:10px;overflow:hidden">
+  <tr><td style="background:#1f2a26;padding:22px 32px">
+    <span style="font-size:20px;font-weight:700;letter-spacing:.18em;color:#ffffff">PROMETEO</span>
+    <span style="display:block;margin-top:4px;font-size:12px;color:#b9c7c0">Atlas inmobiliario de Santiago · prometeo.land</span>
+  </td></tr>
+  <tr><td style="padding:30px 32px 8px">
+    <p style="margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#2f7c7a;font-weight:600">Acceso a tu cuenta</p>
+    <h1 style="margin:0 0 14px;font-size:24px;line-height:1.25;font-weight:650">Tu enlace para entrar</h1>
+    <p style="margin:0 0 22px;font-size:15px;line-height:1.55;color:#3c4741">Pediste entrar a tu cuenta de <b>PROMETEO</b> con este correo. Haz clic en el botón y quedarás dentro, sin contraseña.</p>
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:6px;background:#234f43">
+      <a href="{{ .RedirectTo }}&amp;token_hash={{ .TokenHash }}&amp;type=email" style="display:inline-block;padding:14px 26px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none">Entrar a PROMETEO</a>
+    </td></tr></table>
+    <p style="margin:14px 0 0;font-size:12.5px;line-height:1.5;color:#6b7770">El enlace sirve una sola vez y vence en 1 hora. Puedes abrirlo en cualquier navegador o dispositivo.</p>
+  </td></tr>
+  <tr><td style="padding:22px 32px 6px">
+    <p style="margin:0 0 8px;font-size:13px;font-weight:650;text-transform:uppercase;letter-spacing:.06em">Recuerda</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:14px;line-height:1.5;color:#3c4741">
+      <tr><td valign="top" style="padding:3px 10px 3px 0;color:#2f7c7a">●</td><td style="padding:3px 0">Mapa de Santiago por comuna, barrio y edificio: precios reales del SII, transporte, ruido, áreas verdes, seguridad y riesgos naturales.</td></tr>
+      <tr><td valign="top" style="padding:3px 10px 3px 0;color:#2f7c7a">●</td><td style="padding:3px 0">Informe de ubicación por dirección o rol, listo en PDF, para decidir o asesorar a tu cliente.</td></tr>
+      <tr><td valign="top" style="padding:3px 10px 3px 0;color:#2f7c7a">●</td><td style="padding:3px 0">Tu cuenta guarda tus informes y tus compras. Sin contraseñas: siempre entras con un enlace como este.</td></tr>
+    </table>
+  </td></tr>
+  <tr><td style="padding:18px 32px 26px">
+    <p style="margin:0;padding:12px 14px;background:#f2f6f4;border-radius:6px;font-size:13px;line-height:1.5;color:#3c4741">¿No pediste este enlace? Ignora este correo: nadie puede entrar sin hacer clic en él, y tu cuenta sigue segura.</p>
+  </td></tr>
+  <tr><td style="padding:16px 32px 22px;border-top:1px solid #e6eae5;font-size:12.5px;line-height:1.5;color:#6b7770">
+    <b style="color:#3c4741">English:</b> you asked to sign in to your PROMETEO account. Click the button to sign in, no password needed. The link works once and expires in 1 hour. If it wasn't you, ignore this e-mail.
+  </td></tr>
+</table>
+<p style="margin:16px 0 0;font-size:11.5px;color:#8a948f">PROMETEO · Santiago, Chile · <a href="https://prometeo.land" style="color:#8a948f">prometeo.land</a></p>
+<p style="margin:6px 0 0;font-size:11px;color:#a3aca7;max-width:480px">Si el botón no funciona, copia este enlace en tu navegador:<br><span style="word-break:break-all">{{ .RedirectTo }}&amp;token_hash={{ .TokenHash }}&amp;type=email</span></p>
+</td></tr>
+</table>
+</body>
+</html>
