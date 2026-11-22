@@ -29,8 +29,8 @@ export const COMPOSITE: Metric = {
   ramp: COMPOSITE_RAMP,
 };
 
-const HIGH_IS_GOOD = new Set(["IN01", "IN04", "EN04"]);
-const HIGH_IS_BAD = new Set(["EN03", "EN01", "CL01", "RS01", "RS03", "RS05", "RS07", "RS09"]);
+export const HIGH_IS_GOOD = new Set(["IN01", "IN04", "EN04"]);
+export const HIGH_IS_BAD = new Set(["EN03", "EN01", "CL01", "RS01", "RS03", "RS05", "RS07", "RS09"]);
 const PARTS = METRICS.filter((m) => !m.demo && (HIGH_IS_GOOD.has(m.id) || HIGH_IS_BAD.has(m.id)));
 
 /** percentile with ties counted half, oriented so that higher = better */
