@@ -32,7 +32,7 @@ export default function ReportDocument({ input, ai, source }: { input: ReportInp
   const years = input.price ? Object.entries(input.price.years).sort(([a], [b]) => a.localeCompare(b)).slice(-7).map(([y, v]) => [y, v.median] as [string, number]) : [];
   const hazards = [input.hazards.RS07, input.hazards.RS09, input.hazards.RS05].filter(Boolean).length;
   const crime = metric("RS01");
-  const page = (n: number) => <footer className="rd-foot"><span>ATLAS CHILE · {input.object.title}</span><span>{n}</span></footer>;
+  const page = (n: number) => <footer className="rd-foot"><span>PROMETEO · prometeo.land · {input.object.title}</span><span>{n}</span></footer>;
 
   // running footer of the printed PDF (Chrome/Edge page margin boxes); the on-screen sheets use .rd-foot
   const pageCss = `@page{@bottom-left{content:${JSON.stringify(`ATLAS CHILE · ${input.object.title.replace(/[<>{}\\"]/g, "")}`)};font:8pt sans-serif;color:#8a948f}@bottom-right{content:counter(page);font:8pt sans-serif;color:#8a948f}}`;

@@ -13,7 +13,7 @@ export function Locked({ rows = 8, compact = false }: { rows?: number; compact?:
       <div className="tr-lock">
         <strong>{tr("lockTitle")}</strong>
         {!compact && <p>{tr("lockText")}</p>}
-        <Link href="/account" className="at-primary tr-lock-cta">{tr("lockCta")}</Link>
+        <Link href="/pricing" className="at-primary tr-lock-cta">{tr("lockCta")}</Link>
       </div>
     </div>
   );

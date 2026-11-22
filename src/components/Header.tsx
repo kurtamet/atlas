@@ -6,6 +6,7 @@ import { useMe } from "@/lib/access";
 const NAV = [
   { href: "/", key: "explore" },
   { href: "/trends", key: "trends" },
+  { href: "/pricing", key: "pricing" },
   { href: "/partners", key: "partners" },
 ] as const;
 
@@ -16,8 +17,8 @@ export default function Header() {
   return (
     <>
       <header className="at-header">
-        <Link href="/" className="at-wordmark" aria-label="Atlas Chile">
-          <strong>ATLAS</strong>
+        <Link href="/" className="at-wordmark" aria-label="PROMETEO">
+          <strong>PROMETEO</strong>
           <div className="at-brand-rule" />
           <span>CHILE</span>
         </Link>
@@ -30,6 +31,7 @@ export default function Header() {
         </nav>
         <Link href="/account" className="at-account" aria-current={pathname === "/account" ? "page" : undefined}>
           <span className="at-account-label">{me && !me.email && me.configured ? t("nav.signIn") : t("nav.account")}</span>
+          {me?.email && (me.plan || me.credits > 0) && <span className="pm-chip">{me.plan ? t(`nav.plan_${me.plan}`) : t("nav.credits", { n: me.credits })}</span>}
         </Link>
       </header>
       <div className="at-note">

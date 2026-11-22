@@ -7,6 +7,7 @@ import type { PointFacts, Observation, PoiGroup, LngLat } from "@/lib/object/fac
 import type { AreaCollection } from "@/lib/geo";
 import { buildReportInput, ruleVerdict } from "@/lib/report/input";
 import { ScoreBars, FAVOUR } from "./report/charts";
+import { ReportInfoButton } from "./commerce/ReportInfo";
 
 import type { PriceInfo } from "@/lib/report/input";
 export type { PriceInfo };
@@ -79,6 +80,7 @@ export default function ObjectReport(props: {
           </div>
           <div className="at-report-actions">
             <button type="button" className="at-primary" onClick={props.onReport}>{t("drawer.teaserCta")}</button>
+            <ReportInfoButton />
             <button type="button" className="at-close" aria-label={t("drawer.close")} onClick={onClose}>×</button>
           </div>
         </div>
@@ -97,7 +99,7 @@ export default function ObjectReport(props: {
             </div>
             <div className="at-preview-lock">
               <p>{r("previewLocked")}</p>
-              <button type="button" className="at-primary" onClick={props.onReport}>{t("drawer.teaserCta")}</button>
+              <div className="pm-cta-row"><button type="button" className="at-primary" onClick={props.onReport}>{t("drawer.teaserCta")}</button><ReportInfoButton /></div>
             </div>
           </div>
         </div>
@@ -190,7 +192,7 @@ export default function ObjectReport(props: {
             <span className="at-eyebrow">{t("drawer.teaserEyebrow")}</span>
             <h3>{t("drawer.teaserTitle")}</h3>
             <p>{r("paidAdds")}</p>
-            <button type="button" className="at-primary" onClick={props.onReport}>{t("drawer.teaserCta")}</button>
+            <div className="pm-cta-row"><button type="button" className="at-primary" onClick={props.onReport}>{t("drawer.teaserCta")}</button><ReportInfoButton /></div>
           </div>
         </div>
         <p className="at-subline">{r("disclaimer")}</p>

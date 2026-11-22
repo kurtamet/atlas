@@ -61,7 +61,7 @@ export default async function AdminPage({ params }: { params: Promise<{ locale: 
                 <td>{credits(r)}</td>
                 <td>{r.reports.length}{last ? <><br /><span className="ac-muted">{fmt(last)}</span></> : null}</td>
                 <td className="ad-actions">
-                  <form action={grantSubscription}><input type="hidden" name="user_id" value={r.id} /><input name="days" type="number" defaultValue={30} min={1} max={400} /><button className="at-secondary">{t("grant")}</button></form>
+                  <form action={grantSubscription}><input type="hidden" name="user_id" value={r.id} /><select name="plan" defaultValue="unlimited"><option value="basic">Básica</option><option value="partner">Partner</option><option value="unlimited">Ilimitada</option></select><input name="days" type="number" defaultValue={30} min={1} max={400} /><button className="at-secondary">{t("grant")}</button></form>
                   {end && <form action={cancelSubscription}><input type="hidden" name="user_id" value={r.id} /><button className="at-secondary">{t("cancel")}</button></form>}
                   <form action={addCredits}><input type="hidden" name="user_id" value={r.id} /><input name="credits" type="number" defaultValue={10} min={1} max={100} /><button className="at-secondary">{t("addCredits")}</button></form>
                   <form action={addNote}><input type="hidden" name="user_id" value={r.id} /><input name="body" placeholder={t("notePh")} /><button className="at-secondary">{t("addNote")}</button></form>

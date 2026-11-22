@@ -19,7 +19,8 @@ const uid = (f: FormData) => {
 export async function grantSubscription(f: FormData) {
   const { db } = await admin();
   const days = Math.min(400, Math.max(1, Number(f.get("days")) || 30));
-  await db.from("subscriptions").insert({ user_id: uid(f), plan: "unlimited", status: "active", current_period_end: new Date(Date.now() + days * 864e5).toISOString(), provider: "manual" });
+  const plan = ["basic", "partner", "unlimited"].includes(String(f.get("plan"))) ? String(f.get("plan")) : "unlimited";
+  await db.from("subscriptions").insert({ user_id: uid(f), plan, status: "active", current_period_end: new Date(Date.now() + days * 864e5).toISOString(), provider: "manual" });
   done();
 }
 
@@ -32,7 +33,7 @@ export async function cancelSubscription(f: FormData) {
 export async function addCredits(f: FormData) {
   const { db } = await admin();
   const credits = Math.min(100, Math.max(1, Number(f.get("credits")) || 1));
-  await db.from("purchases").insert({ user_id: uid(f), kind: credits === 1 ? "single" : "pack", credits, status: "paid", provider: "manual" });
+  await db.from("purchases").insert({ user_id: uid(f), kind: "pack", product: "manual", credits, status: "paid", provider: "manual" });
   done();
 }
 
