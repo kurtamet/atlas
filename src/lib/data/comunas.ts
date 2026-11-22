@@ -17,10 +17,10 @@ type Loader = <T>(file: string) => Promise<T>;
 const fetchLoader: Loader = <T,>(f: string) => fetch(`/data/${f}`).then((r) => r.json() as Promise<T>);
 
 /**
- * Trends paywall switch. Off for now (decided 2026-11-21: trends open to everyone while the user base grows);
- * set NEXT_PUBLIC_TRENDS_PAYWALL=1 to bring back the free/subscriber split.
+ * Trends paywall switch. On since 2026-11-22 (a 5-minute full preview, then plans only);
+ * NEXT_PUBLIC_TRENDS_PAYWALL=0 opens trends to everyone again.
  */
-export const TRENDS_PAYWALL = process.env.NEXT_PUBLIC_TRENDS_PAYWALL === "1";
+export const TRENDS_PAYWALL = process.env.NEXT_PUBLIC_TRENDS_PAYWALL !== "0";
 
 /** subscriber-only parts of the table: yearly prices and derived extras (changes, projections) */
 export const FREE_LAYERS = new Set(["QX00", "EC02", "SO01", "IN01", "EN04"]);

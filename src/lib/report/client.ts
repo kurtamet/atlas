@@ -24,7 +24,7 @@ export function requestReport(input: ReportInput, locale: string): void {
   save({ input });
   window.open(`/${locale}/report?id=${id}`, "_blank");
   fetch("/api/report", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ input }) })
-    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.status === 402 ? "payment" : String(r.status)))))
     .then((j: { ai: ReportAI; source: "claude" | "rules"; savedId?: string | null }) => save({ input, ai: j.ai, source: j.source, savedId: j.savedId }))
     .catch((e: Error) => save({ input, error: e.message }));
 }

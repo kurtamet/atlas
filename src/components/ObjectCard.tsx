@@ -4,7 +4,8 @@ import { useLocale, useTranslations } from "next-intl";
 import ObjectReport, { type PriceInfo } from "./ObjectReport";
 import { buildReportInput } from "@/lib/report/input";
 import { catastroOf } from "@/lib/object/catastro";
-import { requestReport } from "@/lib/report/client";
+import BuyReport from "./commerce/BuyReport";
+import { ReportInfoButton } from "./commerce/ReportInfo";
 import type { AreaCollection } from "@/lib/geo";
 import { pointFacts, observations, type PointFacts, type PoisFile, type HazardsFile, type Observation, type LngLat } from "@/lib/object/facts";
 
@@ -44,6 +45,7 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
   const t = useTranslations("object");
   const [facts, setFacts] = useState<PointFacts | null>(null);
   const [open, setOpen] = useState(false);
+  const [buying, setBuying] = useState(false);
   const locale = useLocale();
   useEffect(() => {
     let live = true;
@@ -55,10 +57,11 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
   const height = Number(osm.render_height);
   const obs = facts ? observations(facts, { zone, comuna }) : null;
   const cat = catastroOf(osm);
-  const getReport = () => {
-    if (!facts || !obs) return;
-    requestReport(buildReportInput({ locale: locale === "en" ? "en" : "es", title, lngLat, area, height: Number.isFinite(height) && height > 0 ? height : undefined, facts, obs, zone, comuna, zones, comunas, price, pricePeriod, catastro: cat ? { ...cat, ...(osm.rol ? { rol: String(osm.rol) } : {}) } : null }), locale);
+  const makeInput = () => {
+    if (!facts || !obs) return null;
+    return buildReportInput({ locale: locale === "en" ? "en" : "es", title, lngLat, area, height: Number.isFinite(height) && height > 0 ? height : undefined, facts, obs, zone, comuna, zones, comunas, price, pricePeriod, catastro: cat ? { ...cat, ...(osm.rol ? { rol: String(osm.rol) } : {}) } : null });
   };
+  const getReport = () => setBuying(true);
   // teaser: the card shows the first findings; the paid report explains all of them
   const SHOWN = 2;
   const hidden = obs ? Math.max(0, obs.cons.length - SHOWN) + Math.max(0, obs.pros.length - SHOWN) : 0;
@@ -124,10 +127,15 @@ export default function ObjectCard({ lngLat, footprint, osm, zone, comuna, title
           <button type="button" className="at-secondary at-more" onClick={() => setOpen(true)}>{t("more")}</button>
           <div className="at-teaser">
             <strong>{hidden > 0 ? t("teaserMore", { n: hidden }) : t("teaserTitle")}</strong>
-            <button type="button" className="at-primary" onClick={getReport}>{t("teaserCta")}</button>
+            <p className="pm-teaser-line">{t("teaserLine")}</p>
+            <div className="pm-cta-row">
+              <button type="button" className="at-primary" onClick={getReport}>{t("teaserCta")}</button>
+              <ReportInfoButton />
+            </div>
           </div>
         </>
       )}
+      {buying && <BuyReport title={title} makeInput={makeInput} onClose={() => setBuying(false)} />}
       {open && facts && obs && (
         <ObjectReport
           onClose={() => setOpen(false)}

@@ -1,21 +1,20 @@
 import "server-only";
-import { adminClient, currentAccount } from "@/lib/supabase/server";
+import { adminClient } from "@/lib/supabase/server";
 import type { ReportInput } from "./input";
 import type { ReportAI } from "./schema";
 
+export type PaidWith = "subscription" | "credit" | "single" | "admin" | "preview";
+
 /**
- * Keeps a generated report in the signed-in user's account. What paid for it is recorded:
- * subscription, a pack credit, admin, or "preview" while payments are not live yet.
- * Returns the saved id, or null for anonymous visitors / no Supabase.
+ * Keeps a generated report: in the user's account, or (guest single purchase) without a user,
+ * reachable through its purchase. Records what paid for it. Returns the saved id, or null.
  */
-export async function saveReport(input: ReportInput, ai: ReportAI, source: "claude" | "rules"): Promise<string | null> {
-  const account = await currentAccount();
+export async function saveReport(input: ReportInput, ai: ReportAI, source: "claude" | "rules", userId: string | null, paidWith: PaidWith): Promise<string | null> {
   const db = adminClient();
-  if (!account || !db) return null;
-  const paidWith = account.role === "admin" ? "admin" : account.subscriber ? "subscription" : account.credits > 0 && source === "claude" ? "credit" : "preview";
+  if (!db) return null;
   const [lng, lat] = input.object.lngLat;
   const { data, error } = await db.from("reports").insert({
-    user_id: account.user.id,
+    user_id: userId,
     title: input.object.title,
     comuna: input.object.comuna,
     location: `SRID=4326;POINT(${lng} ${lat})`,

@@ -12,11 +12,16 @@ export interface Me {
   email: string | null;
   role: "user" | "admin" | null;
   subscriber: boolean;
+  plan: "basic" | "partner" | "unlimited" | null;
   subscriptionEnd: string | null;
+  /** reports left this billing month on the plan; null = unlimited */
+  planReportsLeft: number | null;
   credits: number;
+  /** the next report is already paid for (plan allowance, credit or admin) */
+  canReport: boolean;
 }
 
-const ANON: Me = { configured: false, email: null, role: null, subscriber: false, subscriptionEnd: null, credits: 0 };
+const ANON: Me = { configured: false, email: null, role: null, subscriber: false, plan: null, subscriptionEnd: null, planReportsLeft: 0, credits: 0, canReport: false };
 const KEY = "atlas-preview-subscriber";
 let me: Me | null = null;
 let pending: Promise<void> | null = null;

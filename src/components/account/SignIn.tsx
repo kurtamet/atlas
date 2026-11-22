@@ -4,9 +4,9 @@ import { useTranslations } from "next-intl";
 import { browserClient } from "@/lib/supabase/browser";
 
 /** passwordless sign-in: Supabase e-mails a one-time link that lands on /api/auth/callback */
-export default function SignIn({ failed = false }: { failed?: boolean }) {
+export default function SignIn({ failed = false, email: initial = "" }: { failed?: boolean; email?: string }) {
   const t = useTranslations("acct");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initial);
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const sb = browserClient();
   if (!sb) return <p className="at-lead">{t("notConfigured")}</p>;
