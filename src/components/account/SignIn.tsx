@@ -7,7 +7,7 @@ import { browserClient } from "@/lib/supabase/browser";
 export default function SignIn({ failed = false, email: initial = "" }: { failed?: boolean; email?: string }) {
   const t = useTranslations("acct");
   const [email, setEmail] = useState(initial);
-  const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "error" | "limit">("idle");
   const sb = browserClient();
   if (!sb) return <p className="at-lead">{t("notConfigured")}</p>;
   const submit = async (e: React.FormEvent) => {
@@ -15,7 +15,9 @@ export default function SignIn({ failed = false, email: initial = "" }: { failed
     setState("sending");
     const next = window.location.pathname;
     const { error } = await sb.auth.signInWithOtp({ email: email.trim(), options: { emailRedirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(next)}` } });
-    setState(error ? "error" : "sent");
+    // 429: the mail service hit its hourly limit (not the user's fault)
+    setState(!error ? "sent" : error.status === 429 ? "limit" : "error");
+    if (error) console.warn("sign-in e-mail failed", error.status, error.message);
   };
   return (
     <form className="ac-signin" onSubmit={submit}>
@@ -27,6 +29,7 @@ export default function SignIn({ failed = false, email: initial = "" }: { failed
           <label className="ac-field"><span>{t("email")}</span><input type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nombre@empresa.cl" /></label>
           <button type="submit" className="at-primary" disabled={state === "sending"}>{state === "sending" ? t("sending") : t("sendLink")}</button>
           {state === "error" && <p className="ac-error">{t("sendError")}</p>}
+          {state === "limit" && <p className="ac-error">{t("sendLimit")}</p>}
         </>
       )}
     </form>

@@ -553,7 +553,8 @@
     "buyPack": "Comprar un pack",
     "upgrade": "Cambiar de plan",
     "billing": "Facturación y cancelación",
-    "planChanged": "Plan actualizado. La diferencia del mes en curso se cobra (o abona) de forma proporcional."
+    "planChanged": "Plan actualizado. La diferencia del mes en curso se cobra (o abona) de forma proporcional.",
+    "sendLimit": "Enviamos demasiados enlaces en la última hora. Inténtalo de nuevo en unos minutos; si ya pediste un enlace, revisa tu correo (también spam)."
   },
   "admin": {
     "eyebrow": "Administración",

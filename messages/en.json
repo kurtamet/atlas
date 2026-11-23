@@ -553,7 +553,8 @@
     "buyPack": "Buy a pack",
     "upgrade": "Change plan",
     "billing": "Billing and cancellation",
-    "planChanged": "Plan updated. The difference for the current month is charged (or credited) pro rata."
+    "planChanged": "Plan updated. The difference for the current month is charged (or credited) pro rata.",
+    "sendLimit": "We have sent too many sign-in links in the last hour. Try again in a few minutes; if you already asked for a link, check your inbox (and spam)."
   },
   "admin": {
     "eyebrow": "Administration",
