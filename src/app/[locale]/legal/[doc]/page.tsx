@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { LEGAL_TEXT } from "@/lib/legal/content";
-import { LEGAL_DOCS, LEGAL_UPDATED, LEGAL_VERSION, OPERATOR, isLegalDoc } from "@/lib/legal/operator";
+import { LEGAL_DOCS, LEGAL_UPDATED, LEGAL_VERSION, OPERATOR, isLegalDoc, operatorLine } from "@/lib/legal/operator";
 
 export function generateStaticParams() {
   return routing.locales.flatMap((locale) => LEGAL_DOCS.map((doc) => ({ locale, doc })));
@@ -16,20 +16,20 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale, doc } = await params;
   if (!isLegalDoc(doc)) return {};
   const d = LEGAL_TEXT[lang(locale)][doc];
-  return { title: `${d.title} · PROMETEO`, description: fillText(d.summary) };
+  return { title: `${d.title} · PROMETEO`, description: fillText(d.summary, lang(locale)) };
 }
 
-const TOKENS: Record<string, string> = { name: OPERATOR.name, rut: OPERATOR.rut, address: OPERATOR.address, email: OPERATOR.email, site: OPERATOR.site };
-const fillText = (s: string) => s.replace(/\{(\w+)\}/g, (m, k: string) => TOKENS[k] ?? m);
+const tokens = (l: "es" | "en"): Record<string, string> => ({ operator: operatorLine(l), email: OPERATOR.email, site: OPERATOR.site });
+const fillText = (s: string, l: "es" | "en") => s.replace(/\{(\w+)\}/g, (m, k: string) => tokens(l)[k] ?? m);
 
-/** fills {tokens}; the e-mail becomes a link and unfilled [placeholders] are highlighted */
-function fill(s: string): ReactNode {
+/** fills {tokens}; the e-mail becomes a link */
+function fill(s: string, l: "es" | "en"): ReactNode {
+  const tk = tokens(l);
   return s.split(/(\{\w+\})/g).map((part, i) => {
     const k = /^\{(\w+)\}$/.exec(part)?.[1];
-    if (!k || !(k in TOKENS)) return <Fragment key={i}>{part}</Fragment>;
-    const v = TOKENS[k];
-    if (k === "email") return <a key={i} href={`mailto:${v}`}>{v}</a>;
-    return v.includes("[") ? <mark key={i} className="lg-ph">{v}</mark> : <Fragment key={i}>{v}</Fragment>;
+    if (!k || !(k in tk)) return <Fragment key={i}>{part}</Fragment>;
+    if (k === "email") return <a key={i} href={`mailto:${tk[k]}`}>{tk[k]}</a>;
+    return <Fragment key={i}>{tk[k]}</Fragment>;
   });
 }
 
@@ -50,16 +50,16 @@ export default async function LegalPage({ params }: { params: Promise<{ locale: 
       <p className="at-eyebrow">{t("eyebrow")}</p>
       <h1>{d.title}</h1>
       <p className="lg-meta">{t("updated", { date: LEGAL_UPDATED[l], version: LEGAL_VERSION })}</p>
-      <p className="lg-beta">{t("beta")}</p>
-      <p className="at-lead">{fill(d.summary)}</p>
+      <p className="lg-beta">{t("beta", { name: OPERATOR.name })}</p>
+      <p className="at-lead">{fill(d.summary, l)}</p>
       <div className="lg-body">
         {d.sections.map((s) => (
           <article key={s.h}>
             <h2>{s.h}</h2>
             {s.p.map((p, i) =>
               Array.isArray(p)
-                ? <ul key={i}>{p.map((li, j) => <li key={j}>{fill(li)}</li>)}</ul>
-                : <p key={i}>{fill(p)}</p>,
+                ? <ul key={i}>{p.map((li, j) => <li key={j}>{fill(li, l)}</li>)}</ul>
+                : <p key={i}>{fill(p, l)}</p>,
             )}
           </article>
         ))}

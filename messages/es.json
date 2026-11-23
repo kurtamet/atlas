@@ -723,7 +723,7 @@
     "tab_privacy": "Privacidad",
     "tab_refunds": "Pagos y reembolsos",
     "updated": "Última actualización: {date} · versión {version}",
-    "beta": "Versión beta. Estos textos son una plantilla provisional mientras PROMETEO está en etapa de prueba y serán revisados por un abogado. Los datos del titular marcados entre corchetes se completarán al constituir la empresa en Chile.",
+    "beta": "Versión beta. Mientras se constituye la empresa en Chile, PROMETEO es operado por {name}. Estos textos son una plantilla provisional que será revisada por un abogado y se actualizará cuando cambie el titular.",
     "contact": "¿Preguntas sobre estos textos? Escríbenos a",
     "consentSingle": "Acepto los <terms>Términos y Condiciones</terms>, la <privacy>Política de Privacidad</privacy> y la <refunds>Política de Pagos y Reembolsos</refunds>. Entiendo que el informe se entrega de inmediato y que, una vez entregado, no aplica el derecho de retracto.",
     "consentPlans": "Acepto los <terms>Términos y Condiciones</terms>, la <privacy>Política de Privacidad</privacy> y la <refunds>Política de Pagos y Reembolsos</refunds>. Entiendo que las suscripciones se renuevan cada mes hasta que las cancele.",

@@ -723,7 +723,7 @@
     "tab_privacy": "Privacy",
     "tab_refunds": "Payments & refunds",
     "updated": "Last updated: {date} · version {version}",
-    "beta": "Beta version. These texts are a provisional template while PROMETEO is in testing and will be reviewed by a lawyer. Operator details in brackets will be completed once the Chilean company is set up. The Spanish version prevails.",
+    "beta": "Beta version. Until the Chilean company is set up, PROMETEO is operated by {name}. These texts are a provisional template that will be reviewed by a lawyer and updated when the operator changes. The Spanish version prevails.",
     "contact": "Questions about these texts? Write to",
     "consentSingle": "I accept the <terms>Terms of Use</terms>, the <privacy>Privacy Policy</privacy> and the <refunds>Payments and Refunds Policy</refunds>. I understand the report is delivered immediately and that, once delivered, the right of withdrawal does not apply.",
     "consentPlans": "I accept the <terms>Terms of Use</terms>, the <privacy>Privacy Policy</privacy> and the <refunds>Payments and Refunds Policy</refunds>. I understand subscriptions renew every month until I cancel.",
