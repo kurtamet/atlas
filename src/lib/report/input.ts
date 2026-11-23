@@ -4,6 +4,7 @@
  * so tokens are spent on interpretation, never on layout, figures or charts.
  */
 import type { CatastroFacts } from "../object/catastro.ts";
+import type { Unit, Mix, Valuation } from "../object/units.ts";
 import { METRICS, type Metric, type FamilyId } from "../layers/registry.ts";
 import type { PointFacts, Observation, PoiGroup, LngLat } from "../object/facts.ts";
 
@@ -54,6 +55,12 @@ export interface ReportInput {
   extras: Record<string, number | string | null>;
   /** SII catastro aggregates of the building (or of one rol), from the building tile or the rol search */
   catastro?: (CatastroFacts & { rol?: string }) | null;
+  /** the unit the report is about (picked by the user or the only one), null = the building as a whole */
+  unit?: Unit | null;
+  /** SII rols of the building by kind (apartments, offices, parking…) */
+  mix?: Mix | null;
+  /** price benchmark of the unit's (or the building's main) kind, and the estimate for the picked unit */
+  valuation?: Valuation | null;
 }
 
 function percentile(all: AreaLike | null, id: string, v: number): number | null {
@@ -94,6 +101,9 @@ export function buildReportInput(a: {
   price?: PriceInfo;
   pricePeriod?: [string, string];
   catastro?: (CatastroFacts & { rol?: string }) | null;
+  unit?: Unit | null;
+  mix?: Mix | null;
+  valuation?: Valuation | null;
 }): ReportInput {
   const metrics = METRICS.map((m) => metricValue(m, a.zone, a.comuna, a.zones, a.comunas)).filter((x): x is MetricValue => !!x);
   const by = (id: string) => metrics.find((m) => m.id === id)?.favour;
@@ -133,12 +143,17 @@ export function buildReportInput(a: {
       EN03_day65: pick("EN03_day65"), EN03_night55: pick("EN03_night55"), CL01_future: pick("CL01_d"), EN01_station: pick("EN01_st"),
     },
     catastro: a.catastro ?? null,
+    unit: a.unit ?? null,
+    mix: a.mix ?? null,
+    valuation: a.valuation ?? null,
   };
 }
 
 /** what Claude sees: the same facts without presentation-only fields */
 export function promptPayload(i: ReportInput) {
-  return { locale: i.locale, object: i.object, metrics: i.metrics, walk: i.walk, metroName: i.metroName, hazards: i.hazards, price: i.price, flags: i.flags, scores: i.scores, extras: i.extras, catastro: i.catastro ?? null };
+  return { locale: i.locale, object: i.object, metrics: i.metrics, walk: i.walk, metroName: i.metroName, hazards: i.hazards, price: i.price, flags: i.flags, scores: i.scores, extras: i.extras, catastro: i.catastro ?? null,
+    unit: i.unit ? { kind: i.unit.kind, rol: i.unit.rol, address: i.unit.dir, m2: i.unit.m2 || null, year: i.unit.yr || null, avaluoUF: i.unit.av || null } : null,
+    buildingUnits: i.mix ?? null, valuation: i.valuation ?? null };
 }
 
 /** verdict from scores and flags alone: used for the free preview and the no-AI draft */

@@ -5,7 +5,7 @@
 import type { ReportAI } from "./schema.ts";
 import { ruleVerdict, type ReportInput, type Flag } from "./input.ts";
 
-type Msgs = { object: { obs: Record<string, string> }; reportDoc: Record<string, string> };
+type Msgs = { object: { obs: Record<string, string>; unit: Record<string, string> }; reportDoc: Record<string, string> };
 
 /** free-card flag -> evidence key the template knows how to label */
 const EVIDENCE: Record<string, string> = {
@@ -31,9 +31,20 @@ export function ruleDraft(i: ReportInput, m: Msgs): ReportAI {
     overview: fill(m.reportDoc.fb_overview, { comuna: i.object.comuna }),
     strengths: i.flags.pros.slice(0, 5).map((f) => ({ title: shortTitle(text(f)), detail: text(f), evidence: EVIDENCE[f.key] ?? f.key })),
     risks: i.flags.cons.slice(0, 5).map((f) => ({ title: shortTitle(text(f)), detail: text(f), severity: high.has(f.key) ? "high" : "medium", mitigation: m.reportDoc.fb_mitigation, evidence: EVIDENCE[f.key] ?? f.key })),
-    value: { position: i.price ? "in_line" : "unknown", comment: i.price ? fill(m.reportDoc.fb_value, { comuna: i.object.comuna, median: new Intl.NumberFormat(i.locale === "es" ? "es-CL" : "en-US").format(i.price.median), n: comunaPrices.length }) : m.reportDoc.fb_noValue },
+    value: i.valuation ? valueFromBenchmark(i, m) : { position: i.price ? "in_line" : "unknown", comment: i.price ? fill(m.reportDoc.fb_value, { comuna: i.object.comuna, median: new Intl.NumberFormat(i.locale === "es" ? "es-CL" : "en-US").format(i.price.median), n: comunaPrices.length }) : m.reportDoc.fb_noValue },
     audiences: (["family", "first_buyer", "investor_rent", "flipper", "senior"] as const).map((audience) => ({ audience, fit: "neutral", reason: m.reportDoc.fb_audience })),
     checks: [m.reportDoc.fb_check1, m.reportDoc.fb_check2, m.reportDoc.fb_check3],
     negotiation: [],
+  };
+}
+
+function valueFromBenchmark(i: ReportInput, m: Msgs): ReportAI["value"] {
+  const v = i.valuation!;
+  const nf = new Intl.NumberFormat(i.locale === "es" ? "es-CL" : "en-US", { maximumFractionDigits: 1 });
+  const p = { kind: m.object.unit[`kindsGen_${v.kind}`], where: m.object.unit[`where_${v.level}`], med: nf.format(v.med) };
+  const position = v.rmMed === null || v.level === "RM" ? "unknown" : v.med < v.rmMed * 0.9 ? "below" : v.med > v.rmMed * 1.1 ? "above" : "in_line";
+  return {
+    position,
+    comment: v.estimate ? fill(m.reportDoc.fb_valueEst, { ...p, low: nf.format(v.estimate.low), high: nf.format(v.estimate.high) }) : fill(m.reportDoc.fb_valueBench, p),
   };
 }
