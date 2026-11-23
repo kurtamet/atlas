@@ -12,6 +12,7 @@ export default function Footer() {
     <footer className="at-footer" data-explore={pathname === "/" ? "true" : undefined}>
       <span>{t("tagline")} · © {new Date().getFullYear()} {OPERATOR.name}</span>
       <div className="at-footer-links">
+        <Link href="/about">{t("about")}</Link>
         <Link href="/methods">{t("methods")}</Link>
         <Link href="/partners">{t("api")}</Link>
         <Link href="/legal/terms">{t("terms")}</Link>

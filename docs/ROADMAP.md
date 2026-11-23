@@ -20,6 +20,11 @@ Decided items waiting for their turn. Newest decisions first.
 
 ## Data
 
+- **Connectivity layer IN07: mobile coverage and internet speed (decided 2026-11-23).** Goes into the "Vida cotidiana" family; shown on the About page and in the presentation as "coming soon".
+  - Draft pipeline: `pipeline/connectivity_ookla.py` (Ookla Speedtest Open Data, quarterly ~610 m tiles, anonymous S3). Per zone and comuna, separately for mobile and fixed: mean download/upload Mbps, latency, tests, devices; zones with fewer than 10 tests stay "no data". First run 2026-Q3: mobile data in 871 of 5 602 zones (median 110 Mbps), fixed in 1 563 (median 460 Mbps), all 32 comunas covered.
+  - **Licence blocker:** Ookla open data is CC BY-NC-SA 4.0 (non-commercial). Before showing it on the paid product: either get a commercial licence from Ookla, or use official SUBTEL data (coverage maps by operator and technology, internet connections per comuna). subtel.gob.cl is not reachable from the cloud, so add a Chile-side downloader in `pipeline/chile/` like CEAD/SINCA.
+  - Then: register IN07 in `src/lib/layers/registry.ts`, add to the object card ("4G/5G coverage, typical speed") and to trends.
+
 - SII catastro (Detalle Catastral): local downloader `pipeline/chile/fetch_catastro.py` asks for login at run time. Then:
   - EC01 (UF/m²);
   - type, area, year and avalúo in the object card;
