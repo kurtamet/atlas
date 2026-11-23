@@ -15,7 +15,7 @@ import type { ReportInput } from "@/lib/report/input";
  * The step between "get the full report" and the report: uses what the user already has
  * (plan allowance, pack credit) or sells one report on the spot, without an account.
  */
-export default function BuyReport({ title, makeInput, onClose }: { title: string; makeInput: () => ReportInput | null; onClose: () => void }) {
+export default function BuyReport({ title, makeInput, onClose, unitSlot }: { title: string; makeInput: () => ReportInput | null; onClose: () => void; unitSlot?: React.ReactNode }) {
   const t = useTranslations("buy");
   const locale = useLocale();
   const { me } = useMe();
@@ -55,6 +55,7 @@ export default function BuyReport({ title, makeInput, onClose }: { title: string
       <div className="pm-buy">
         <span className="at-eyebrow">{t("eyebrow")} <ReportInfoButton /></span>
         <h2>{title}</h2>
+        {unitSlot}
         {paid ? (
           <>
             <p className="pm-lead">{source || t("ready")}</p>
