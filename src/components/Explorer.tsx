@@ -249,7 +249,7 @@ export default function Explorer() {
           const pt: [number, number] = [h.lon, h.lat];
           setMarker(pt);
           fly({ kind: "fly", center: pt, zoom: 17 });
-          const osm = { rol: rolTxt, nr: 1, u: h.ds === "H" ? 1 : 0, ds: h.ds, m2u: h.m2 || "", yr: h.yr || "", av: h.av || "", how: h.how };
+          const osm = { rol: rolTxt, nr: 1, u: h.ds === "H" ? 1 : 0, ds: h.ds, dir: h.dir, m2u: h.m2 || "", yr: h.yr || "", av: h.av || "", how: h.how };
           if (!selectObject({ lngLat: pt, footprint: null, osm }, h.dir)) {
             setSelection(null);
             setMessage(t("search.outside"));

@@ -9,6 +9,7 @@ import { formatValue } from "@/lib/layers/style";
 import type { ReportInput } from "@/lib/report/input";
 import type { ReportAI } from "@/lib/report/schema";
 import type { PoiGroup } from "@/lib/object/facts";
+import { KINDS, unitLabel } from "@/lib/object/units";
 import { ScoreBars, PercentileStrip, WalkBars, PriceColumns, FAVOUR } from "./charts";
 
 const GROUPS: PoiGroup[] = ["metro", "transport", "food", "pharmacy", "health", "park", "school"];
@@ -32,6 +33,9 @@ export default function ReportDocument({ input, ai, source }: { input: ReportInp
   const years = input.price ? Object.entries(input.price.years).sort(([a], [b]) => a.localeCompare(b)).slice(-7).map(([y, v]) => [y, v.median] as [string, number]) : [];
   const hazards = [input.hazards.RS07, input.hazards.RS09, input.hazards.RS05].filter(Boolean).length;
   const crime = metric("RS01");
+  const u = useTranslations("object.unit");
+  const val = input.valuation ?? null;
+  const benchArgs = val ? { kind: u(`kind_${val.kind}`), where: u(`where_${val.level}`), med: num(val.med, 1), p25: num(val.p25, 1), p75: num(val.p75, 1), n: num(val.n) } : null;
   const page = (n: number) => <footer className="rd-foot"><span>PROMETEO · prometeo.land · {input.object.title}</span><span>{n}</span></footer>;
 
   // running footer of the printed PDF (Chrome/Edge page margin boxes); the on-screen sheets use .rd-foot
@@ -47,6 +51,13 @@ export default function ReportDocument({ input, ai, source }: { input: ReportInp
             <p className="rd-eyebrow">{d("eyebrow")}</p>
             <h1>{input.object.title}</h1>
             <p className="rd-sub">{input.object.comuna}{input.object.zone ? ` · ${t("drawer.zone")} ${input.object.zone}` : ""} · {input.object.lngLat[1]}, {input.object.lngLat[0]}</p>
+            {(input.unit || input.mix) && (
+              <p className="rd-sub">
+                {input.unit
+                  ? [u(`kind_${input.unit.kind}`), unitLabel(input.unit.dir), input.unit.m2 ? `${num(input.unit.m2)} m²` : null, input.unit.yr ? `${o("cat.year", { y: input.unit.yr })}` : null, `rol ${input.unit.rol}`].filter(Boolean).join(" · ")
+                  : `${d("unitWhole")}: ${KINDS.filter((k) => input.mix?.[k]).map((k) => u(`kinds_${k}`, { n: input.mix![k]! })).join(" · ")}`}
+              </p>
+            )}
           </div>
           <div className="rd-date">{date}</div>
         </header>
@@ -63,7 +74,13 @@ export default function ReportDocument({ input, ai, source }: { input: ReportInp
         )}
         <div className="rd-tiles">
           <div><b>{input.walk.metro !== undefined ? `~${input.walk.metro} min` : "—"}</b><span>{d("tileMetro")}{input.metroName ? ` · ${input.metroName}` : ""}</span></div>
-          <div><b>{input.price ? `${num(input.price.median)} UF` : "—"}</b><span>{d("tilePrice", { comuna: input.object.comuna })}</span></div>
+          {val?.estimate ? (
+            <div><b>≈ {num(val.estimate.mid)} UF</b><span>{d("tileEstimate")}</span></div>
+          ) : val && val.basis === "m2" ? (
+            <div><b>{num(val.med, 1)} UF/m²</b><span>{d("tileBench", { kind: u(`kindsGen_${val.kind}`), where: u(`where_${val.level}`) })}</span></div>
+          ) : (
+            <div><b>{input.price ? `${num(input.price.median)} UF` : "—"}</b><span>{d("tilePrice", { comuna: input.object.comuna })}</span></div>
+          )}
           <div><b style={{ color: hazards ? FAVOUR.bad : FAVOUR.good }}>{hazards ? d("tileHazardsYes", { n: hazards }) : d("tileHazardsNo")}</b><span>{d("tileHazards")}</span></div>
           <div><b>{crime ? num(crime.value) : "—"}</b><span>{d("tileCrime")}</span></div>
         </div>
@@ -101,6 +118,20 @@ export default function ReportDocument({ input, ai, source }: { input: ReportInp
         <ol className="rd-list">{ai.checks.map((c, i) => <li key={i}>{c}</li>)}</ol>
         {ai.negotiation.length > 0 && (<><h3 className="rd-h">{d("negotiation")}</h3><ul className="rd-list">{ai.negotiation.map((c, i) => <li key={i}>{c}</li>)}</ul></>)}
         <h3 className="rd-h">{d("value")}</h3>
+        {val && benchArgs && (
+          <>
+            {val.estimate && (
+              <div className="rd-estimate">
+                <span>{d("estimate")}{input.unit ? ` · ${unitLabel(input.unit.dir)}` : ""}</span>
+                <b>{d("estimateRange", { low: num(val.estimate.low), high: num(val.estimate.high) })}</b>
+                <small>{d("estimateMid", { mid: num(val.estimate.mid) })}</small>
+              </div>
+            )}
+            <p>{d(`valueBench_${val.basis}`, benchArgs)}{val.rmMed && val.level !== "RM" ? ` ${d("valueRm", { med: num(val.rmMed, 1) })}` : ""}</p>
+            {val.estimate && <p className="rd-note">{val.basis === "unit" ? d("estimateNoteUnit") : d("estimateNote", { m2: num(val.area ?? 0) })}</p>}
+            {input.price && <h4 className="rd-h4">{d("comunaContext")}</h4>}
+          </>
+        )}
         {input.price ? (
           <>
             <p>{d("priceLine", { comuna: input.object.comuna, median: num(input.price.median), p25: num(input.price.p25), p75: num(input.price.p75), n: num(input.price.n) })}</p>
