@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { adminClient } from "@/lib/supabase/server";
 import { RETAIL_CLP, packById, planById, type ProductId } from "./plans";
+import { LEGAL_VERSION } from "@/lib/legal/operator";
 
 /**
  * Stripe Checkout for PROMETEO. Prices are sent inline (price_data), so nothing has to be set up
@@ -74,7 +75,7 @@ export async function createCheckout(a: CheckoutArgs): Promise<string> {
   }
 
   const customer = a.user ? await customerFor(db, a.user) : undefined;
-  const metadata: Record<string, string> = { product: a.product, ...(purchaseId ? { purchase_id: purchaseId } : {}), ...(a.user ? { user_id: a.user.id } : {}) };
+  const metadata: Record<string, string> = { product: a.product, terms_version: LEGAL_VERSION, ...(purchaseId ? { purchase_id: purchaseId } : {}), ...(a.user ? { user_id: a.user.id } : {}) };
   const name = NAMES[a.product][a.locale];
   const success = a.product === "single"
     ? loc(`/report?order=${purchaseId}&session_id={CHECKOUT_SESSION_ID}`)
@@ -97,6 +98,9 @@ export async function createCheckout(a: CheckoutArgs): Promise<string> {
     metadata,
     ...(plan ? { subscription_data: { metadata } } : { payment_intent_data: { metadata } }),
     allow_promotion_codes: true,
+    custom_text: { submit: { message: a.locale === "en"
+      ? `By paying you accept the PROMETEO Terms, Privacy Policy and Payments and Refunds Policy: ${loc("/legal/terms")}`
+      : `Al pagar aceptas los Términos y Condiciones, la Política de Privacidad y la Política de Pagos y Reembolsos de PROMETEO: ${loc("/legal/terms")}` } },
     success_url: success,
     cancel_url: `${a.origin}${a.cancelPath.startsWith("/") && !a.cancelPath.startsWith("//") ? a.cancelPath : "/"}`,
   });

@@ -24,7 +24,10 @@
     "tagline": "PROMETEO · Inteligencia territorial",
     "methods": "Metodología",
     "api": "Integraciones y API",
-    "language": "Idioma"
+    "language": "Idioma",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "refunds": "Pagos y reembolsos"
   },
   "explore": {
     "searchLabel": "Dirección, rol SII o criterio",
@@ -711,6 +714,19 @@
     "legal": "Los informes son orientativos: no son una tasación ni asesoría legal o financiera.",
     "err_failed": "No pudimos abrir el pago. Inténtalo de nuevo en un momento.",
     "err_not_configured": "Los pagos aún no están activos en este servidor.",
-    "switch": "Cambiar a este plan"
+    "switch": "Cambiar a este plan",
+    "legalLink": "Términos y Condiciones"
+  },
+  "legal": {
+    "eyebrow": "Legal",
+    "tab_terms": "Términos y Condiciones",
+    "tab_privacy": "Privacidad",
+    "tab_refunds": "Pagos y reembolsos",
+    "updated": "Última actualización: {date} · versión {version}",
+    "beta": "Versión beta. Estos textos son una plantilla provisional mientras PROMETEO está en etapa de prueba y serán revisados por un abogado. Los datos del titular marcados entre corchetes se completarán al constituir la empresa en Chile.",
+    "contact": "¿Preguntas sobre estos textos? Escríbenos a",
+    "consentSingle": "Acepto los <terms>Términos y Condiciones</terms>, la <privacy>Política de Privacidad</privacy> y la <refunds>Política de Pagos y Reembolsos</refunds>. Entiendo que el informe se entrega de inmediato y que, una vez entregado, no aplica el derecho de retracto.",
+    "consentPlans": "Acepto los <terms>Términos y Condiciones</terms>, la <privacy>Política de Privacidad</privacy> y la <refunds>Política de Pagos y Reembolsos</refunds>. Entiendo que las suscripciones se renuevan cada mes hasta que las cancele.",
+    "consentRequired": "Marca la casilla para continuar."
   }
 }

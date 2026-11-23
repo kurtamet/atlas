@@ -24,7 +24,10 @@
     "tagline": "PROMETEO · Territorial intelligence",
     "methods": "Methodology",
     "api": "Integrations & API",
-    "language": "Language"
+    "language": "Language",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "refunds": "Payments & refunds"
   },
   "explore": {
     "searchLabel": "Address, SII rol or criteria",
@@ -711,6 +714,19 @@
     "legal": "Reports are indicative: they are not a valuation or legal or financial advice.",
     "err_failed": "We could not open checkout. Try again in a moment.",
     "err_not_configured": "Payments are not active on this server yet.",
-    "switch": "Switch to this plan"
+    "switch": "Switch to this plan",
+    "legalLink": "Terms of Use"
+  },
+  "legal": {
+    "eyebrow": "Legal",
+    "tab_terms": "Terms of Use",
+    "tab_privacy": "Privacy",
+    "tab_refunds": "Payments & refunds",
+    "updated": "Last updated: {date} · version {version}",
+    "beta": "Beta version. These texts are a provisional template while PROMETEO is in testing and will be reviewed by a lawyer. Operator details in brackets will be completed once the Chilean company is set up. The Spanish version prevails.",
+    "contact": "Questions about these texts? Write to",
+    "consentSingle": "I accept the <terms>Terms of Use</terms>, the <privacy>Privacy Policy</privacy> and the <refunds>Payments and Refunds Policy</refunds>. I understand the report is delivered immediately and that, once delivered, the right of withdrawal does not apply.",
+    "consentPlans": "I accept the <terms>Terms of Use</terms>, the <privacy>Privacy Policy</privacy> and the <refunds>Payments and Refunds Policy</refunds>. I understand subscriptions renew every month until I cancel.",
+    "consentRequired": "Tick the box to continue."
   }
 }

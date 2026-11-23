@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import Modal from "./Modal";
+import Consent from "./Consent";
 import { ReportInfoButton } from "./ReportInfo";
 import { startCheckout, type CheckoutError } from "./checkout";
 import { useMe, refreshMe } from "@/lib/access";
@@ -20,6 +21,8 @@ export default function BuyReport({ title, makeInput, onClose }: { title: string
   const { me } = useMe();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<CheckoutError | null>(null);
+  const [agreed, setAgreed] = useState(false);
+  const [missing, setMissing] = useState(false);
   const fmt = (n: number) => formatClp(n, locale);
   const bestPack = PACKS[0];
   const cheapestPlan = PLANS[0];
@@ -32,6 +35,7 @@ export default function BuyReport({ title, makeInput, onClose }: { title: string
     onClose();
   };
   const buySingle = async () => {
+    if (!agreed) { setMissing(true); return; }
     const input = makeInput();
     if (!input) return;
     setBusy(true);
@@ -66,6 +70,7 @@ export default function BuyReport({ title, makeInput, onClose }: { title: string
               </div>
               <button type="button" className="at-primary" disabled={busy} onClick={buySingle}>{busy ? t("redirecting") : t("pay", { price: fmt(RETAIL_CLP) })}</button>
             </div>
+            <Consent kind="single" checked={agreed} missing={missing} onChange={setAgreed} />
             {err && <p className="ac-error">{t(`err_${err}`)}</p>}
             <p className="pm-or">{t("or")}</p>
             <Link href="/pricing" className="pm-offer">
