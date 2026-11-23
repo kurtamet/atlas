@@ -264,7 +264,7 @@
       "for3Text": "Acceso a servicios, brechas de infraestructura, ruido, calor, conectividad y cobertura de datos.",
       "roadTitle": "Hacia dónde vamos",
       "r1": "Hoy",
-      "r1Text": "Santiago y la Región Metropolitana: capas, catastro, tipo de propiedad, informes y tendencias.",
+      "r1Text": "Santiago y la Región Metropolitana: capas, catastro, valoración por tipo de unidad, informes y tendencias.",
       "r2": "Próximo",
       "r2Text": "Todo Chile, capa de cobertura móvil e internet, fotos de edificios.",
       "r3": "Socios",
@@ -274,7 +274,15 @@
       "ctaMap": "Explorar el mapa",
       "ctaTrends": "Ver datos y tendencias",
       "ctaContact": "Escríbenos",
-      "operator": "PROMETEO es operado por {name}."
+      "operator": "PROMETEO es operado por {name}.",
+      "unitTitle": "Nuevo: el valor de tu unidad, no el promedio del barrio",
+      "unitLead": "PROMETEO lee la composición de cada edificio en el catastro del SII y valora la unidad concreta que eliges con ventas reales del mismo tipo.",
+      "u1": "Composición del edificio: por ejemplo, 89 oficinas, 6 locales, 717 estacionamientos y 35 bodegas.",
+      "u2": "Eliges tu unidad (DP 501, OF 32) en la ficha o al comprar el informe.",
+      "u3": "Se compara solo con ventas del mismo tipo: departamentos, casas, oficinas, locales, industria y terrenos; estacionamientos y bodegas por unidad.",
+      "u4": "La referencia viene del nivel más preciso con ventas suficientes: zona de ~1 km, luego comuna, luego región.",
+      "u5": "El informe entrega un rango de valor de la unidad con la mediana UF/m² y el número de ventas, y la IA escribe las conclusiones y la lista de verificación para ese tipo de propiedad.",
+      "uStats": "Base: 67 mil ventas de departamentos, 35 mil de casas y 49 mil de estacionamientos y bodegas (SII F2890, 10/2024–09/2026), además de oficinas, locales, industria y terrenos."
     }
   },
   "object": {

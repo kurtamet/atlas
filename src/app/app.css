@@ -450,3 +450,6 @@ a.pm-offer:hover{border-color:var(--at-brand)}
 .rd-estimate b{font-size:16pt;font-weight:700;color:#1f2a26}
 .rd-estimate small{color:#5f6b65;font-size:9pt}
 .rd-h4{margin:12px 0 4px;font-size:9.5pt;font-weight:650;color:#1f2a26}
+.atlas-root .at-about-new{background:var(--at-soft);border-left:3px solid var(--at-brand);padding:22px 26px;border-radius:6px}
+.atlas-root .at-about-new .at-about-list{margin-bottom:8px}
+.atlas-root .at-about-note{font-size:12px!important;margin-top:4px}

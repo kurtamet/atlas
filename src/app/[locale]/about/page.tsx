@@ -7,6 +7,7 @@ const STATS = ["1", "2", "3", "4"] as const;
 const HOW = ["how1", "how2", "how3"] as const;
 const FAMILY_KEYS = ["f1", "f2", "f3", "f4", "f5", "f6"] as const;
 const FAMILIES = FAMILY_KEYS.map((k, i) => [k, FAMILY_LIST[i].color] as const);
+const UNIT = ["u1", "u2", "u3", "u4", "u5"] as const;
 const METHOD = ["m1", "m2", "m3", "m4", "m5", "m6"] as const;
 const FOR = ["for1", "for2", "for3"] as const;
 const ROAD = ["r1", "r2", "r3", "r4"] as const;
@@ -52,6 +53,17 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
             </article>
           ))}
         </div>
+      </div>
+
+      <div className="at-about-block at-about-new">
+        <h2>{t("unitTitle")}</h2>
+        <p>{t("unitLead")}</p>
+        <ul className="at-about-list">
+          {UNIT.map((k) => (
+            <li key={k}>{t(k)}</li>
+          ))}
+        </ul>
+        <p className="at-about-note">{t("uStats")}</p>
       </div>
 
       <div className="at-about-block">

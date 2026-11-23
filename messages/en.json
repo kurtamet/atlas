@@ -264,7 +264,7 @@
       "for3Text": "Access to services, infrastructure gaps, noise, heat, connectivity and data coverage.",
       "roadTitle": "Where we are going",
       "r1": "Today",
-      "r1Text": "Santiago and the Metropolitan Region: layers, cadastre, property type, reports and trends.",
+      "r1Text": "Santiago and the Metropolitan Region: layers, cadastre, valuation by unit type, reports and trends.",
       "r2": "Next",
       "r2Text": "All of Chile, a mobile and internet coverage layer, building photos.",
       "r3": "Partners",
@@ -274,7 +274,15 @@
       "ctaMap": "Explore the map",
       "ctaTrends": "See data and trends",
       "ctaContact": "Contact us",
-      "operator": "PROMETEO is operated by {name}."
+      "operator": "PROMETEO is operated by {name}.",
+      "unitTitle": "New: the value of your unit, not the neighbourhood average",
+      "unitLead": "PROMETEO reads the composition of every building in the SII cadastre and values the specific unit you pick against actual sales of the same type.",
+      "u1": "Building composition: for example, 89 offices, 6 shops, 717 parking spaces and 35 storage units.",
+      "u2": "Pick your unit (DP 501, OF 32) in the card or when buying the report.",
+      "u3": "Compared only with sales of the same type: apartments, houses, offices, shops, industrial and land; parking and storage per unit.",
+      "u4": "The benchmark comes from the most precise level with enough sales: ~1 km zone, then comuna, then region.",
+      "u5": "The report gives a value range for the unit with the median UF/m² and the number of sales, and the AI writes the conclusions and the checklist for that property type.",
+      "uStats": "Based on 67k apartment sales, 35k house sales and 49k parking and storage sales (SII F2890, 10/2024–09/2026), plus offices, shops, industrial and land."
     }
   },
   "object": {
