@@ -1,7 +1,7 @@
 /**
  * Legal texts of PROMETEO (BETA templates, pending review by a Chilean lawyer).
  * Spanish is the binding version; English is a courtesy translation.
- * Tokens {name} {rut} {address} {email} {site} are filled from ./operator at render time.
+ * Tokens {operator} {email} {site} are filled from ./operator at render time.
  * A paragraph that is an array renders as a bulleted list.
  */
 import type { LegalDoc } from "./operator";
@@ -18,7 +18,7 @@ const es: Record<LegalDoc, LegalText> = {
       {
         h: "1. Quiénes somos y aceptación",
         p: [
-          "PROMETEO ({site}) es un servicio en línea de información territorial e inmobiliaria sobre Chile, operado por {name}, RUT {rut}, con domicilio en {address} (en adelante, «PROMETEO», «nosotros»). Contacto: {email}.",
+          "PROMETEO ({site}) es un servicio en línea de información territorial e inmobiliaria sobre Chile, operado por {operator} (en adelante, «PROMETEO», «nosotros»). Contacto: {email}.",
           "Al usar el sitio, crear una cuenta o comprar un informe, suscripción o pack, aceptas estos Términos y Condiciones, la Política de Privacidad y la Política de Pagos y Reembolsos, que forman parte de este acuerdo. Si no estás de acuerdo, no uses el servicio.",
           "El servicio se encuentra en etapa beta: funciones, coberturas y precios pueden cambiar mientras lo mejoramos.",
         ],
@@ -121,7 +121,7 @@ const es: Record<LegalDoc, LegalText> = {
       {
         h: "1. Responsable del tratamiento",
         p: [
-          "El responsable de tus datos personales es {name}, RUT {rut}, con domicilio en {address}. Para cualquier asunto de privacidad, escríbenos a {email}.",
+          "El responsable de tus datos personales es {operator}. Para cualquier asunto de privacidad, escríbenos a {email}.",
         ],
       },
       {
@@ -280,7 +280,7 @@ const en: Record<LegalDoc, LegalText> = {
       {
         h: "1. Who we are and acceptance",
         p: [
-          "PROMETEO ({site}) is an online service providing territorial and real-estate information about Chile, operated by {name}, RUT {rut}, located at {address} (“PROMETEO”, “we”). Contact: {email}.",
+          "PROMETEO ({site}) is an online service providing territorial and real-estate information about Chile, operated by {operator} (“PROMETEO”, “we”). Contact: {email}.",
           "By using the site, creating an account or buying a report, subscription or pack, you accept these Terms, the Privacy Policy and the Payments and Refunds Policy, which form part of this agreement. If you do not agree, do not use the service.",
           "The service is in beta: features, coverage and prices may change while we improve it.",
         ],
@@ -382,7 +382,7 @@ const en: Record<LegalDoc, LegalText> = {
     sections: [
       {
         h: "1. Data controller",
-        p: ["The controller of your personal data is {name}, RUT {rut}, located at {address}. For any privacy matter, write to {email}."],
+        p: ["The controller of your personal data is {operator}. For any privacy matter, write to {email}."],
       },
       {
         h: "2. Data we process",
