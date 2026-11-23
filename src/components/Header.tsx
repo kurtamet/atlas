@@ -8,6 +8,7 @@ const NAV = [
   { href: "/trends", key: "trends" },
   { href: "/pricing", key: "pricing" },
   { href: "/partners", key: "partners" },
+  { href: "/about", key: "about" },
 ] as const;
 
 export default function Header() {

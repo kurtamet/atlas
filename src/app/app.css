@@ -402,6 +402,33 @@ a.pm-offer:hover{border-color:var(--at-brand)}
 .atlas-root .pr-consent{max-width:720px;margin:20px 0 4px;padding:11px 14px;border:1px solid var(--at-line);border-radius:3px}
 .atlas-root .pm-consent.pm-consent-missing{color:#d9775b}
 
+/* About page */
+.atlas-root .at-about{max-width:1080px}
+.atlas-root .at-about .at-lead{font-size:16px;max-width:760px;line-height:1.55}
+.atlas-root .at-about-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:32px 0 8px}
+.atlas-root .at-about-stats div{border-top:2px solid var(--at-ink,#1d2321);padding-top:12px}
+.atlas-root .at-about-stats strong{display:block;font-size:30px;font-weight:500;letter-spacing:-.04em}
+.atlas-root .at-about-stats span{font-size:12px;color:var(--at-muted);line-height:1.4;display:block;margin-top:4px}
+.atlas-root .at-about-block{margin-top:44px}
+.atlas-root .at-about-block>h2{font-size:22px;font-weight:500;letter-spacing:-.03em;margin:0 0 10px}
+.atlas-root .at-about-block>p{font-size:14px;color:var(--at-muted);max-width:760px;line-height:1.6}
+.atlas-root .at-about .at-partners{margin:16px 0 0}
+.atlas-root .at-about .at-partner h3{font-size:18px;line-height:1.25;letter-spacing:-.03em;font-weight:500;margin:8px 0}
+.atlas-root .at-about .at-partner p{font-size:13px}
+.atlas-root .at-about-families{list-style:none;padding:0;margin:16px 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px}
+.atlas-root .at-about-families li{display:grid;grid-template-columns:12px 150px 1fr;gap:10px;align-items:baseline;font-size:13px;border-top:1px solid var(--at-line);padding-top:10px}
+.atlas-root .at-about-families i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.atlas-root .at-about-families span{color:var(--at-muted)}
+.atlas-root .at-about-list{margin:12px 0 14px;padding-left:18px;max-width:820px}
+.atlas-root .at-about-list li{font-size:14px;line-height:1.55;margin-bottom:6px}
+.atlas-root .at-about-link{font-size:13px;text-decoration:underline}
+.atlas-root .at-about-road{list-style:none;padding:0;margin:16px 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.atlas-root .at-about-road li{border-left:2px solid var(--at-line);padding-left:14px}
+.atlas-root .at-about-road li:first-child{border-left-color:var(--at-ink,#1d2321)}
+.atlas-root .at-about-road p{font-size:13px;margin-top:6px;line-height:1.5}
+.atlas-root .at-about-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:46px}
+.atlas-root .at-about-op{font-size:12px;color:var(--at-muted);margin-top:18px}
+@media(max-width:800px){.atlas-root .at-about-stats,.atlas-root .at-about-road{grid-template-columns:repeat(2,minmax(0,1fr))}.atlas-root .at-about-families{grid-template-columns:1fr}.atlas-root .at-about-families li{grid-template-columns:12px 120px 1fr}}
 /* unit picker (apartment / office / shop / parking of a building) */
 .pm-units h2{margin:0 0 6px}
 .pm-unit-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
