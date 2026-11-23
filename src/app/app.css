@@ -379,3 +379,25 @@ a.pm-offer:hover{border-color:var(--at-brand)}
 .atlas-root .ac-actions{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 4px}
 .atlas-root .ac-actions a{text-decoration:none}
 .pm-area-hint{font-size:12px;color:var(--at-muted);margin:12px 0 0;display:flex;gap:8px;align-items:flex-start}
+
+/* legal pages (/legal/terms, /legal/privacy, /legal/refunds) and the checkout consent line */
+.atlas-root .lg-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:26px}
+.atlas-root .lg-tabs a{padding:6px 11px;border:1px solid var(--at-line);border-radius:3px;font-size:12px;color:var(--at-muted);text-decoration:none}
+.atlas-root .lg-tabs a[aria-current="page"]{background:var(--at-brand);border-color:var(--at-brand);color:var(--at-onbrand)}
+.atlas-root .lg-meta{font-size:12px;color:var(--at-muted);margin:0 0 12px}
+.atlas-root .lg-beta{font-size:12px;line-height:1.5;max-width:720px;padding:10px 13px;border:1px solid var(--at-line);border-left:3px solid #d29b3a;border-radius:3px;margin:0 0 18px}
+.atlas-root .lg-body{max-width:760px;margin-top:26px}
+.atlas-root .lg-body article{border-top:1px solid var(--at-line);padding:18px 0 6px}
+.atlas-root .lg-body h2{font-size:17px;font-weight:500;letter-spacing:-.02em;margin:0 0 10px}
+.atlas-root .lg-body p,.atlas-root .lg-body li{font-size:13px;line-height:1.6;color:var(--at-muted);margin:0 0 10px}
+.atlas-root .lg-body ul{padding-left:20px;margin:0 0 10px}
+.atlas-root .lg-body li{margin-bottom:5px}
+.atlas-root .lg a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.atlas-root .lg .lg-tabs a{text-decoration:none}
+.atlas-root .lg-ph{background:rgba(210,155,58,.22);color:inherit;padding:0 3px;border-radius:2px}
+.atlas-root .lg-contact{font-size:13px;margin-top:22px;color:var(--at-muted)}
+.atlas-root .pm-consent{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.45;color:var(--at-muted);margin:12px 0;cursor:pointer}
+.atlas-root .pm-consent input{margin-top:2px;flex:none;accent-color:var(--at-brand)}
+.atlas-root .pm-consent a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.atlas-root .pr-consent{max-width:720px;margin:20px 0 4px;padding:11px 14px;border:1px solid var(--at-line);border-radius:3px}
+.atlas-root .pm-consent.pm-consent-missing{color:#d9775b}

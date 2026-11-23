@@ -7,11 +7,14 @@ import { currentAccount } from "@/lib/supabase/server";
 import { changePlan, createCheckout, stripeConfigured } from "@/lib/commerce/stripe";
 import { isProduct, planById } from "@/lib/commerce/plans";
 import { validInput } from "@/lib/report/generate";
+import { LEGAL_VERSION } from "@/lib/legal/operator";
 
 export async function POST(req: Request) {
   if (!stripeConfigured()) return NextResponse.json({ error: "payments not configured" }, { status: 503 });
-  let body: { product?: string; locale?: string; back?: string; input?: unknown; title?: string };
+  let body: { terms?: string; product?: string; locale?: string; back?: string; input?: unknown; title?: string };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "bad request" }, { status: 400 }); }
+  // the buyer ticked "I accept the Terms…" for this version of the legal texts
+  if (body.terms !== LEGAL_VERSION) return NextResponse.json({ error: "terms not accepted" }, { status: 400 });
   const product = String(body.product ?? "");
   if (!isProduct(product)) return NextResponse.json({ error: "unknown product" }, { status: 400 });
   if (product === "single" && !validInput(body.input)) return NextResponse.json({ error: "report input required" }, { status: 400 });

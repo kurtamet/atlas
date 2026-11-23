@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { PACKS, PLANS, RETAIL_CLP, formatClp, perReport, unlimitedBreakEven, type ProductId } from "@/lib/commerce/plans";
 import { startCheckout, type CheckoutError } from "./checkout";
 import { ReportInfoButton } from "./ReportInfo";
+import Consent from "./Consent";
 import { useMe } from "@/lib/access";
 
 const FAQ = ["account", "cancel", "unused", "single", "pay", "data"] as const;
@@ -15,8 +16,15 @@ export default function Pricing() {
   const { me } = useMe();
   const [busy, setBusy] = useState<ProductId | null>(null);
   const [err, setErr] = useState<CheckoutError | null>(null);
+  const [agreed, setAgreed] = useState(false);
+  const [missing, setMissing] = useState(false);
   const fmt = (n: number) => formatClp(n, locale);
   const buy = async (p: ProductId) => {
+    if (!agreed) {
+      setMissing(true);
+      document.getElementById("pr-consent")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     setBusy(p);
     setErr(null);
     const e = await startCheckout(p, locale);
@@ -29,6 +37,7 @@ export default function Pricing() {
       <h1>{t("title")}</h1>
       <p className="at-lead">{t("lead")}</p>
       {err && <p className="ac-error">{t(`err_${err}`)}</p>}
+      <div id="pr-consent"><Consent kind="plans" checked={agreed} missing={missing} onChange={setAgreed} className="pr-consent" /></div>
 
       <h2 className="pr-h">{t("plansTitle")}</h2>
       <p className="pr-sub">{t("plansSub")}</p>
@@ -103,7 +112,7 @@ export default function Pricing() {
           ))}
         </div>
       </div>
-      <p className="pr-note">{t("legal")}</p>
+      <p className="pr-note">{t("legal")} <Link href="/legal/terms">{t("legalLink")}</Link></p>
     </section>
   );
 }
