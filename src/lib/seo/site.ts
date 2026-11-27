@@ -14,7 +14,7 @@ export const asLocale = (l: string): Locale => (l === "en" ? "en" : "es");
 /** search-engine ownership tokens (public by design); env wins so they can change without a deploy of code */
 export const VERIFICATION = {
   google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
-  bing: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || "",
+  bing: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || "216ECA4E114A7C86B3F7687F14301021",
 };
 
 /** path inside a locale ("/comunas/nunoa") → absolute URL; Spanish is the default locale and has no prefix */
