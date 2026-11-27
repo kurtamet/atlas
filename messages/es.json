@@ -1,7 +1,8 @@
 {
   "meta": {
     "title": "PROMETEO · Cada lugar, en contexto",
-    "description": "Antes de comprar, conoce el lugar: precios reales del SII, riesgos oficiales, entorno, transporte y servicios de cada dirección del Gran Santiago, e informes completos en minutos."
+    "description": "Antes de comprar, conoce el lugar: precios reales del SII, riesgos oficiales, entorno, transporte y servicios de cada dirección del Gran Santiago, e informes completos en minutos.",
+    "h1": "Mapa inmobiliario del Gran Santiago: precios reales del SII, riesgos, entorno y transporte por dirección"
   },
   "nav": {
     "label": "Navegación principal",
@@ -15,7 +16,9 @@
     "plan_partner": "Partner",
     "plan_unlimited": "Ilimitada",
     "credits": "{n} informes",
-    "about": "Nosotros"
+    "about": "Nosotros",
+    "comunas": "Comunas",
+    "blog": "Blog"
   },
   "note": {
     "left": "BETA · Gran Santiago · datos oficiales abiertos",
@@ -29,7 +32,9 @@
     "terms": "Términos",
     "privacy": "Privacidad",
     "refunds": "Pagos y reembolsos",
-    "about": "Sobre PROMETEO"
+    "about": "Sobre PROMETEO",
+    "comunas": "Precio m² por comuna",
+    "blog": "Blog"
   },
   "explore": {
     "searchLabel": "Dirección, rol SII o criterio",

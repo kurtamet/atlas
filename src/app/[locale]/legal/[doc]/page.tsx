@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { LEGAL_TEXT } from "@/lib/legal/content";
+import { pageMeta } from "@/lib/seo/site";
 import { LEGAL_DOCS, LEGAL_UPDATED, LEGAL_VERSION, OPERATOR, isLegalDoc, operatorLine } from "@/lib/legal/operator";
 
 export function generateStaticParams() {
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale, doc } = await params;
   if (!isLegalDoc(doc)) return {};
   const d = LEGAL_TEXT[lang(locale)][doc];
-  return { title: `${d.title} · PROMETEO`, description: fillText(d.summary, lang(locale)) };
+  return pageMeta({ locale, path: `/legal/${doc}`, title: d.title, description: fillText(d.summary, lang(locale)) });
 }
 
 const tokens = (l: "es" | "en"): Record<string, string> => ({ operator: operatorLine(l), email: OPERATOR.email, site: OPERATOR.site });

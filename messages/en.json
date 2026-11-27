@@ -1,7 +1,8 @@
 {
   "meta": {
     "title": "PROMETEO · Every place, in context",
-    "description": "Know the place before you buy: real SII sale prices, official hazards, surroundings, transit and services for every address in Greater Santiago, and full reports in minutes."
+    "description": "Know the place before you buy: real SII sale prices, official hazards, surroundings, transit and services for every address in Greater Santiago, and full reports in minutes.",
+    "h1": "Real-estate map of Greater Santiago: actual SII prices, hazards, surroundings and transit by address"
   },
   "nav": {
     "label": "Main navigation",
@@ -15,7 +16,9 @@
     "plan_partner": "Partner",
     "plan_unlimited": "Unlimited",
     "credits": "{n} reports",
-    "about": "About"
+    "about": "About",
+    "comunas": "Comunas",
+    "blog": "Blog"
   },
   "note": {
     "left": "BETA · Greater Santiago · official open data",
@@ -29,7 +32,9 @@
     "terms": "Terms",
     "privacy": "Privacy",
     "refunds": "Payments & refunds",
-    "about": "About PROMETEO"
+    "about": "About PROMETEO",
+    "comunas": "Price per m² by comuna",
+    "blog": "Blog"
   },
   "explore": {
     "searchLabel": "Address, SII rol or criteria",

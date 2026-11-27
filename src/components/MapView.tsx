@@ -1,4 +1,5 @@
 "use client";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef } from "react";
 import type { Map as MLMap, Marker, StyleSpecification, MapGeoJSONFeature, FilterSpecification, ExpressionSpecification } from "maplibre-gl";
 import type { Metric, Level } from "@/lib/layers/registry";

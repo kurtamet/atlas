@@ -1,4 +1,11 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { pageMeta } from "@/lib/seo/site";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "pages.methods" });
+  return pageMeta({ locale, path: "/methods", title: `${t("eyebrow")}: ${t("title")}`, description: t("lead") });
+}
 import { Link } from "@/i18n/navigation";
 
 export default async function MethodsPage({ params }: { params: Promise<{ locale: string }> }) {
