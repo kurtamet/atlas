@@ -6,6 +6,8 @@ import { useMe } from "@/lib/access";
 const NAV = [
   { href: "/", key: "explore" },
   { href: "/trends", key: "trends" },
+  { href: "/comunas", key: "comunas" },
+  { href: "/blog", key: "blog" },
   { href: "/pricing", key: "pricing" },
   { href: "/partners", key: "partners" },
   { href: "/about", key: "about" },
@@ -25,7 +27,7 @@ export default function Header() {
         </Link>
         <nav className="at-nav" aria-label={t("nav.label")}>
           {NAV.map((n) => (
-            <Link key={n.key} href={n.href} aria-current={pathname === n.href ? "page" : undefined}>
+            <Link key={n.key} href={n.href} aria-current={pathname === n.href || (n.href !== "/" && pathname.startsWith(`${n.href}/`)) ? "page" : undefined}>
               {t(`nav.${n.key}`)}
             </Link>
           ))}

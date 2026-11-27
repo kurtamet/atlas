@@ -5,6 +5,12 @@ import SignIn from "@/components/account/SignIn";
 import { stripe, stripeConfigured } from "@/lib/commerce/stripe";
 import { planById } from "@/lib/commerce/plans";
 import { saveProfile } from "./actions";
+import { pageMeta } from "@/lib/seo/site";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return pageMeta({ locale, path: "/account", title: "PROMETEO", description: "", index: false, absoluteTitle: true });
+}
 
 export const dynamic = "force-dynamic";
 const SEGMENTS = ["agent", "investor", "flipper", "institution", "buyer", "other"] as const;

@@ -2,6 +2,12 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { adminClient, currentAccount } from "@/lib/supabase/server";
 import { grantSubscription, cancelSubscription, addCredits, addNote } from "./actions";
+import { pageMeta } from "@/lib/seo/site";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return pageMeta({ locale, path: "/admin", title: "PROMETEO", description: "", index: false, absoluteTitle: true });
+}
 
 export const dynamic = "force-dynamic";
 /** request time (a dynamic server page renders once per request) */

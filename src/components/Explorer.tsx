@@ -191,11 +191,10 @@ export default function Explorer() {
     return true;
   }
 
-  async function onSearch(e: React.FormEvent) {
-    e.preventDefault();
+  async function runSearch(text: string) {
     setMessage(null);
     const names = comunas?.features.map((f) => String(f.properties.name)) ?? [];
-    const parsed = parseQuery(query, names);
+    const parsed = parseQuery(text, names);
     switch (parsed.kind) {
       case "empty":
         return;
@@ -290,6 +289,25 @@ export default function Explorer() {
       }
     }
   }
+
+  async function onSearch(e: React.FormEvent) {
+    e.preventDefault();
+    await runSearch(query);
+  }
+
+  // deep link: /?q=<address, comuna or criteria> runs the search once comunas are loaded (used by comuna pages and the blog)
+  const deepLinked = useRef(false);
+  useEffect(() => {
+    if (!comunas || deepLinked.current) return;
+    deepLinked.current = true;
+    const q = new URLSearchParams(window.location.search).get("q")?.trim();
+    if (!q) return;
+    queueMicrotask(() => {
+      setQuery(q);
+      void runSearch(q);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comunas]);
 
   const selectedRef = selection?.kind === "area" ? { level: selection.level as Level, id: selection.id } : null;
   const highlighted = selection?.kind === "matches" ? selection.items.map((i) => i.code) : [];

@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { pageMeta } from "@/lib/seo/site";
 import { OPERATOR } from "@/lib/legal/operator";
 import { FAMILIES as FAMILY_LIST } from "@/lib/layers/registry";
 
@@ -15,7 +16,7 @@ const ROAD = ["r1", "r2", "r3", "r4"] as const;
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "pages.about" });
-  return { title: `${t("eyebrow")}`, description: t("lead") };
+  return pageMeta({ locale, path: "/about", title: `${t("eyebrow")}: ${t("title")}`, description: t("lead") });
 }
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
